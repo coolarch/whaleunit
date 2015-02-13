@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
 		<version>9</version>
 	</parent>
+	
 	<groupId>cool.arch.whaleunit</groupId>
 	<artifactId>whaleunit</artifactId>
 	<version>1.0-SNAPSHOT</version>
+	
 	<packaging>pom</packaging>
+	
 	<name>WhaleUnit</name>
+	
+	<description>Docker support for JUnit based integration testing</description>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.source.version>1.7</java.source.version>
 		<java.target.version>1.7</java.target.version>
 		<lib.junit.version>4.12</lib.junit.version>
 		<lib.mockito.version>1.10.19</lib.mockito.version>
+		<lib.docker-client.version>2.7.6</lib.docker-client.version>
 	</properties>
+	
+	<modules>
+		<module>whaleunit-annotation</module>
+		<module>whaleunit-junit</module>
+	</modules>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -30,19 +45,42 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 	<dependencyManagement>
 		<dependencies>
+			
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-annotation</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-junit</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${lib.junit.version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${lib.mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-client</artifactId>
+				<version>${lib.docker-client.version}</version>
+			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
+	
 </project>
