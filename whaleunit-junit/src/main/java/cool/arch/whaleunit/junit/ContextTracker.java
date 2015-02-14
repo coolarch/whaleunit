@@ -1,21 +1,32 @@
 package cool.arch.whaleunit.junit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import cool.arch.whaleunit.junit.docker.Container;
+import cool.arch.whaleunit.junit.docker.ContainerImpl;
 
 public class ContextTracker implements LifeCycle {
 	
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
-
+	
+	private Object test;
+	
+	private Map<String, Container> containers = new HashMap<>();
+	
 	@Override
 	public void onInit(Object test, String... dirtiedContainers) {
+		this.test = test;
+		
 		if (dirtiedContainers != null) {
 			globallyDirtiedContainerNames.addAll(Arrays.asList(dirtiedContainers));
 		}
 		
-		System.out.println("onInit");
+		init();
+		validate();
 	}
 
 	@Override
@@ -44,18 +55,40 @@ public class ContextTracker implements LifeCycle {
 		}
 		
 		for (final String containerName : dirtyContainerNames) {
-			System.out.println("stopping container: " + containerName);
+			final Container container = containers.get(containerName);
+			container.stop();
 		}
 		
 		for (final String containerName : dirtyContainerNames) {
-			System.out.println("start container: " + containerName);
+			final Container container = containers.get(containerName);
+			container.start();
 		}
-		
-		System.out.println("onTestEnd");
 	}
 
 	@Override
 	public void onCleanup() {
-		System.out.println("onCleanup");
+		for (final Container container : containers.values()) {
+			container.stop();
+		}
+
+		for (final Container container : containers.values()) {
+			container.destroy();
+		}
+	}
+	
+	private void init() {
+		addContainer("foo");
+		addContainer("bar");
+		addContainer("bat");
+		addContainer("baz");
+	}
+	
+	private void validate() {
+		
+	}
+	
+	private void addContainer(final String name) {
+		final Container container = new ContainerImpl(name);
+		containers.put(name, container);
 	}
 }
