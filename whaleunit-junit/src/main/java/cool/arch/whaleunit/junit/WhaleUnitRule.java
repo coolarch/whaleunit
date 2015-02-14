@@ -1,42 +1,67 @@
 package cool.arch.whaleunit.junit;
 
-import org.junit.AssumptionViolatedException;
-import org.junit.runner.Description;
+import java.lang.reflect.Method;
 
-public class WhaleUnitRule extends AbstractLifecyleHookRule {
+import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.whaleunit.junit.exception.TestManagementException;
+
+
+public final class WhaleUnitRule extends AbstractLifecyleHookRule {
+	
+	private final LifeCycle tracker = new ContextTracker();
 
 	@Override
-	protected void succeeded(Description description) {
-		System.out.println("succeeded");
+	protected void beforeClass(Class<?> testClass) {
+		final DirtiesContainers annotation = testClass.getAnnotation(DirtiesContainers.class);
+		
+		if (annotation == null) {
+			tracker.onInit(testClass);
+		} else {
+			tracker.onInit(testClass, annotation.value());
+		}
 	}
 
 	@Override
-	protected void failed(Throwable e, Description description) {
-		System.out.println("failed");
+	protected void afterClass(Class<?> testClass) {
+		tracker.onCleanup();
 	}
 
 	@Override
-	protected void skipped(AssumptionViolatedException e, Description description) {
-		System.out.println("skipped");
+	protected void succeeded(Class<?> testClass, String methodName) {
+		tracker.onTestSucceeded();
 	}
 
 	@Override
-	protected void starting(Description description) {
-		System.out.println("starting");
+	protected void failed(Class<?> testClass, String methodName, Throwable e) {
+		tracker.onTestFailed();
 	}
 
 	@Override
-	protected void finished(Description description) {
-		System.out.println("finished");
+	protected void skipped(Class<?> testClass, String methodName) {
+		// Intentionally do nothing
 	}
 
 	@Override
-	protected void beforeClass() {
-		System.out.println("beforeClass");
+	protected void starting(Class<?> testClass, String methodName) {
+		tracker.onTestStart();
 	}
 
 	@Override
-	protected void afterClass() {
-		System.out.println("afterClass");
+	protected void finished(Class<?> testClass, String methodName) {
+		try {
+			final Method method = testClass.getMethod(methodName);
+			
+			final DirtiesContainers annotation = method.getAnnotation(DirtiesContainers.class);
+			
+			if (annotation == null) {
+				tracker.onTestEnd();
+			} else {
+				tracker.onTestEnd("foo", "bar");
+			}
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO - Try to break this
+			throw new TestManagementException("Error looking up method " + methodName);
+		}
 	}
 }

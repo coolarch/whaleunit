@@ -7,9 +7,12 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import cool.arch.whaleunit.annotation.DirtiesContainers;
+
 /**
  *
  */
+@DirtiesContainers({"bat"})
 public class WhaleUnitRuleTest {
 
 	@Rule
@@ -21,12 +24,19 @@ public class WhaleUnitRuleTest {
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
 	 */
 	@Test
-	public void testExecution() {
-		System.out.println("During 1");
+	@DirtiesContainers({"baz"})
+	public void testOne() {
+		System.out.println("one");
 	}
 	
 	@Test
-	public void secondTest() {
-		System.out.println("During 2");
+	public void testTwo() {
+		System.out.println("two");
+	}
+	
+	@Test
+	@DirtiesContainers({"foo", "bar"})
+	public void testThree() {
+		System.out.println("three");
 	}
 }

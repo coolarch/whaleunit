@@ -2,15 +2,15 @@ package cool.arch.whaleunit.junit;
 
 public interface LifeCycle {
 
-	void beforeClass();
-    
-    void afterClass();
+	void onInit(Object test, String... dirtiedContainers);
+
+    void onTestStart();
     
     void onTestSucceeded();
 
     void onTestFailed();
 
-    void onTestStart();
-
-    void onTestEnd();
+    void onTestEnd(String... dirtiedContainers);
+    
+    void onCleanup();
 }
