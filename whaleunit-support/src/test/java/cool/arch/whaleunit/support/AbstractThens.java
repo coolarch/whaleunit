@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.support;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,24 +25,6 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- *
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Container {
+public interface AbstractThens {
 	
-	String id();
-	
-	String image();
-	
-	String tag() default "latest";
-
 }

@@ -30,13 +30,12 @@ import java.lang.reflect.Method;
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.junit.exception.TestManagementException;
 
-
 public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	
 	private final LifeCycle tracker = new ContextTracker();
-
+	
 	@Override
-	protected void beforeClass(Class<?> testClass) {
+	protected void beforeClass(final Class<?> testClass) {
 		final DirtiesContainers annotation = testClass.getAnnotation(DirtiesContainers.class);
 		
 		if (annotation == null) {
@@ -45,34 +44,34 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 			tracker.onInit(testClass, annotation.value());
 		}
 	}
-
+	
 	@Override
-	protected void afterClass(Class<?> testClass) {
+	protected void afterClass(final Class<?> testClass) {
 		tracker.onCleanup();
 	}
-
+	
 	@Override
-	protected void succeeded(Class<?> testClass, String methodName) {
+	protected void succeeded(final Class<?> testClass, final String methodName) {
 		tracker.onTestSucceeded();
 	}
-
+	
 	@Override
-	protected void failed(Class<?> testClass, String methodName, Throwable e) {
+	protected void failed(final Class<?> testClass, final String methodName, final Throwable e) {
 		tracker.onTestFailed();
 	}
-
+	
 	@Override
-	protected void skipped(Class<?> testClass, String methodName) {
+	protected void skipped(final Class<?> testClass, final String methodName) {
 		// Intentionally do nothing
 	}
-
+	
 	@Override
-	protected void starting(Class<?> testClass, String methodName) {
+	protected void starting(final Class<?> testClass, final String methodName) {
 		tracker.onTestStart();
 	}
-
+	
 	@Override
-	protected void finished(Class<?> testClass, String methodName) {
+	protected void finished(final Class<?> testClass, final String methodName) {
 		try {
 			final Method method = testClass.getMethod(methodName);
 			

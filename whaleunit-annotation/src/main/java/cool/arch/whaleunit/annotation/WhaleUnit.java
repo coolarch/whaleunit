@@ -37,11 +37,13 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 public @interface WhaleUnit {
 	
-	Class<?>[] containersFrom() default {};
+	Class<?>[] containersFromClasses() default {};
 	
-	String configPath() default "";
+	String[] containersFromFig() default {};
+	
+	String config() default "classpath:/cool/arch/whaleunit/junit/config.properties";
 	
 }

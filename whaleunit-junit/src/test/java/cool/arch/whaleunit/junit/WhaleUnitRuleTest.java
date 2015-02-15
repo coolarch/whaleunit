@@ -39,10 +39,7 @@ import cool.arch.whaleunit.annotation.WhaleUnit;
  *
  */
 @DirtiesContainers({ "bat" })
-@WhaleUnit(
-		containersFrom = {
-				Ubuntu.class
-		})
+@WhaleUnit(containersFromClasses = { Ubuntu.class })
 public class WhaleUnitRuleTest {
 	
 	@Rule

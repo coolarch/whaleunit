@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.support.io;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,24 +25,31 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.InputStream;
 
-/**
- *
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Container {
-	
-	String id();
-	
-	String image();
-	
-	String tag() default "latest";
+import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
 
+class ClasspathResource extends Resource {
+	
+	public static final String PREFIX = "classpath";
+	
+	ClasspathResource(final String path) {
+		super(path);
+	}
+	
+	@Override
+	public final String getPrefix() {
+		return PREFIX;
+	}
+	
+	@Override
+	protected InputStream loadInputStream() throws UnknownResourceException {
+		final InputStream stream = getClass().getResourceAsStream(getNativePath());
+		
+		if (stream == null) {
+			throw new UnknownResourceException("Unknown resource " + getPath());
+		}
+		
+		return stream;
+	}
 }

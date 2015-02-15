@@ -31,12 +31,16 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import cool.arch.whaleunit.annotation.WhaleUnit;
 import cool.arch.whaleunit.junit.docker.Container;
 import cool.arch.whaleunit.junit.docker.ContainerFactory;
 import cool.arch.whaleunit.junit.docker.Containers;
 import cool.arch.whaleunit.junit.docker.DockerContainerFactoryImpl;
+import cool.arch.whaleunit.junit.exception.ValidationException;
 
 public class ContextTracker implements LifeCycle {
+	
+	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL = "Annotation %s is required on unit test %s that is using WhaleUnit.";
 	
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
 	
@@ -44,7 +48,7 @@ public class ContextTracker implements LifeCycle {
 	
 	private final Containers containers = new Containers();
 	
-	private Object test;
+	private Class<?> testClass;
 	
 	public ContextTracker() {
 		containerFactory = new DockerContainerFactoryImpl();
@@ -56,38 +60,38 @@ public class ContextTracker implements LifeCycle {
 	}
 	
 	@Override
-	public void onInit(Object test, String... dirtiedContainers) {
-		this.test = test;
+	public void onInit(final Class<?> testClass, final String... dirtiedContainers) {
+		this.testClass = testClass;
 		
 		if (dirtiedContainers != null) {
 			globallyDirtiedContainerNames.addAll(Arrays.asList(dirtiedContainers));
 		}
 		
-		init();
 		validate();
+		init();
 	}
-
+	
 	@Override
 	public void onTestStart() {
 		containers.startAll();
 	}
-
+	
 	@Override
 	public void onTestSucceeded() {
 		// Intentionally do nothing
 	}
-
+	
 	@Override
 	public void onTestFailed() {
 		containers.stopAll();
 	}
-
+	
 	@Override
-	public void onTestEnd(String... dirtiedContainers) {
+	public void onTestEnd(final String... dirtiedContainers) {
 		containers.stop(globallyDirtiedContainerNames);
 		containers.stop(dirtiedContainers);
 	}
-
+	
 	@Override
 	public void onCleanup() {
 		containers.stopAll();
@@ -102,6 +106,13 @@ public class ContextTracker implements LifeCycle {
 	}
 	
 	private void validate() {
+		final WhaleUnit annotation = testClass.getAnnotation(WhaleUnit.class);
+		
+		if (annotation == null) {
+			throw new ValidationException(String.format(MISSING_WHALEUNIT_ANNOTATION_TMPL, WhaleUnit.class.getName(), testClass.getName()));
+		}
+		
+		annotation.config();
 		
 	}
 	

@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.support.io.exception;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,24 +25,30 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- *
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Container {
+public class InvalidResourceException extends Exception {
 	
-	String id();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	String image();
+	public InvalidResourceException() {
+		super();
+	}
 	
-	String tag() default "latest";
-
+	public InvalidResourceException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public InvalidResourceException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+	
+	public InvalidResourceException(final String message) {
+		super(message);
+	}
+	
+	public InvalidResourceException(final Throwable cause) {
+		super(cause);
+	}
 }

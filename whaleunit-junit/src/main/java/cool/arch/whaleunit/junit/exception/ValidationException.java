@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.junit.exception;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - JUnit
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,24 +25,33 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- *
+ * Exception that indicates that a test's configuration is invalid.
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Container {
+public class ValidationException extends RuntimeException {
 	
-	String id();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	String image();
+	public ValidationException() {
+		super();
+	}
 	
-	String tag() default "latest";
-
+	public ValidationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public ValidationException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+	
+	public ValidationException(final String message) {
+		super(message);
+	}
+	
+	public ValidationException(final Throwable cause) {
+		super(cause);
+	}
 }
