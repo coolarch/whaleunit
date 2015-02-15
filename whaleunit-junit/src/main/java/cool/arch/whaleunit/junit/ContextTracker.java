@@ -1,21 +1,59 @@
 package cool.arch.whaleunit.junit;
 
+/*
+ * #%L
+ * WhaleUnit - JUnit
+ * %%
+ * Copyright (C) 2015 CoolArch
+ * %%
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ * #L%
+ */
+
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import cool.arch.whaleunit.junit.docker.Container;
-import cool.arch.whaleunit.junit.docker.ContainerImpl;
+import cool.arch.whaleunit.junit.docker.ContainerFactory;
+import cool.arch.whaleunit.junit.docker.Containers;
+import cool.arch.whaleunit.junit.docker.DockerContainerFactoryImpl;
 
 public class ContextTracker implements LifeCycle {
 	
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
 	
+	private final ContainerFactory containerFactory;
+	
+	private final Containers containers = new Containers();
+	
 	private Object test;
 	
-	private Map<String, Container> containers = new HashMap<>();
+	public ContextTracker() {
+		containerFactory = new DockerContainerFactoryImpl();
+	}
+	
+	public ContextTracker(final ContainerFactory containerFactory) {
+		requireNonNull(containerFactory, "containerFactory shall not be null");
+		this.containerFactory = containerFactory;
+	}
 	
 	@Override
 	public void onInit(Object test, String... dirtiedContainers) {
@@ -31,49 +69,29 @@ public class ContextTracker implements LifeCycle {
 
 	@Override
 	public void onTestStart() {
-		System.out.println("onTestStart");
+		containers.startAll();
 	}
 
 	@Override
 	public void onTestSucceeded() {
-		System.out.println("onTestSucceeded");
+		// Intentionally do nothing
 	}
 
 	@Override
 	public void onTestFailed() {
-		System.out.println("onTestFailed");
+		containers.stopAll();
 	}
 
 	@Override
 	public void onTestEnd(String... dirtiedContainers) {
-		final Set<String> dirtyContainerNames = new HashSet<>();
-		
-		dirtyContainerNames.addAll(globallyDirtiedContainerNames);
-		
-		if (dirtiedContainers != null && dirtiedContainers.length > 0) {
-			dirtyContainerNames.addAll(Arrays.asList(dirtiedContainers));
-		}
-		
-		for (final String containerName : dirtyContainerNames) {
-			final Container container = containers.get(containerName);
-			container.stop();
-		}
-		
-		for (final String containerName : dirtyContainerNames) {
-			final Container container = containers.get(containerName);
-			container.start();
-		}
+		containers.stop(globallyDirtiedContainerNames);
+		containers.stop(dirtiedContainers);
 	}
 
 	@Override
 	public void onCleanup() {
-		for (final Container container : containers.values()) {
-			container.stop();
-		}
-
-		for (final Container container : containers.values()) {
-			container.destroy();
-		}
+		containers.stopAll();
+		containers.destroyAll();
 	}
 	
 	private void init() {
@@ -88,7 +106,7 @@ public class ContextTracker implements LifeCycle {
 	}
 	
 	private void addContainer(final String name) {
-		final Container container = new ContainerImpl(name);
-		containers.put(name, container);
+		final Container container = containerFactory.create(name);
+		containers.add(container);
 	}
 }

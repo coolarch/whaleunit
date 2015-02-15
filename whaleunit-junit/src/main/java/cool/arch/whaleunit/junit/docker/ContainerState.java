@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.exception;
+package cool.arch.whaleunit.junit.docker;
 
 /*
  * #%L
@@ -25,30 +25,26 @@ package cool.arch.whaleunit.junit.exception;
  * #L%
  */
 
-public class TestManagementException extends RuntimeException {
+public enum ContainerState {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public TestManagementException() {
-		super();
-	}
+	NEW,
 	
-	public TestManagementException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+	CREATING,
 	
-	public TestManagementException(String message, Throwable cause) {
-		super(message, cause);
-	}
+	CREATED,
 	
-	public TestManagementException(String message) {
-		super(message);
-	}
+	STARTING,
 	
-	public TestManagementException(Throwable cause) {
-		super(cause);
-	}
+	STARTED,
+	
+	FAILED,
+	
+	STOPPING,
+	
+	STOPPED,
+	
+	DESTROYING,
+	
+	DESTROYED
+	
 }

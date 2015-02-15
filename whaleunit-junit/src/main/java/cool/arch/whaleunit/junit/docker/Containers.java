@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.exception;
+package cool.arch.whaleunit.junit.docker;
 
 /*
  * #%L
@@ -25,30 +25,48 @@ package cool.arch.whaleunit.junit.exception;
  * #L%
  */
 
-public class TestManagementException extends RuntimeException {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+import static java.util.Objects.requireNonNull;
 
-	public TestManagementException() {
-		super();
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Containers {
+	
+	private Map<String, Container> containers = new HashMap<>();
+
+	public void add(final Container container) {
+		requireNonNull(container, "container shall not be null");
+		containers.put(container.getName(), container);
 	}
 	
-	public TestManagementException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
+	public void startAll() {
+		for (final Container container : containers.values()) {
+			container.start();
+		}
 	}
 	
-	public TestManagementException(String message, Throwable cause) {
-		super(message, cause);
+	public void stopAll() {
+		for (final Container container : containers.values()) {
+			container.stop();
+		}
 	}
 	
-	public TestManagementException(String message) {
-		super(message);
+	public void destroyAll() {
+		for (final Container container : containers.values()) {
+			container.destroy();
+		}
 	}
 	
-	public TestManagementException(Throwable cause) {
-		super(cause);
+	public void stop(final String... names) {
+		
+		// TODO - Implement
+		
+	}
+	
+	public void stop(final Collection<String> names) {
+		
+		// TODO - Implement
+		
 	}
 }

@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.exception;
+package cool.arch.whaleunit.junit;
 
 /*
  * #%L
@@ -25,30 +25,33 @@ package cool.arch.whaleunit.junit.exception;
  * #L%
  */
 
-public class TestManagementException extends RuntimeException {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+import static java.util.Objects.requireNonNull;
 
-	public TestManagementException() {
-		super();
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
+class ClassStatement extends Statement {
+	
+	private final AbstractLifecyleHookRule rule;
+	
+	private final Statement base;
+	
+	private final Description description;
+	
+	ClassStatement(final AbstractLifecyleHookRule rule, final Statement base, final Description description) {
+		this.rule = requireNonNull(rule, "rule shall not be null");
+		this.base = requireNonNull(base, "base shall not be null");
+		this.description = requireNonNull(description, "description shall not be null");
 	}
 	
-	public TestManagementException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-	
-	public TestManagementException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public TestManagementException(String message) {
-		super(message);
-	}
-	
-	public TestManagementException(Throwable cause) {
-		super(cause);
+	@Override
+	public void evaluate() throws Throwable {
+		rule.beforeClass(description.getTestClass());
+		
+		try {
+			base.evaluate();
+		} finally {
+			rule.afterClass(description.getTestClass());
+		}
 	}
 }

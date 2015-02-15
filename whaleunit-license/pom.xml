@@ -11,24 +11,11 @@
 	
 	<packaging>jar</packaging>
 	
-	<artifactId>whaleunit-annotation</artifactId>
+	<artifactId>whaleunit-license</artifactId>
 	
-	<name>WhaleUnit - Annotation</name>
+	<name>WhaleUnit - License</name>
 	
 	<dependencies>
 	</dependencies>
-	
-	<build>
-		
-		<plugins>
-			
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-			</plugin>
-			
-		</plugins>
-		
-	</build>
 	
 </project>
