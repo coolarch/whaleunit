@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.junit.impl;
 
 /*
  * #%L
@@ -31,14 +31,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
+import cool.arch.whaleunit.annotation.LoggerAdapter;
 import cool.arch.whaleunit.annotation.WhaleUnit;
-import cool.arch.whaleunit.junit.docker.Container;
-import cool.arch.whaleunit.junit.docker.ContainerFactory;
-import cool.arch.whaleunit.junit.docker.Containers;
-import cool.arch.whaleunit.junit.docker.DockerContainerFactoryImpl;
+import cool.arch.whaleunit.junit.api.Container;
+import cool.arch.whaleunit.junit.api.ContainerFactory;
+import cool.arch.whaleunit.junit.api.Containers;
+import cool.arch.whaleunit.junit.api.ContextTracker;
+import cool.arch.whaleunit.junit.exception.InitializationException;
 import cool.arch.whaleunit.junit.exception.ValidationException;
 
-public class ContextTracker implements LifeCycle {
+@Service
+public class ContextTrackerImpl implements ContextTracker {
 	
 	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL = "Annotation %s is required on unit test %s that is using WhaleUnit.";
 	
@@ -46,17 +53,17 @@ public class ContextTracker implements LifeCycle {
 	
 	private final ContainerFactory containerFactory;
 	
-	private final Containers containers = new Containers();
+	private final Containers containers;
 	
 	private Class<?> testClass;
 	
-	public ContextTracker() {
-		containerFactory = new DockerContainerFactoryImpl();
-	}
+	private LoggerAdapter loggerAdapter;
 	
-	public ContextTracker(final ContainerFactory containerFactory) {
+	@Inject
+	public ContextTrackerImpl(final ContainerFactory containerFactory, final Containers containers) {
 		requireNonNull(containerFactory, "containerFactory shall not be null");
 		this.containerFactory = containerFactory;
+		this.containers = containers;
 	}
 	
 	@Override
@@ -99,6 +106,16 @@ public class ContextTracker implements LifeCycle {
 	}
 	
 	private void init() {
+		final WhaleUnit whaleUnit = testClass.getAnnotation(WhaleUnit.class);
+		
+		try {
+			loggerAdapter = whaleUnit.loggerAdapter().newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new InitializationException("Error initializing LoggerAdapter", e);
+		}
+		
+		containers.setLoggerAdapter(loggerAdapter);
+		
 		addContainer("foo");
 		addContainer("bar");
 		addContainer("bat");
@@ -117,7 +134,9 @@ public class ContextTracker implements LifeCycle {
 	}
 	
 	private void addContainer(final String name) {
-		final Container container = containerFactory.create(name);
+		loggerAdapter.debug("Registering container " + name);
+		
+		final Container container = containerFactory.apply(name);
 		containers.add(container);
 	}
 }

@@ -38,6 +38,9 @@ import cool.arch.whaleunit.support.io.ResourceSpec.Whens;
 import cool.arch.whaleunit.support.io.exception.InvalidResourceException;
 import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
 
+/**
+ * Specification for test actions for the {@link cool.arch.whaleunit.support.io.Resource} class.
+ */
 public final class ResourceSpec implements Spec<Givens, Whens, Thens> {
 	
 	public static Givens given() {
@@ -71,7 +74,7 @@ public final class ResourceSpec implements Spec<Givens, Whens, Thens> {
 		
 	}
 	
-	public class Fluent implements Givens, Whens, Thens {
+	class Fluent implements Givens, Whens, Thens {
 		
 		private Resource resource;
 		

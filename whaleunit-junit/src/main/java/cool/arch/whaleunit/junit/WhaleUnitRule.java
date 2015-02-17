@@ -25,24 +25,85 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
+import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.createAndPopulateServiceLocator;
+
 import java.lang.reflect.Method;
 
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ServiceLocator;
+
 import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.whaleunit.junit.api.ContextTracker;
 import cool.arch.whaleunit.junit.exception.TestManagementException;
+import cool.arch.whaleunit.support.functional.Optional;
+import cool.arch.whaleunit.support.functional.primitives.Effect;
+import cool.arch.whaleunit.support.functional.primitives.Function;
+import cool.arch.whaleunit.support.functional.primitives.Predicate;
 
 public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	
-	private final LifeCycle tracker = new ContextTracker();
+	@Inject
+	private ContextTracker tracker;
+	
+	private final Optional<ServiceLocator> locator;
+	
+	/**
+	 * Constructs a new WhaleUnitRule.
+	 */
+	public WhaleUnitRule() {
+		this(true);
+	}
+	
+	/**
+	 * Constructs a new WhaleUnitRule allowing JSR-330 injection to be disabled.
+	 * @param inject Whether or not creation of an JSR-330 service locator should be created or used
+	 */
+	WhaleUnitRule(final boolean inject) {
+		final WhaleUnitRule _this = this;
+		
+		locator = Optional.of(inject)
+			.filter(new Predicate<Boolean>() {
+				@Override
+				public boolean test(final Boolean inject) {
+					return inject;
+				}
+			}).map(new Function<Boolean, ServiceLocator>() {
+				@Override
+				public ServiceLocator apply(final Boolean locator) {
+					return createAndPopulateServiceLocator();
+				}
+			}).ifPresent(new Effect<ServiceLocator>() {
+				@Override
+				public void apply(final ServiceLocator locator) {
+					locator.inject(_this);
+				}
+			});
+	}
 	
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void beforeClass(final Class<?> testClass) {
-		final DirtiesContainers annotation = testClass.getAnnotation(DirtiesContainers.class);
-		
-		if (annotation == null) {
-			tracker.onInit(testClass);
-		} else {
-			tracker.onInit(testClass, annotation.value());
-		}
+		Optional.of((Class) testClass)
+		.map(new Function<Class, DirtiesContainers>() {
+			@Override
+			public DirtiesContainers apply(final Class testClass) {
+				return (DirtiesContainers) testClass.getAnnotation(DirtiesContainers.class);
+			}
+		})
+		.map(new Function<DirtiesContainers, String[]>() {
+			@Override
+			public String[] apply(final DirtiesContainers annotation) {
+				return annotation.value();
+			}
+		})
+		.or(new String[] {})
+		.ifPresent(new Effect<String[]>() {
+			@Override
+			public void apply(final String[] dirtyContainerIds) {
+				tracker.onInit(testClass, dirtyContainerIds);
+			}
+		});
 	}
 	
 	@Override
@@ -72,20 +133,42 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	
 	@Override
 	protected void finished(final Class<?> testClass, final String methodName) {
-		try {
-			final Method method = testClass.getMethod(methodName);
-			
-			final DirtiesContainers annotation = method.getAnnotation(DirtiesContainers.class);
-			
-			if (annotation == null) {
-				tracker.onTestEnd();
-			} else {
-				tracker.onTestEnd("foo", "bar");
+		Optional.of(methodName).map(new Function<String, Method>() {
+			@Override
+			public Method apply(final String methodName) {
+				try {
+					return testClass.getMethod(methodName);
+				} catch (NoSuchMethodException | SecurityException e) {
+					throw new TestManagementException("Error looking up method " + methodName);
+				}
 			}
-			
-		} catch (NoSuchMethodException | SecurityException e) {
-			// TODO - Try to break this
-			throw new TestManagementException("Error looking up method " + methodName);
-		}
+		})
+		.map(new Function<Method,DirtiesContainers>() {
+			@Override
+			public DirtiesContainers apply(final Method method) {
+				return method.getAnnotation(DirtiesContainers.class);
+			}
+		})
+		.map(new Function<DirtiesContainers,String[]>() {
+			@Override
+			public String[] apply(final DirtiesContainers annotation) {
+				return annotation.value();
+			}
+		})
+		.or(new String[] {})
+		.ifPresent(new Effect<String[]>() {
+			@Override
+			public void apply(final String[] containerIds) {
+				tracker.onTestEnd(containerIds);
+			}
+		});
+	}
+	
+	public ContextTracker getTracker() {
+		return tracker;
+	}
+	
+	public void setTracker(final ContextTracker tracker) {
+		this.tracker = tracker;
 	}
 }

@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.junit.enums;
 
 /*
  * #%L
@@ -25,17 +25,26 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-public interface LifeCycle {
+public enum ContainerState {
 	
-	void onInit(Class<?> testClass, String... dirtiedContainers);
+	NEW,
 	
-	void onTestStart();
+	CREATING,
 	
-	void onTestSucceeded();
+	CREATED,
 	
-	void onTestFailed();
+	STARTING,
 	
-	void onTestEnd(String... dirtiedContainers);
+	STARTED,
 	
-	void onCleanup();
+	FAILED,
+	
+	STOPPING,
+	
+	STOPPED,
+	
+	DESTROYING,
+	
+	DESTROYED
+	
 }

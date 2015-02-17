@@ -9,9 +9,9 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	
-	<packaging>jar</packaging>
-	
 	<artifactId>whaleunit-annotation</artifactId>
+	
+	<packaging>jar</packaging>
 	
 	<name>WhaleUnit - Annotation</name>
 	

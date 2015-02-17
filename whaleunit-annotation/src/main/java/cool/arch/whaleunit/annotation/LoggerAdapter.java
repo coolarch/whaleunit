@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.annotation;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Annotation
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,26 +25,32 @@ package cool.arch.whaleunit.junit.docker;
  * #L%
  */
 
-public enum ContainerState {
+/**
+ * Adapter interface for logging in WhaleUnit.
+ */
+public interface LoggerAdapter {
 	
-	NEW,
+	boolean isDebugEnabled();
 	
-	CREATING,
+	void debug(String content);
 	
-	CREATED,
+	void debug(String content, Throwable error);
 	
-	STARTING,
+	boolean isInfoEnabled();
 	
-	STARTED,
+	void info(String content);
 	
-	FAILED,
+	void info(String content, Throwable error);
 	
-	STOPPING,
+	boolean isWarnEnabled();
 	
-	STOPPED,
+	void warn(String content);
 	
-	DESTROYING,
+	void warn(String content, Throwable error);
 	
-	DESTROYED
+	boolean isErrorEnabled();
 	
+	void error(String content);
+	
+	void error(String content, Throwable error);
 }

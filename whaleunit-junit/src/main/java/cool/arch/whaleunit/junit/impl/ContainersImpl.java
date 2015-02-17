@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.junit.impl;
 
 /*
  * #%L
@@ -27,14 +27,24 @@ package cool.arch.whaleunit.junit.docker;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Containers {
-	
-	private Map<String, Container> containers = new HashMap<>();
+import org.jvnet.hk2.annotations.Service;
 
+import cool.arch.whaleunit.annotation.LoggerAdapter;
+import cool.arch.whaleunit.junit.api.Container;
+import cool.arch.whaleunit.junit.api.Containers;
+
+@Service
+public class ContainersImpl implements Containers {
+	
+	private final Map<String, Container> containers = new HashMap<>();
+	
+	private LoggerAdapter loggerAdapter;
+	
 	public void add(final Container container) {
 		requireNonNull(container, "container shall not be null");
 		containers.put(container.getName(), container);
@@ -59,14 +69,24 @@ public class Containers {
 	}
 	
 	public void stop(final String... names) {
+		loggerAdapter.debug(Arrays.toString(names));
 		
 		// TODO - Implement
 		
 	}
 	
 	public void stop(final Collection<String> names) {
+		loggerAdapter.debug(names.toString());
 		
 		// TODO - Implement
 		
+	}
+	
+	public LoggerAdapter getLoggerAdapter() {
+		return loggerAdapter;
+	}
+	
+	public void setLoggerAdapter(final LoggerAdapter loggerAdapter) {
+		this.loggerAdapter = loggerAdapter;
 	}
 }

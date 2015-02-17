@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.junit.exception;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - JUnit
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,26 +25,33 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotation interface used to indicate that at an individual method, or global class level that a list of containers are to be considered dirtied.
- * <p>
- * Dirtying happens after each test method execution.  Prior to the next test method, if any, being executed, the dirtied containers are restarted. 
+ * Exception that indicates that a test's initialization failed.
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface DirtiesContainers {
+public class InitializationException extends RuntimeException {
 	
 	/**
-	 * Container ids that should be considered dirty.
-	 * @return Container ids that should be considered dirty
+	 * 
 	 */
-	String[] value();
+	private static final long serialVersionUID = 1L;
 	
+	public InitializationException() {
+		super();
+	}
+	
+	public InitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public InitializationException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+	
+	public InitializationException(final String message) {
+		super(message);
+	}
+	
+	public InitializationException(final Throwable cause) {
+		super(cause);
+	}
 }

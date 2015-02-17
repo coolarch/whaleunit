@@ -26,14 +26,52 @@
 	</organization>
 	
 	<inceptionYear>2015</inceptionYear>
-
+	
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/coolarch/whaleunit/issues</url>
+	</issueManagement>
+	
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	
+	<developers>
+		
+		<developer>
+			<id>matthewwerny</id>
+			<name>Matthew Werny</name>
+			<organization>CoolArch</organization>
+			<organizationUrl>http://www.arch.cool/</organizationUrl>
+			<timezone>-7</timezone>
+			<email>matthewwerny+coolarch@gmail.com</email>
+			<roles>
+				<role>Project Lead</role>
+			</roles>
+		</developer>
+		
+	</developers>
+	
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>TBD</url>
+	</ciManagement>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.source.version>1.7</java.source.version>
 		<java.target.version>1.7</java.target.version>
 		<lib.junit.version>4.12</lib.junit.version>
 		<lib.mockito.version>1.10.19</lib.mockito.version>
-		<lib.docker-client.version>2.7.6</lib.docker-client.version>
+		<lib.docker-client.version>2.7.7-SNAPSHOT</lib.docker-client.version>
+		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
+		
+		<plugin.lint.version>0.0.8</plugin.lint.version>
+		<plugin.license.version>1.8</plugin.license.version>
 	</properties>
 
 	<modules>
@@ -44,6 +82,15 @@
 	</modules>
 
 	<build>
+		
+		<plugins>
+			
+			<plugin>
+				<groupId>com.lewisd</groupId>
+				<artifactId>lint-maven-plugin</artifactId>
+			</plugin>
+		
+		</plugins>
 		
 		<pluginManagement>
 			
@@ -62,7 +109,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>1.8</version>
+					<version>${plugin.license.version}</version>
 					<configuration>
 						<licenseName>apache2</licenseName>
 						<licenseResolver>classpath://license/resolver</licenseResolver>
@@ -96,6 +143,72 @@
 					</dependencies>
 					
 				</plugin>
+				
+				<plugin>
+					<groupId>org.glassfish.hk2</groupId>
+					<artifactId>hk2-inhabitant-generator</artifactId>
+					<version>${lib.hk2.version}</version>
+					<executions>
+						<execution>
+							<id>hk2-inhabitant-generator-generate</id>
+							<goals>
+								<goal>generate-inhabitants</goal>
+							</goals>
+							<phase>process-classes</phase>
+						</execution>
+					</executions>
+				</plugin>
+				
+				<plugin>
+					<groupId>com.lewisd</groupId>
+					<artifactId>lint-maven-plugin</artifactId>
+					<version>${plugin.lint.version}</version>
+					<executions>
+						<execution>
+							<id>lint-maven-plugin-validate-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<phase>validate</phase>
+						</execution>
+					</executions>
+				</plugin>
+				
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.glassfish.hk2
+										</groupId>
+										<artifactId>
+											hk2-inhabitant-generator
+										</artifactId>
+										<versionRange>
+											[2.4.0-b10,)
+										</versionRange>
+										<goals>
+											<goal>
+												generate-inhabitants
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+										</execute >
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		
 		</pluginManagement>
@@ -103,32 +216,33 @@
 	</build>
 
 	<dependencyManagement>
+		
 		<dependencies>
-
+			
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-annotation</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-support</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-junit</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-license</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -148,7 +262,24 @@
 				<version>${lib.docker-client.version}</version>
 			</dependency>
 			
+			<dependency>
+				<groupId>org.glassfish.hk2</groupId>
+				<artifactId>hk2</artifactId>
+				<version>${lib.hk2.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>javax.inject</artifactId>
+						<groupId>javax.inject</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>javax.inject</artifactId>
+						<groupId>org.glassfish.hk2.external</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			
 		</dependencies>
+		
 	</dependencyManagement>
-
+	
 </project>

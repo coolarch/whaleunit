@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.junit.api;
 
 /*
  * #%L
@@ -25,12 +25,29 @@ package cool.arch.whaleunit.junit.docker;
  * #L%
  */
 
-public class DockerContainerFactoryImpl implements ContainerFactory {
+import java.util.Collection;
 
-	@Override
-	public Container create(final String name) {
-		final Container container = new ContainerImpl(name);
-		
-		return container;
-	}
+import org.jvnet.hk2.annotations.Contract;
+
+import cool.arch.whaleunit.annotation.LoggerAdapter;
+
+@Contract
+public interface Containers {
+	
+	void add(Container container);
+	
+	void startAll();
+	
+	void stopAll();
+	
+	void destroyAll();
+	
+	void stop(String... names);
+	
+	void stop(Collection<String> names);
+	
+	LoggerAdapter getLoggerAdapter();
+	
+	void setLoggerAdapter(LoggerAdapter loggerAdapter);
+	
 }

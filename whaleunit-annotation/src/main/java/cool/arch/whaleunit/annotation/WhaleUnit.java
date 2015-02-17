@@ -32,18 +32,38 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- *
+ * Primary configuration annotation for the WhaleUnit framework.
+ * <p>
+ * This annotation allows for integration of configuration data external to the test class on which this annotation is used.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface WhaleUnit {
 	
+	/**
+	 * Classes that are annotated with {@link cool.arch.whaleunit.annotation.Container} annotations to define containers.
+	 * @return Classes that are annotated with {@link cool.arch.whaleunit.annotation.Container} annotations to define containers
+	 */
 	Class<?>[] containersFromClasses() default {};
 	
+	/**
+	 * Resource paths to any YAML files that adhere to the fig.yml file specification that defines containers.
+	 * @return Resource paths to any YAML files that adhere to the fig.yml file specification that defines containers.
+	 */
 	String[] containersFromFig() default {};
 	
+	/**
+	 * Resource path to the WhaleUnit configuration properties file.
+	 * @return Resource path to the WhaleUnit configuration properties file
+	 */
 	String config() default "classpath:/cool/arch/whaleunit/junit/config.properties";
 	
+	/**
+	 * Logger adapter to use with WhaleUnit.
+	 * <p>
+	 * The default implementation uses java.util.logging based logging.
+	 * @return
+	 */
+	Class<? extends LoggerAdapter> loggerAdapter() default DefaultLoggerAdapter.class;
 }

@@ -1,4 +1,6 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.junit.api;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /*
  * #%L
@@ -25,16 +27,18 @@ package cool.arch.whaleunit.junit.docker;
  * #L%
  */
 
-public interface Container {
+@Contract
+public interface ContextTracker {
 	
-	void create();
+	void onInit(Class<?> testClass, String... dirtiedContainers);
 	
-	void start();
+	void onTestStart();
 	
-	void stop();
+	void onTestSucceeded();
 	
-	void destroy();
+	void onTestFailed();
 	
-	String getName();
+	void onTestEnd(String... dirtiedContainers);
 	
+	void onCleanup();
 }

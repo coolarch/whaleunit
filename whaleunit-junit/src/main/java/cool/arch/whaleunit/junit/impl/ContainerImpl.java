@@ -1,4 +1,7 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.junit.impl;
+
+import cool.arch.whaleunit.junit.api.Container;
+import cool.arch.whaleunit.junit.enums.ContainerState;
 
 /*
  * #%L

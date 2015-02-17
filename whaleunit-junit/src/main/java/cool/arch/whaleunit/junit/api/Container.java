@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit.docker;
+package cool.arch.whaleunit.junit.api;
 
 /*
  * #%L
@@ -25,8 +25,16 @@ package cool.arch.whaleunit.junit.docker;
  * #L%
  */
 
-public interface ContainerFactory {
+public interface Container {
 	
-	Container create(final String name);
-
+	void create();
+	
+	void start();
+	
+	void stop();
+	
+	void destroy();
+	
+	String getName();
+	
 }

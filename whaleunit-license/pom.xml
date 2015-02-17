@@ -9,9 +9,9 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	
-	<packaging>jar</packaging>
-	
 	<artifactId>whaleunit-license</artifactId>
+	
+	<packaging>jar</packaging>
 	
 	<name>WhaleUnit - License</name>
 	

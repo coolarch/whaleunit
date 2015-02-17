@@ -1,8 +1,13 @@
-package cool.arch.whaleunit.annotation;
+package cool.arch.whaleunit.junit.impl;
+
+import org.jvnet.hk2.annotations.Service;
+
+import cool.arch.whaleunit.junit.api.Container;
+import cool.arch.whaleunit.junit.api.ContainerFactory;
 
 /*
  * #%L
- * WhaleUnit - Annotation
+ * WhaleUnit - JUnit
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,26 +30,13 @@ package cool.arch.whaleunit.annotation;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Annotation interface used to indicate that at an individual method, or global class level that a list of containers are to be considered dirtied.
- * <p>
- * Dirtying happens after each test method execution.  Prior to the next test method, if any, being executed, the dirtied containers are restarted. 
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface DirtiesContainers {
+@Service
+public class ContainerFactoryImpl implements ContainerFactory {
 	
-	/**
-	 * Container ids that should be considered dirty.
-	 * @return Container ids that should be considered dirty
-	 */
-	String[] value();
-	
+	@Override
+	public Container apply(final String name) {
+		final Container container = new ContainerImpl(name);
+		
+		return container;
+	}
 }
