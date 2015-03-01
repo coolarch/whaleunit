@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.loader.fig;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Fig Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,29 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+import java.util.Collection;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+import cool.arch.whaleunit.api.ContainerDescriptor;
+import cool.arch.whaleunit.api.ContainerDescriptorLoader;
+import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
 
+public class FigContainerDescriptorLoader implements ContainerDescriptorLoader<FigContainers> {
+	
+	@Override
+	public Collection<ContainerDescriptor> load(final FigContainers annotation) throws ContainerDescriptorLoadException {
+
+		// TODO - Implement
+
+		return null;
+	}
+	
+	@Override
+	public Class<FigContainers> getAnnotationType() {
+		return FigContainers.class;
+	}
+	
+	@Override
+	public String getTitle() {
+		return "Fig Container Loader";
+	}
 }

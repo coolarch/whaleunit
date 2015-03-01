@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.api;
 
 /*
  * #%L
@@ -25,15 +25,23 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+import java.util.Collection;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+import org.jvnet.hk2.annotations.Contract;
 
+@Contract
+public interface Containers {
+	
+	void add(Container container);
+	
+	void startAll();
+	
+	void stopAll();
+	
+	void destroyAll();
+	
+	void stop(String... names);
+	
+	void stop(Collection<String> names);
+	
 }

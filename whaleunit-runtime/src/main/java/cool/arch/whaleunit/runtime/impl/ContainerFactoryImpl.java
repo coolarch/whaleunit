@@ -1,4 +1,13 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.impl;
+
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
+import cool.arch.whaleunit.annotation.Logger;
+import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
+import cool.arch.whaleunit.runtime.api.Container;
+import cool.arch.whaleunit.runtime.api.ContainerFactory;
 
 /*
  * #%L
@@ -25,15 +34,23 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+@Service
+public class ContainerFactoryImpl implements ContainerFactory {
+	
+	private final Logger logger;
+	
+	private final LoggerAdapterFactory factory;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+	@Inject
+	ContainerFactoryImpl(final LoggerAdapterFactory factory) {
+		this.factory = factory;
+		logger = factory.create(getClass());
+	}
 
+	@Override
+	public Container apply(final String name) {
+		final Container container = new ContainerImpl(factory, name);
+		
+		return container;
+	}
 }

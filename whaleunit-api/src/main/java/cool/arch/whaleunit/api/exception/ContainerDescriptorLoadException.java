@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.api.exception;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - API
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,30 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+public class ContainerDescriptorLoadException extends Exception {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public ContainerDescriptorLoadException() {
+		super();
+	}
+	
+	public ContainerDescriptorLoadException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public ContainerDescriptorLoadException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+	
+	public ContainerDescriptorLoadException(final String message) {
+		super(message);
+	}
+	
+	public ContainerDescriptorLoadException(final Throwable cause) {
+		super(cause);
+	}
 }

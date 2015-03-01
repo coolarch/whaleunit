@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.testng;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - TestNG Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,29 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+import org.testng.annotations.Test;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.whaleunit.annotation.WhaleUnit;
 
+@DirtiesContainers({ "bat" })
+@WhaleUnit(containersFromClasses = { Ubuntu.class })
+public class AbstractWhaleUnitTestngTestTest extends AbstractWhaleUnitTestngTest {
+	
+	@Test
+	@DirtiesContainers({ "baz" })
+	public void testOne() {
+		System.out.println("one");
+	}
+	
+	@Test
+	public void testTwo() {
+		System.out.println("two");
+	}
+	
+	@Test
+	@DirtiesContainers({ "foo", "bar" })
+	public void testThree() {
+		System.out.println("three");
+	}
 }

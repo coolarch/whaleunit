@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.api;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,10 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+public interface DelegatingLoggerAdapterFactory extends LoggerAdapterFactory {
+	
+	void setLoggerAdapterFactory(LoggerAdapterFactory loggerAdapterFactory);
 
 }

@@ -19,19 +19,19 @@
 	<name>WhaleUnit</name>
 
 	<description>Docker support for JUnit based integration testing</description>
-	
+
 	<organization>
 		<name>CoolArch</name>
 		<url>http://www.arch.cool</url>
 	</organization>
-	
+
 	<inceptionYear>2015</inceptionYear>
-	
+
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/coolarch/whaleunit/issues</url>
 	</issueManagement>
-	
+
 	<licenses>
 		<license>
 			<name>Apache 2</name>
@@ -39,9 +39,9 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
-	
+
 	<developers>
-		
+
 		<developer>
 			<id>matthewwerny</id>
 			<name>Matthew Werny</name>
@@ -53,49 +53,58 @@
 				<role>Project Lead</role>
 			</roles>
 		</developer>
-		
+
 	</developers>
-	
+
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>TBD</url>
 	</ciManagement>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.source.version>1.7</java.source.version>
-		<java.target.version>1.7</java.target.version>
+		<java.source.version>1.8</java.source.version>
+		<java.target.version>1.8</java.target.version>
 		<lib.junit.version>4.12</lib.junit.version>
+		<lib.testng.version>6.8.21</lib.testng.version>
+		
 		<lib.mockito.version>1.10.19</lib.mockito.version>
 		<lib.docker-client.version>2.7.7-SNAPSHOT</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
+		<lib.slf4j.version>1.7.10</lib.slf4j.version>
+		<lib.logback.version>1.1.2</lib.logback.version>
 		
 		<plugin.lint.version>0.0.8</plugin.lint.version>
 		<plugin.license.version>1.8</plugin.license.version>
 	</properties>
 
 	<modules>
+		<module>whaleunit-runtime</module>
+		<module>whaleunit-api</module>
 		<module>whaleunit-annotation</module>
 		<module>whaleunit-support</module>
 		<module>whaleunit-junit</module>
+		<module>whaleunit-testng</module>
 		<module>whaleunit-license</module>
+		<module>whaleunit-descriptor-loader-annotation</module>
+		<module>whaleunit-descriptor-loader-fig</module>
 	</modules>
 
 	<build>
-		
+
 		<plugins>
-			
+
 			<plugin>
 				<groupId>com.lewisd</groupId>
 				<artifactId>lint-maven-plugin</artifactId>
 			</plugin>
-		
+
 		</plugins>
-		
+
 		<pluginManagement>
-			
+
 			<plugins>
-				
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -103,6 +112,18 @@
 					<configuration>
 						<source>${java.source.version}</source>
 						<target>${java.target.version}</target>
+					</configuration>
+				</plugin>
+				
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<systemProperties>
+							<property>
+								<name>java.util.logging.config.file</name>
+								<value>src/test/resources/logging.properties</value>
+							</property>
+						</systemProperties>
 					</configuration>
 				</plugin>
 				
@@ -133,7 +154,7 @@
 							<phase>verify</phase>
 						</execution>
 					</executions>
-					
+
 					<dependencies>
 						<dependency>
 							<groupId>cool.arch.whaleunit</groupId>
@@ -141,9 +162,9 @@
 							<version>${project.version}</version>
 						</dependency>
 					</dependencies>
-					
+
 				</plugin>
-				
+
 				<plugin>
 					<groupId>org.glassfish.hk2</groupId>
 					<artifactId>hk2-inhabitant-generator</artifactId>
@@ -158,7 +179,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				
+
 				<plugin>
 					<groupId>com.lewisd</groupId>
 					<artifactId>lint-maven-plugin</artifactId>
@@ -173,8 +194,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -184,25 +204,43 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.glassfish.hk2
-										</groupId>
-										<artifactId>
-											hk2-inhabitant-generator
-										</artifactId>
-										<versionRange>
-											[2.4.0-b10,)
-										</versionRange>
+										<groupId>org.glassfish.hk2</groupId>
+										<artifactId>hk2-inhabitant-generator</artifactId>
+										<versionRange>[2.4.0-b10,)</versionRange>
 										<goals>
-											<goal>
-												generate-inhabitants
-											</goal>
+											<goal>generate-inhabitants</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
 										<execute>
 											<runOnIncremental>true</runOnIncremental>
-										</execute >
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.lewisd</groupId>
+										<artifactId>lint-maven-plugin</artifactId>
+										<versionRange>[0.0.8,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.2,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -210,43 +248,81 @@
 					</configuration>
 				</plugin>
 			</plugins>
-		
+
 		</pluginManagement>
-		
+
 	</build>
 
 	<dependencyManagement>
-		
+
 		<dependencies>
-			
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-api</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-runtime</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-annotation</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-support</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-junit</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-			
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-testng</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-license</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
-			
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-descriptor-loader-annotation</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-descriptor-loader-fig</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${lib.junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${lib.testng.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -260,6 +336,24 @@
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-client</artifactId>
 				<version>${lib.docker-client.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${lib.slf4j.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${lib.logback.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${lib.logback.version}</version>
 			</dependency>
 			
 			<dependency>
@@ -277,9 +371,9 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			
+
 		</dependencies>
-		
+
 	</dependencyManagement>
-	
+
 </project>

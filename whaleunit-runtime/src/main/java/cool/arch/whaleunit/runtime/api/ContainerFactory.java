@@ -1,4 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.api;
+
+import java.util.function.Function;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /*
  * #%L
@@ -25,15 +29,7 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+@Contract
+public interface ContainerFactory extends Function<String, Container> {
 
 }

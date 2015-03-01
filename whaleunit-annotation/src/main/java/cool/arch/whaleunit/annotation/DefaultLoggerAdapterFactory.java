@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.annotation;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Annotation
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,10 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+public class DefaultLoggerAdapterFactory implements LoggerAdapterFactory {
+	
+	@Override
+	public Logger create(final Class<?> source) {
+		return new DefaultLogger(source);
+	}
 }

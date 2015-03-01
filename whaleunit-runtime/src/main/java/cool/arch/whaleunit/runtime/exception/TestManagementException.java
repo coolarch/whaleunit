@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.exception;
 
 /*
  * #%L
@@ -25,15 +25,30 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+public class TestManagementException extends RuntimeException {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+	public TestManagementException() {
+		super();
+	}
+	
+	public TestManagementException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public TestManagementException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	public TestManagementException(String message) {
+		super(message);
+	}
+	
+	public TestManagementException(Throwable cause) {
+		super(cause);
+	}
 }

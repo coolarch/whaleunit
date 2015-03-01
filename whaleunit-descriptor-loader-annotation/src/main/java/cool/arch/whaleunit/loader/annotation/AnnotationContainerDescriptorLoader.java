@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.loader.annotation;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Annotation Container Loader
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,29 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
+import java.util.Collection;
 
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+import cool.arch.whaleunit.api.ContainerDescriptor;
+import cool.arch.whaleunit.api.ContainerDescriptorLoader;
+import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
 
+public class AnnotationContainerDescriptorLoader implements ContainerDescriptorLoader<Containers> {
+	
+	@Override
+	public Collection<ContainerDescriptor> load(final Containers annotation) throws ContainerDescriptorLoadException {
+
+		// TODO - Implement
+
+		return null;
+	}
+	
+	@Override
+	public Class<Containers> getAnnotationType() {
+		return Containers.class;
+	}
+	
+	@Override
+	public String getTitle() {
+		return "Annotation Container Loader";
+	}
 }

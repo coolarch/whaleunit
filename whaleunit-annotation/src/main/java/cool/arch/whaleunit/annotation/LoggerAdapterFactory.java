@@ -1,8 +1,9 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.annotation;
+
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Annotation
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +26,13 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
+public interface LoggerAdapterFactory {
+	
+	/**
+	 * Create a new {@link Logger} instance for a source source class.
+	 * @param source Source class from which log events will be generated
+	 * @return LoggerAdapter instance
+	 */
+	Logger create(Class<?> source);
 
 }

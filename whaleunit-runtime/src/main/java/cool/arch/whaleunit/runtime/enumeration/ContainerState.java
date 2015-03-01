@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.enumeration;
 
 /*
  * #%L
@@ -25,15 +25,26 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+public enum ContainerState {
+	
+	NEW,
+	
+	CREATING,
+	
+	CREATED,
+	
+	STARTING,
+	
+	STARTED,
+	
+	FAILED,
+	
+	STOPPING,
+	
+	STOPPED,
+	
+	DESTROYING,
+	
+	DESTROYED
+	
 }

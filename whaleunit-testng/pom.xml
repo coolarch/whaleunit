@@ -9,21 +9,11 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>whaleunit-support</artifactId>
+	<artifactId>whaleunit-testng</artifactId>
 	
 	<packaging>jar</packaging>
 	
-	<name>WhaleUnit - Support</name>
-	
-	<dependencies>
-		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
-	</dependencies>
+	<name>WhaleUnit - TestNG Support</name>
 	
 	<build>
 		
@@ -42,5 +32,26 @@
 		</plugins>
 		
 	</build>
+	
+	<dependencies>
+		
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+			
+		<dependency>
+			<groupId>cool.arch.whaleunit</groupId>
+			<artifactId>whaleunit-runtime</artifactId>
+		</dependency>
+		
+	</dependencies>
 	
 </project>

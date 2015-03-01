@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.annotation;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Annotation
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,15 +25,32 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+/**
+ * Adapter interface for logging in WhaleUnit.
+ */
+public interface Logger {
+	
+	boolean isDebugEnabled();
+	
+	void debug(String content);
+	
+	void debug(String content, Throwable error);
+	
+	boolean isInfoEnabled();
+	
+	void info(String content);
+	
+	void info(String content, Throwable error);
+	
+	boolean isWarnEnabled();
+	
+	void warn(String content);
+	
+	void warn(String content, Throwable error);
+	
+	boolean isErrorEnabled();
+	
+	void error(String content);
+	
+	void error(String content, Throwable error);
 }

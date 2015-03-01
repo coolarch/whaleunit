@@ -42,16 +42,10 @@ import java.lang.annotation.Target;
 public @interface WhaleUnit {
 	
 	/**
-	 * Classes that are annotated with {@link cool.arch.whaleunit.annotation.Container} annotations to define containers.
-	 * @return Classes that are annotated with {@link cool.arch.whaleunit.annotation.Container} annotations to define containers
+	 * Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers.
+	 * @return Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers
 	 */
 	Class<?>[] containersFromClasses() default {};
-	
-	/**
-	 * Resource paths to any YAML files that adhere to the fig.yml file specification that defines containers.
-	 * @return Resource paths to any YAML files that adhere to the fig.yml file specification that defines containers.
-	 */
-	String[] containersFromFig() default {};
 	
 	/**
 	 * Resource path to the WhaleUnit configuration properties file.
@@ -65,5 +59,5 @@ public @interface WhaleUnit {
 	 * The default implementation uses java.util.logging based logging.
 	 * @return
 	 */
-	Class<? extends LoggerAdapter> loggerAdapter() default DefaultLoggerAdapter.class;
+	Class<? extends LoggerAdapterFactory> loggerAdapterFactory() default DefaultLoggerAdapterFactory.class;
 }

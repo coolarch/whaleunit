@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.junit;
+package cool.arch.whaleunit.runtime.exception;
 
 /*
  * #%L
@@ -25,15 +25,33 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import cool.arch.whaleunit.loader.annotation.Container;
-import cool.arch.whaleunit.loader.annotation.Containers;
-
-@Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
-})
-public class Ubuntu {
-
+/**
+ * Exception that indicates that a test's initialization failed.
+ */
+public class InitializationException extends RuntimeException {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public InitializationException() {
+		super();
+	}
+	
+	public InitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	
+	public InitializationException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+	
+	public InitializationException(final String message) {
+		super(message);
+	}
+	
+	public InitializationException(final Throwable cause) {
+		super(cause);
+	}
 }
