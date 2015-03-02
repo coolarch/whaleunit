@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.runtime.impl;
+package cool.arch.whaleunit.runtime;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,67 +25,79 @@ package cool.arch.whaleunit.runtime.impl;
  * #L%
  */
 
+import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.annotation.WhaleUnit;
-import cool.arch.whaleunit.api.ContainerDescriptorLoader;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
 import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.api.ContextTracker;
 import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
+import cool.arch.whaleunit.runtime.api.MutableTestClassHolder;
+import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
 import cool.arch.whaleunit.runtime.exception.InitializationException;
 import cool.arch.whaleunit.runtime.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.exception.ValidationException;
+import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 
-@Service
-public class ContextTrackerImpl implements ContextTracker {
+public final class WhaleUnitRuntime implements ContextTracker {
 	
 	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL = "Annotation %s is required on unit test %s that is using WhaleUnit.";
 	
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
 	
-	private final ContainerFactory containerFactory;
+	@Inject
+	private ContainerFactory containerFactory;
 	
-	private final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
+	@Inject
+	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
+	
+	@Inject
+	private Containers containers;
+	
+	@Inject
+	private MutableTestClassHolder testClassHolder;
+	
+	@Inject
+	private Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
 
-	private final Containers containers;
-	
-	private Class<?> testClass;
-	
-	private LoggerAdapterFactory loggerAdapterFactory;
-	
 	private Logger log;
 
-	@Inject
-	public ContextTrackerImpl(final ContainerFactory containerFactory, final Containers containers,
-		final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory) {
-		requireNonNull(containerFactory, "containerFactory shall not be null");
-		this.containerFactory = containerFactory;
-		this.containers = containers;
-		this.delegatingLoggerAdapterFactory = delegatingLoggerAdapterFactory;
+	private final ServiceLocator locator;
+
+	/**
+	 * Constructs a new WhaleUnitRule.
+	 */
+	public WhaleUnitRuntime(final Class<?> testClass) {
+		requireNonNull(testClass, "testClass shall not be null");
+		locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
+		locator.inject(this);
+		testClassHolder.setTestClass(testClass);
+	}
+	
+	WhaleUnitRuntime(final ServiceLocator locator) {
+		this.locator = requireNonNull(locator, "locator shall not be null");
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void onInit(final Class<?> testClass) {
-		this.testClass = testClass;
-		
 		Optional.of((Class) testClass)
 			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
 			.map(annotation -> ((DirtiesContainers) annotation).value())
@@ -115,15 +127,9 @@ public class ContextTrackerImpl implements ContextTracker {
 	@Override
 	public void onTestEnd(final String methodName) {
 		containers.stop(globallyDirtiedContainerNames);
-
-		Optional.of(methodName)
-			.map(name -> {
-				try {
-					return testClass.getMethod(name);
-				} catch (NoSuchMethodException | SecurityException e) {
-					throw new TestManagementException("Error looking up method " + methodName);
-				}
-			})
+		
+		testClassHolder.getTestClass()
+			.map(wrap(testClass -> testClass.getMethod(methodName), e -> new TestManagementException("Error looking up method " + methodName)))
 			.map(method -> method.getAnnotation(DirtiesContainers.class))
 			.map(annotation -> annotation.value())
 			.ifPresent(containers::stop);
@@ -135,32 +141,24 @@ public class ContextTrackerImpl implements ContextTracker {
 		containers.destroyAll();
 	}
 	
-	@SuppressWarnings("rawtypes")
 	private void preInit() {
-		final WhaleUnit annotation = testClass.getAnnotation(WhaleUnit.class);
+		initLogAdapter();
+	}
+	
+	private void initLogAdapter() {
+		final String whaleUnitName = WhaleUnit.class.getName();
+		final String testClassName = testClassHolder.getTestClass().get().getName();
+		final String message = String.format(MISSING_WHALEUNIT_ANNOTATION_TMPL, whaleUnitName, testClassName);
 		
-		if (annotation == null) {
-			throw new ValidationException(String.format(MISSING_WHALEUNIT_ANNOTATION_TMPL, WhaleUnit.class.getName(), testClass.getName()));
-		}
-		
-		try {
-			loggerAdapterFactory = annotation.loggerAdapterFactory().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new InitializationException("Error initializing LoggerAdapter", e);
-		}
-		
-		delegatingLoggerAdapterFactory.setLoggerAdapterFactory(loggerAdapterFactory);
-
-		log = loggerAdapterFactory.create(getClass());
-
-		final ServiceLoader<ContainerDescriptorLoader> loadersIterable = ServiceLoader.load(ContainerDescriptorLoader.class);
-		
-		final Map<Class<?>, ContainerDescriptorLoader> loaders = new HashMap<>();
-		
-		for (final ContainerDescriptorLoader loader : loadersIterable) {
-			getLog().debug("Loaded: " + loader.getTitle());
-			loaders.put(loader.getAnnotationType(), loader);
-		}
+		final Optional<LoggerAdapterFactory> laf = testClassHolder.getTestClass()
+			.map(testClass -> testClass.getAnnotation(WhaleUnit.class))
+			.map(annotation -> annotation.loggerAdapterFactory())
+			.map(wrap(clazz -> clazz.newInstance(), e -> new InitializationException("Error initializing LoggerAdapter", e)));
+			
+		laf.ifPresent(delegatingLoggerAdapterFactory::setLoggerAdapterFactory);
+		laf.orElseThrow(() -> new ValidationException(message));
+		laf.map(factory -> delegatingLoggerAdapterFactory.create(getClass()))
+			.ifPresent(log -> this.log = log);
 	}
 	
 	private void init() {
@@ -171,9 +169,9 @@ public class ContextTrackerImpl implements ContextTracker {
 	}
 	
 	private void validate() {
-		final WhaleUnit annotation = testClass.getAnnotation(WhaleUnit.class);
-		
-		annotation.config();
+		//		final WhaleUnit annotation = testClass.getAnnotation(WhaleUnit.class);
+		//		
+		//		annotation.config();
 		
 		// TODO - Implement
 	}

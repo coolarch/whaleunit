@@ -46,10 +46,15 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-			
+		
 		<dependency>
 			<groupId>cool.arch.whaleunit</groupId>
 			<artifactId>whaleunit-runtime</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cool.arch.whaleunit</groupId>
+			<artifactId>whaleunit-test-support</artifactId>
 		</dependency>
 		
 	</dependencies>

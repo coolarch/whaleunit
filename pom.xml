@@ -67,15 +67,17 @@
 		<java.target.version>1.8</java.target.version>
 		<lib.junit.version>4.12</lib.junit.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
-		
+
 		<lib.mockito.version>1.10.19</lib.mockito.version>
 		<lib.docker-client.version>2.7.7-SNAPSHOT</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
 		<lib.slf4j.version>1.7.10</lib.slf4j.version>
 		<lib.logback.version>1.1.2</lib.logback.version>
-		
+
 		<plugin.lint.version>0.0.8</plugin.lint.version>
 		<plugin.license.version>1.8</plugin.license.version>
+
+		<skipITs>true</skipITs>
 	</properties>
 
 	<modules>
@@ -83,6 +85,7 @@
 		<module>whaleunit-api</module>
 		<module>whaleunit-annotation</module>
 		<module>whaleunit-support</module>
+		<module>whaleunit-test-support</module>
 		<module>whaleunit-junit</module>
 		<module>whaleunit-testng</module>
 		<module>whaleunit-license</module>
@@ -97,6 +100,29 @@
 			<plugin>
 				<groupId>com.lewisd</groupId>
 				<artifactId>lint-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.18.1</version>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>${skipITs}</skip>
+				</configuration>
 			</plugin>
 
 		</plugins>
@@ -114,19 +140,7 @@
 						<target>${java.target.version}</target>
 					</configuration>
 				</plugin>
-				
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<systemProperties>
-							<property>
-								<name>java.util.logging.config.file</name>
-								<value>src/test/resources/logging.properties</value>
-							</property>
-						</systemProperties>
-					</configuration>
-				</plugin>
-				
+
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
@@ -154,7 +168,6 @@
 							<phase>verify</phase>
 						</execution>
 					</executions>
-
 					<dependencies>
 						<dependency>
 							<groupId>cool.arch.whaleunit</groupId>
@@ -162,7 +175,6 @@
 							<version>${project.version}</version>
 						</dependency>
 					</dependencies>
-
 				</plugin>
 
 				<plugin>
@@ -283,6 +295,13 @@
 
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-test-support</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-junit</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
@@ -337,25 +356,25 @@
 				<artifactId>docker-client</artifactId>
 				<version>${lib.docker-client.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${lib.slf4j.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${lib.logback.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${lib.logback.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.glassfish.hk2</groupId>
 				<artifactId>hk2</artifactId>

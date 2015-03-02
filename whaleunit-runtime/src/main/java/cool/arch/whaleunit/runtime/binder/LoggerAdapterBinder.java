@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.support;
+package cool.arch.whaleunit.runtime.binder;
 
 /*
  * #%L
- * WhaleUnit - Support
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,6 +25,22 @@ package cool.arch.whaleunit.support;
  * #L%
  */
 
-public interface AbstractThens {
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+
+import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
+import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
+import cool.arch.whaleunit.runtime.impl.DelegatingLoggerAdapterFactoryImpl;
+
+public class LoggerAdapterBinder extends AbstractBinder {
 	
+	@Override
+	protected void configure() {
+		bind(DelegatingLoggerAdapterFactoryImpl.class)
+			.to(DelegatingLoggerAdapterFactory.class)
+			.to(LoggerAdapterFactory.class)
+			.in(Singleton.class);
+		;
+	}
 }

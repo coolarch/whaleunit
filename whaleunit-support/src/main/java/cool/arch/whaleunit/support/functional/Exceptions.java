@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.support;
+package cool.arch.whaleunit.support.functional;
 
 /*
  * #%L
@@ -25,8 +25,31 @@ package cool.arch.whaleunit.support;
  * #L%
  */
 
-public interface AbstractWhens<T extends AbstractThens> {
+import java.util.function.Function;
+
+public final class Exceptions {
 	
-	T then() throws Exception;
+	public static <T, R, E extends RuntimeException> Function<T, R> wrap(final ThrowableFunction<T, R> function, final Function<Throwable, E> exceptionMapper) {
+		
+		final Function<T, R> fn = (t) -> {
+			R result = null;
+
+			try {
+				result = function.apply(t);
+			} catch (final Throwable e) {
+				throw exceptionMapper.apply(e);
+			}
+			
+			return result;
+		};
+		
+		return fn;
+	}
 	
+	@FunctionalInterface
+	public interface ThrowableFunction<T, R> {
+		
+		R apply(T t) throws Exception;
+		
+	}
 }

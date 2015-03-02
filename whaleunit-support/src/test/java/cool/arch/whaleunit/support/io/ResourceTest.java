@@ -3,8 +3,6 @@
  */
 package cool.arch.whaleunit.support.io;
 
-import static cool.arch.whaleunit.support.io.ResourceSpec.given;
-
 import org.junit.Test;
 
 import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
@@ -37,7 +35,7 @@ import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
 /**
  * Test for the {@link cool.arch.whaleunit.support.io.Resource} class.
  */
-public class ResourceTest {
+public class ResourceTest extends ResourceSpec {
 	
 	/**
 	 * Test method for {@link cool.arch.whaleunit.support.io.Resource#forPath(java.lang.String)}.

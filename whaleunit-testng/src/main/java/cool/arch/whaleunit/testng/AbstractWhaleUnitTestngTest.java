@@ -33,7 +33,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-import cool.arch.whaleunit.runtime.api.WhaleUnitRuntime;
+import cool.arch.whaleunit.runtime.WhaleUnitRuntime;
 
 public abstract class AbstractWhaleUnitTestngTest {
 	
@@ -41,7 +41,7 @@ public abstract class AbstractWhaleUnitTestngTest {
 
 	@BeforeClass
 	public final void beforeClass() throws Exception {
-		runtime = new WhaleUnitRuntime();
+		runtime = new WhaleUnitRuntime(getClass());
 		runtime.onInit(getClass());
 	}
 

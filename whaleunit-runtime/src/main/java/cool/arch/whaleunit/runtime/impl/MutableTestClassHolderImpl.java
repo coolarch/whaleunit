@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.support;
+package cool.arch.whaleunit.runtime.impl;
 
 /*
  * #%L
- * WhaleUnit - Support
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,8 +25,24 @@ package cool.arch.whaleunit.support;
  * #L%
  */
 
-public interface Spec<G extends AbstractGivens<W, T>, W extends AbstractWhens<T>, T extends AbstractThens> {
+import java.util.Optional;
+
+import org.jvnet.hk2.annotations.Service;
+
+import cool.arch.whaleunit.runtime.api.MutableTestClassHolder;
+
+@Service
+public class MutableTestClassHolderImpl implements MutableTestClassHolder {
 	
-	G getGiven();
+	private Optional<Class<?>> testClass;
 	
+	@Override
+	public Optional<Class<?>> getTestClass() {
+		return testClass;
+	}
+	
+	@Override
+	public void setTestClass(final Class<?> testClass) {
+		this.testClass = Optional.ofNullable(testClass);
+	}
 }

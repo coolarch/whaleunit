@@ -5,7 +5,7 @@ package cool.arch.whaleunit.junit;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - JUnit Support
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -28,41 +28,85 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
-import cool.arch.whaleunit.annotation.DirtiesContainers;
-import cool.arch.whaleunit.annotation.WhaleUnit;
-
 /**
- *
+ * 
  */
-@DirtiesContainers({ "bat" })
-@WhaleUnit(containersFromClasses = { Ubuntu.class })
-public class WhaleUnitRuleTest {
-	
-	@Rule
-	@ClassRule
-	public static final WhaleUnitRule whaleUnitRule = new WhaleUnitRule();
+public class WhaleUnitRuleTest extends WhaleUnitRuleSpec {
 	
 	/**
-	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#beforeClass(java.lang.Class)}.
 	 */
 	@Test
-	@DirtiesContainers({ "baz" })
-	public void testOne() {
-		System.out.println("one");
+	public final void testBeforeClass() {
+		// TODO - Implement
 	}
 	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#afterClass(java.lang.Class)}.
+	 */
 	@Test
-	public void testTwo() {
-		System.out.println("two");
+	public final void testAfterClass() {
+		// TODO - Implement
 	}
 	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#succeeded(java.lang.Class, java.lang.String)}.
+	 */
 	@Test
-	@DirtiesContainers({ "foo", "bar" })
-	public void testThree() {
-		System.out.println("three");
+	public final void testSucceeded() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#failed(java.lang.Class, java.lang.String, java.lang.Throwable)}.
+	 */
+	@Test
+	public final void testFailed() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#skipped(java.lang.Class, java.lang.String)}.
+	 */
+	@Test
+	public final void testSkipped() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#starting(java.lang.Class, java.lang.String)}.
+	 */
+	@Test
+	public final void testStarting() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#finished(java.lang.Class, java.lang.String)}.
+	 */
+	@Test
+	public final void testFinished() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#WhaleUnitRule()}.
+	 */
+	@Test
+	public final void testWhaleUnitRule() {
+		// TODO - Implement
+	}
+	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#WhaleUnitRule(cool.arch.whaleunit.runtime.WhaleUnitRuntime)}.
+	 * @throws Exception 
+	 */
+	@Test
+	public final void testWhaleUnitRuleWhaleUnitRuntime() throws Exception {
+		given()
+			.when()
+			.then().throwAnyCaughtException();
 	}
 }

@@ -26,16 +26,15 @@ package cool.arch.whaleunit.junit;
  */
 
 import static java.util.Objects.requireNonNull;
-import cool.arch.whaleunit.runtime.api.WhaleUnitRuntime;
+import cool.arch.whaleunit.runtime.WhaleUnitRuntime;
 
 public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	
-	private final WhaleUnitRuntime runtime;
+	private WhaleUnitRuntime runtime;
 	
 	public WhaleUnitRule() {
-		runtime = new WhaleUnitRuntime();
 	}
-	
+
 	WhaleUnitRule(final WhaleUnitRuntime runtime) {
 		this.runtime = requireNonNull(runtime, "runtime shall not be null");
 	}
@@ -43,6 +42,7 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	@Override
 	protected void beforeClass(final Class<?> testClass) {
 		requireNonNull(testClass, "testClass shall not be null");
+		runtime = new WhaleUnitRuntime(testClass);
 		runtime.onInit(testClass);
 	}
 	

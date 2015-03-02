@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.support.io;
+package cool.arch.whaleunit.junit;
 
 /*
  * #%L
@@ -25,14 +25,9 @@ package cool.arch.whaleunit.support.io;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import cool.arch.whaleunit.support.io.ResourceSpec.Givens;
-import cool.arch.whaleunit.support.io.ResourceSpec.Thens;
-import cool.arch.whaleunit.support.io.ResourceSpec.Whens;
-import cool.arch.whaleunit.support.io.exception.InvalidResourceException;
-import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
+import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Givens;
+import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Thens;
+import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Whens;
 import cool.arch.whaleunit.testsupport.AbstractGivens;
 import cool.arch.whaleunit.testsupport.AbstractThens;
 import cool.arch.whaleunit.testsupport.AbstractWhens;
@@ -41,7 +36,7 @@ import cool.arch.whaleunit.testsupport.Spec;
 /**
  * Specification for test actions for the {@link cool.arch.whaleunit.support.io.Resource} class.
  */
-public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
+public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	
 	@Override
 	public Givens given() {
@@ -50,55 +45,21 @@ public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
 	
 	public interface Givens extends AbstractGivens<Whens, Thens> {
 		
-		Givens aResourceFor(String path);
-		
 	}
 	
 	public interface Whens extends AbstractWhens<Thens> {
-		
-		Whens resourceIsReadAsAString();
 		
 	}
 	
 	public interface Thens extends AbstractThens {
 		
-		Thens resultIs(String expected) throws Exception;
-		
-		Thens resultContains(String... expectedContents) throws Exception;
-		
 		Thens throwAnyCaughtException() throws Exception;
 		
 	}
 	
-	class Fluent implements Givens, Whens, Thens {
-		
-		private Resource resource;
-		
-		private String result;
+	private class Fluent implements Givens, Whens, Thens {
 		
 		private Exception exception;
-		
-		@Override
-		public final Givens aResourceFor(final String path) {
-			try {
-				resource = Resource.forPath(path);
-			} catch (final InvalidResourceException e) {
-				exception = e;
-			}
-			
-			return this;
-		}
-		
-		@Override
-		public final Whens resourceIsReadAsAString() {
-			try {
-				result = resource.asString();
-			} catch (final UnknownResourceException e) {
-				exception = e;
-			}
-			
-			return this;
-		}
 		
 		@Override
 		public Whens when() {
@@ -108,24 +69,6 @@ public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
 		@Override
 		public Thens then() throws Exception {
 			throwAnyCaughtException();
-			return this;
-		}
-		
-		@Override
-		public final Thens resultIs(final String expected) throws Exception {
-			assertNotNull(result);
-			assertEquals(expected, result);
-			return this;
-		}
-		
-		@Override
-		public final Thens resultContains(final String... expectedContents) throws Exception {
-			assertNotNull(result);
-			
-			for (final String expectedContent : expectedContents) {
-				assertTrue("result must contain " + expectedContent, result.contains(expectedContent));
-			}
-			
 			return this;
 		}
 		

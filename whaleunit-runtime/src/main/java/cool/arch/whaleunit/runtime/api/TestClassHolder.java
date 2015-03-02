@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.support;
+package cool.arch.whaleunit.runtime.api;
 
 /*
  * #%L
- * WhaleUnit - Support
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,8 +25,13 @@ package cool.arch.whaleunit.support;
  * #L%
  */
 
-public interface AbstractGivens<W extends AbstractWhens<T>, T extends AbstractThens> {
+import java.util.Optional;
+
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
+public interface TestClassHolder {
 	
-	W when();
-	
+	Optional<Class<?>> getTestClass();
+
 }
