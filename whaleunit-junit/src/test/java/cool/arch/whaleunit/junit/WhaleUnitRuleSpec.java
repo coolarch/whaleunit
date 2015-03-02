@@ -25,9 +25,19 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Givens;
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Thens;
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Whens;
+import cool.arch.whaleunit.runtime.WhaleUnitRuntime;
 import cool.arch.whaleunit.testsupport.AbstractGivens;
 import cool.arch.whaleunit.testsupport.AbstractThens;
 import cool.arch.whaleunit.testsupport.AbstractWhens;
@@ -45,6 +55,11 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	
 	public interface Givens extends AbstractGivens<Whens, Thens> {
 		
+		Givens aWhaleUnitRuleInstantiatedWithNullArguments();
+
+		Givens aWhaleUnitRuleInstantiatedWithoutArguments();
+		
+		Givens aWhaleUnitRuleInstantiatedWithMockArguments();
 	}
 	
 	public interface Whens extends AbstractWhens<Thens> {
@@ -53,13 +68,26 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	
 	public interface Thens extends AbstractThens {
 		
-		Thens throwAnyCaughtException() throws Exception;
+		Thens exceptionsThrownCount(int count);
+		
+		Thens exceptionsThrown(Class<?> type);
+
+		Thens noExceptionsThrown();
 		
 	}
 	
 	private class Fluent implements Givens, Whens, Thens {
 		
-		private Exception exception;
+		private Fluent() {
+			MockitoAnnotations.initMocks(this);
+		}
+		
+		@Mock
+		private WhaleUnitRuntime mockWhaleUnitRuntime;
+
+		private WhaleUnitRule specimen;
+
+		private final Map<Class<?>, Exception> exceptions = new HashMap<>();
 		
 		@Override
 		public Whens when() {
@@ -68,17 +96,57 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 		
 		@Override
 		public Thens then() throws Exception {
-			throwAnyCaughtException();
 			return this;
 		}
 		
 		@Override
-		public final Thens throwAnyCaughtException() throws Exception {
-			if (exception != null) {
-				throw exception;
+		public final Thens noExceptionsThrown() {
+			assertTrue(exceptions.isEmpty());
+			
+			return this;
+		}
+		
+		@Override
+		public Givens aWhaleUnitRuleInstantiatedWithoutArguments() {
+			specimen = new WhaleUnitRule();
+			
+			return this;
+		}
+		
+		@Override
+		public Givens aWhaleUnitRuleInstantiatedWithNullArguments() {
+			try {
+				specimen = new WhaleUnitRule(null);
+			} catch (final Exception e) {
+				recordException(e);
 			}
 			
 			return this;
+		}
+		
+		@Override
+		public Givens aWhaleUnitRuleInstantiatedWithMockArguments() {
+			specimen = new WhaleUnitRule(mockWhaleUnitRuntime);
+			
+			return this;
+		}
+		
+		@Override
+		public Thens exceptionsThrownCount(final int expectedCount) {
+			assertEquals(expectedCount, exceptions.size());
+
+			return this;
+		}
+		
+		@Override
+		public Thens exceptionsThrown(final Class<?> type) {
+			assertTrue(exceptions.containsKey(type));
+			
+			return this;
+		}
+		
+		private void recordException(final Exception e) {
+			exceptions.put(e.getClass(), e);
 		}
 	}
 }
