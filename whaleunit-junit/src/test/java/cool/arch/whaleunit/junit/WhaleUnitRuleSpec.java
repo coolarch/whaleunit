@@ -64,13 +64,15 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	
 	public interface Whens extends AbstractWhens<Thens> {
 		
+		Whens nothingElseNeedsToBedone();
+
 	}
 	
 	public interface Thens extends AbstractThens {
 		
 		Thens exceptionsThrownCount(int count);
 		
-		Thens exceptionsThrown(Class<?> type);
+		Thens exceptionThrown(Class<?> type);
 
 		Thens noExceptionsThrown();
 		
@@ -139,7 +141,7 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 		}
 		
 		@Override
-		public Thens exceptionsThrown(final Class<?> type) {
+		public Thens exceptionThrown(final Class<?> type) {
 			assertTrue(exceptions.containsKey(type));
 			
 			return this;
@@ -147,6 +149,11 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 		
 		private void recordException(final Exception e) {
 			exceptions.put(e.getClass(), e);
+		}
+		
+		@Override
+		public Whens nothingElseNeedsToBedone() {
+			return this;
 		}
 	}
 }

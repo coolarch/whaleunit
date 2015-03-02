@@ -105,8 +105,12 @@ public class WhaleUnitRuleTest extends WhaleUnitRuleSpec {
 	 */
 	@Test
 	public final void testWhaleUnitRuleWhaleUnitRuntime() throws Exception {
-		given().aWhaleUnitRuleInstantiatedWithNullArguments()
+		given()
+			.aWhaleUnitRuleInstantiatedWithNullArguments()
 			.when()
-			.then().exceptionsThrownCount(1);
+			.nothingElseNeedsToBedone()
+			.then()
+			.exceptionsThrownCount(1)
+			.exceptionThrown(NullPointerException.class);
 	}
 }
