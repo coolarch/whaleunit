@@ -1,6 +1,7 @@
 language: java
 script:
-  - jdk_switcher use oraclejdk8
-  - mvn clean verify
+  - mvn clean install verify
 notifications:
   email: false
+jdk:
+  - oraclejdk8
