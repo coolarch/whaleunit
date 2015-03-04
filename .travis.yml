@@ -1,4 +1,6 @@
 language: java
-script: mvn clean verify
+script:
+  - jdk_switcher use oraclejdk8
+  - mvn clean verify
 notifications:
   email: false
