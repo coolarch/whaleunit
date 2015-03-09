@@ -34,14 +34,16 @@ public interface Containers {
 	
 	void add(Container container);
 	
-	void startAll();
-	
-	void stopAll();
-	
 	void destroyAll();
 	
-	void stop(String... names);
+	boolean exists(String name);
+	
+	void startAll();
 	
 	void stop(Collection<String> names);
 	
+	void stop(String... names);
+	
+	void stopAll();
+
 }

@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.api;
+package cool.arch.whaleunit.api.model;
 
 /*
  * #%L
@@ -25,6 +25,12 @@ package cool.arch.whaleunit.api;
  * #L%
  */
 
-public class ContainerDescriptor {
+public final class Environments extends AbstractIterableGroup<Environment> {
 	
+	private Environments() {
+	}
+	
+	public static GroupBuilder<Environments, Environment> builder() {
+		return new GroupBuilderImpl<>(new Environments());
+	}
 }

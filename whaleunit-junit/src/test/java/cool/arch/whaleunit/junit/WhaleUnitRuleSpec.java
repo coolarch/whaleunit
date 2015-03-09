@@ -25,19 +25,13 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Givens;
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Thens;
 import cool.arch.whaleunit.junit.WhaleUnitRuleSpec.Whens;
 import cool.arch.whaleunit.runtime.WhaleUnitRuntime;
+import cool.arch.whaleunit.testsupport.AbstractFluent;
 import cool.arch.whaleunit.testsupport.AbstractGivens;
 import cool.arch.whaleunit.testsupport.AbstractThens;
 import cool.arch.whaleunit.testsupport.AbstractWhens;
@@ -55,11 +49,15 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	
 	public interface Givens extends AbstractGivens<Whens, Thens> {
 		
-		Givens aWhaleUnitRuleInstantiatedWithNullArguments();
-
-		Givens aWhaleUnitRuleInstantiatedWithoutArguments();
-		
 		Givens aWhaleUnitRuleInstantiatedWithMockArguments();
+
+		Givens aWhaleUnitRuleInstantiatedWithNullArguments();
+		
+		Givens aWhaleUnitRuleInstantiatedWithoutArguments();
+	}
+	
+	public interface Thens extends AbstractThens<Thens> {
+		
 	}
 	
 	public interface Whens extends AbstractWhens<Thens> {
@@ -68,49 +66,16 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 
 	}
 	
-	public interface Thens extends AbstractThens {
-		
-		Thens exceptionsThrownCount(int count);
-		
-		Thens exceptionThrown(Class<?> type);
-
-		Thens noExceptionsThrown();
-		
-	}
-	
-	private class Fluent implements Givens, Whens, Thens {
-		
-		private Fluent() {
-			MockitoAnnotations.initMocks(this);
-		}
+	private class Fluent extends AbstractFluent<Givens, Whens, Thens> implements Givens, Whens, Thens {
 		
 		@Mock
 		private WhaleUnitRuntime mockWhaleUnitRuntime;
 
 		private WhaleUnitRule specimen;
-
-		private final Map<Class<?>, Exception> exceptions = new HashMap<>();
 		
 		@Override
-		public Whens when() {
-			return this;
-		}
-		
-		@Override
-		public Thens then() throws Exception {
-			return this;
-		}
-		
-		@Override
-		public final Thens noExceptionsThrown() {
-			assertTrue(exceptions.isEmpty());
-			
-			return this;
-		}
-		
-		@Override
-		public Givens aWhaleUnitRuleInstantiatedWithoutArguments() {
-			specimen = new WhaleUnitRule();
+		public Givens aWhaleUnitRuleInstantiatedWithMockArguments() {
+			specimen = new WhaleUnitRule(mockWhaleUnitRuntime);
 			
 			return this;
 		}
@@ -127,32 +92,24 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 		}
 		
 		@Override
-		public Givens aWhaleUnitRuleInstantiatedWithMockArguments() {
-			specimen = new WhaleUnitRule(mockWhaleUnitRuntime);
+		public Givens aWhaleUnitRuleInstantiatedWithoutArguments() {
+			specimen = new WhaleUnitRule();
 			
 			return this;
-		}
-		
-		@Override
-		public Thens exceptionsThrownCount(final int expectedCount) {
-			assertEquals(expectedCount, exceptions.size());
-
-			return this;
-		}
-		
-		@Override
-		public Thens exceptionThrown(final Class<?> type) {
-			assertTrue(exceptions.containsKey(type));
-			
-			return this;
-		}
-		
-		private void recordException(final Exception e) {
-			exceptions.put(e.getClass(), e);
 		}
 		
 		@Override
 		public Whens nothingElseNeedsToBedone() {
+			return this;
+		}
+		
+		@Override
+		public Thens then() throws Exception {
+			return this;
+		}
+		
+		@Override
+		public Whens when() {
 			return this;
 		}
 	}

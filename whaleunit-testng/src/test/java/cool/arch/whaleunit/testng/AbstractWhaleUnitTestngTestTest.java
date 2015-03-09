@@ -27,27 +27,23 @@ package cool.arch.whaleunit.testng;
 
 import org.testng.annotations.Test;
 
-import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.WhaleUnit;
 
-@DirtiesContainers({ "bat" })
 @WhaleUnit(containersFromClasses = { Ubuntu.class })
 public class AbstractWhaleUnitTestngTestTest extends AbstractWhaleUnitTestngTest {
 	
 	@Test
-	@DirtiesContainers({ "baz" })
 	public void testOne() {
 		System.out.println("one");
 	}
 	
 	@Test
-	public void testTwo() {
-		System.out.println("two");
+	public void testThree() {
+		System.out.println("three");
 	}
 	
 	@Test
-	@DirtiesContainers({ "foo", "bar" })
-	public void testThree() {
-		System.out.println("three");
+	public void testTwo() {
+		System.out.println("two");
 	}
 }

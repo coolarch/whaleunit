@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.runtime.exception;
+package cool.arch.whaleunit.api.model;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - API
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,33 +25,12 @@ package cool.arch.whaleunit.runtime.exception;
  * #L%
  */
 
-/**
- * Exception that indicates that a test's initialization failed.
- */
-public class InitializationException extends RuntimeException {
+public final class Exposes extends AbstractIterableGroup<Expose> {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	public InitializationException() {
-		super();
+	private Exposes() {
 	}
 	
-	public InitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-	
-	public InitializationException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
-	
-	public InitializationException(final String message) {
-		super(message);
-	}
-	
-	public InitializationException(final Throwable cause) {
-		super(cause);
+	public static GroupBuilder<Exposes, Expose> builder() {
+		return new GroupBuilderImpl<>(new Exposes());
 	}
 }

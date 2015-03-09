@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.runtime.exception;
+package cool.arch.whaleunit.api.model;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - API
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,30 +25,6 @@ package cool.arch.whaleunit.runtime.exception;
  * #L%
  */
 
-public class TestManagementException extends RuntimeException {
+public final class Dns {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public TestManagementException() {
-		super();
-	}
-	
-	public TestManagementException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-	
-	public TestManagementException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public TestManagementException(String message) {
-		super(message);
-	}
-	
-	public TestManagementException(Throwable cause) {
-		super(cause);
-	}
 }

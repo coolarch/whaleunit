@@ -25,7 +25,7 @@ package cool.arch.whaleunit.testsupport;
  * #L%
  */
 
-public interface Spec<G extends AbstractGivens<W, T>, W extends AbstractWhens<T>, T extends AbstractThens> {
+public interface Spec<G extends AbstractGivens<W, T>, W extends AbstractWhens<T>, T extends AbstractThens<T>> {
 	
 	G given();
 	

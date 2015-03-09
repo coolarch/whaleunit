@@ -21,6 +21,22 @@
 			<groupId>cool.arch.whaleunit</groupId>
 			<artifactId>whaleunit-annotation</artifactId>
 		</dependency>
+	
+		<dependency>
+			<groupId>cool.arch.whaleunit</groupId>
+			<artifactId>whaleunit-support</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>cool.arch.whaleunit</groupId>
+			<artifactId>whaleunit-test-support</artifactId>
+		</dependency>
 		
 	</dependencies>
 	

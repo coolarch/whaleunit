@@ -33,6 +33,7 @@ import cool.arch.whaleunit.support.io.ResourceSpec.Thens;
 import cool.arch.whaleunit.support.io.ResourceSpec.Whens;
 import cool.arch.whaleunit.support.io.exception.InvalidResourceException;
 import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
+import cool.arch.whaleunit.testsupport.AbstractFluent;
 import cool.arch.whaleunit.testsupport.AbstractGivens;
 import cool.arch.whaleunit.testsupport.AbstractThens;
 import cool.arch.whaleunit.testsupport.AbstractWhens;
@@ -54,29 +55,29 @@ public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
 		
 	}
 	
+	public interface Thens extends AbstractThens<Thens> {
+		
+		Thens resultContains(String... expectedContents) throws Exception;
+		
+		Thens resultIs(String expected) throws Exception;
+		
+		Thens throwAnyCaughtException() throws Exception;
+		
+	}
+	
 	public interface Whens extends AbstractWhens<Thens> {
 		
 		Whens resourceIsReadAsAString();
 		
 	}
 	
-	public interface Thens extends AbstractThens {
+	class Fluent extends AbstractFluent<Givens, Whens, Thens> implements Givens, Whens, Thens {
 		
-		Thens resultIs(String expected) throws Exception;
-		
-		Thens resultContains(String... expectedContents) throws Exception;
-		
-		Thens throwAnyCaughtException() throws Exception;
-		
-	}
-	
-	class Fluent implements Givens, Whens, Thens {
+		private Exception exception;
 		
 		private Resource resource;
 		
 		private String result;
-		
-		private Exception exception;
 		
 		@Override
 		public final Givens aResourceFor(final String path) {
@@ -101,24 +102,6 @@ public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
 		}
 		
 		@Override
-		public Whens when() {
-			return this;
-		}
-		
-		@Override
-		public Thens then() throws Exception {
-			throwAnyCaughtException();
-			return this;
-		}
-		
-		@Override
-		public final Thens resultIs(final String expected) throws Exception {
-			assertNotNull(result);
-			assertEquals(expected, result);
-			return this;
-		}
-		
-		@Override
 		public final Thens resultContains(final String... expectedContents) throws Exception {
 			assertNotNull(result);
 			
@@ -130,11 +113,29 @@ public abstract class ResourceSpec implements Spec<Givens, Whens, Thens> {
 		}
 		
 		@Override
+		public final Thens resultIs(final String expected) throws Exception {
+			assertNotNull(result);
+			assertEquals(expected, result);
+			return this;
+		}
+		
+		@Override
+		public Thens then() throws Exception {
+			throwAnyCaughtException();
+			return this;
+		}
+		
+		@Override
 		public final Thens throwAnyCaughtException() throws Exception {
 			if (exception != null) {
 				throw exception;
 			}
 			
+			return this;
+		}
+		
+		@Override
+		public Whens when() {
 			return this;
 		}
 	}

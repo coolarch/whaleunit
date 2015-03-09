@@ -30,11 +30,13 @@ import java.util.Collection;
 
 import org.jvnet.hk2.annotations.Contract;
 
-import cool.arch.whaleunit.api.ContainerDescriptor;
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 
 @Contract
 public interface ContainerDescriptorLoaderService {
+	
+	Collection<ContainerDescriptor> extractDescriptors(Class<?> testClass) throws ContainerDescriptorLoadException;
 	
 	<A extends Annotation> Collection<ContainerDescriptor> load(A annotation) throws ContainerDescriptorLoadException;
 

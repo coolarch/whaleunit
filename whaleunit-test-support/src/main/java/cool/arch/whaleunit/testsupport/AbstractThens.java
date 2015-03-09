@@ -25,6 +25,11 @@ package cool.arch.whaleunit.testsupport;
  * #L%
  */
 
-public interface AbstractThens {
+public interface AbstractThens<T extends AbstractThens<T>> {
+
+	T exceptionsThrownCount(int expectedCount);
 	
+	T exceptionThrown(Class<?> type);
+	
+	T noExceptionsThrown();
 }

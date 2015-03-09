@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.runtime.exception;
+package cool.arch.whaleunit.api.exception;
 
 /*
  * #%L
@@ -26,32 +26,32 @@ package cool.arch.whaleunit.runtime.exception;
  */
 
 /**
- * Exception that indicates that a test's configuration is invalid.
+ * Exception that indicates that a test's initialization failed.
  */
-public class ValidationException extends RuntimeException {
+public class InitializationException extends RuntimeException {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public ValidationException() {
+	public InitializationException() {
 		super();
 	}
 	
-	public ValidationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+	public InitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 	
-	public ValidationException(final String message, final Throwable cause) {
+	public InitializationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 	
-	public ValidationException(final String message) {
+	public InitializationException(final String message) {
 		super(message);
 	}
 	
-	public ValidationException(final Throwable cause) {
+	public InitializationException(final Throwable cause) {
 		super(cause);
 	}
 }

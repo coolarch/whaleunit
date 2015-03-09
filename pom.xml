@@ -91,6 +91,7 @@
 		<module>whaleunit-license</module>
 		<module>whaleunit-descriptor-loader-annotation</module>
 		<module>whaleunit-descriptor-loader-fig</module>
+		<module>whaleunit-descriptor-loader-programmatic</module>
 	</modules>
 
 	<build>
@@ -327,6 +328,12 @@
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-descriptor-loader-fig</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-descriptor-loader-programmatic</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 

@@ -25,6 +25,8 @@ package cool.arch.whaleunit.runtime.service.impl;
  * #L%
  */
 
+import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
@@ -32,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -42,10 +45,10 @@ import org.jvnet.hk2.annotations.Service;
 import cool.arch.whaleunit.annotation.ContainerDescriptorLoaderSource;
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
-import cool.arch.whaleunit.api.ContainerDescriptor;
 import cool.arch.whaleunit.api.ContainerDescriptorLoader;
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
-import cool.arch.whaleunit.runtime.exception.TestManagementException;
+import cool.arch.whaleunit.api.exception.TestManagementException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 
 @Service
@@ -60,14 +63,13 @@ public class ContainerDescriptorLoaderServiceImpl implements ContainerDescriptor
 		logger = factory.create(getClass());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<ContainerDescriptor> load(final Annotation annotation) throws ContainerDescriptorLoadException {
-		requireNonNull(annotation, "annotation shall not be null");
-
-		final ContainerDescriptorLoader<Annotation> loader = (ContainerDescriptorLoader<Annotation>) loaders.get(annotation.getClass());
-		
-		return loader.load(annotation);
+	public Collection<ContainerDescriptor> extractDescriptors(final Class<?> testClass) throws ContainerDescriptorLoadException {
+		return stream(testClass.getAnnotations())
+			.filter(this::supported)
+			.map(wrap(this::load, TestManagementException::new))
+			.flatMap(c -> c.stream())
+			.collect(Collectors.toList());
 	}
 	
 	@PostConstruct
@@ -81,7 +83,23 @@ public class ContainerDescriptorLoaderServiceImpl implements ContainerDescriptor
 			.forEach(this::failBadContainerDescriptorLoader);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<ContainerDescriptor> load(final Annotation annotation) throws ContainerDescriptorLoadException {
+		requireNonNull(annotation, "annotation shall not be null");
+
+		final ContainerDescriptorLoader<Annotation> loader = (ContainerDescriptorLoader<Annotation>) loaders.get(annotation.annotationType());
+		final Collection<ContainerDescriptor> descriptors = loader.load(annotation);
+		
+		return descriptors;
+	}
+	
 	private void failBadContainerDescriptorLoader(final Class<?> clazz) {
-		throw new TestManagementException("ContainerDescriptorLoader present in classpath that is not marked with ContainerDescriptorLoaderSource annotation.");
+		throw new TestManagementException(String.format(
+			"ContainerDescriptorLoader %s present in classpath that is not marked with ContainerDescriptorLoaderSource annotation.", clazz.getName()));
+	}
+	
+	private boolean supported(final Annotation annotation) {
+		return loaders.containsKey(annotation.annotationType());
 	}
 }

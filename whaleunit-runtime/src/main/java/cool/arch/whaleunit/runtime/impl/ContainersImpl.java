@@ -60,6 +60,18 @@ public class ContainersImpl implements Containers {
 	}
 	
 	@Override
+	public void destroyAll() {
+		for (final Container container : containers.values()) {
+			container.destroy();
+		}
+	}
+	
+	@Override
+	public boolean exists(final String name) {
+		return containers.containsKey(name);
+	}
+	
+	@Override
 	public void startAll() {
 		for (final Container container : containers.values()) {
 			container.start();
@@ -67,17 +79,11 @@ public class ContainersImpl implements Containers {
 	}
 	
 	@Override
-	public void stopAll() {
-		for (final Container container : containers.values()) {
-			container.stop();
-		}
-	}
-	
-	@Override
-	public void destroyAll() {
-		for (final Container container : containers.values()) {
-			container.destroy();
-		}
+	public void stop(final Collection<String> names) {
+		loggerAdapter.debug(names.toString());
+		
+		// TODO - Implement
+		
 	}
 	
 	@Override
@@ -89,10 +95,9 @@ public class ContainersImpl implements Containers {
 	}
 	
 	@Override
-	public void stop(final Collection<String> names) {
-		loggerAdapter.debug(names.toString());
-		
-		// TODO - Implement
-		
+	public void stopAll() {
+		for (final Container container : containers.values()) {
+			container.stop();
+		}
 	}
 }

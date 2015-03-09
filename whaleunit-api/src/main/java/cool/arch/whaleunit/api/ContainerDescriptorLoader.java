@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 
 /**
  * SPI interface for loading {@link ContainerDescriptor} instances from a pluggable source.

@@ -31,6 +31,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import cool.arch.whaleunit.annotation.ContainerDescriptorLoaderSource;
+
 /**
  * 
  *
@@ -38,6 +40,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@ContainerDescriptorLoaderSource
 public @interface Containers {
 	
 	Container[] value();

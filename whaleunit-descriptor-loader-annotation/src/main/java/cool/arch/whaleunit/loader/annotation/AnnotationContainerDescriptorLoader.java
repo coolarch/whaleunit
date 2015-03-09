@@ -27,9 +27,9 @@ package cool.arch.whaleunit.loader.annotation;
 
 import java.util.Collection;
 
-import cool.arch.whaleunit.api.ContainerDescriptor;
 import cool.arch.whaleunit.api.ContainerDescriptorLoader;
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 
 public class AnnotationContainerDescriptorLoader implements ContainerDescriptorLoader<Containers> {
 	

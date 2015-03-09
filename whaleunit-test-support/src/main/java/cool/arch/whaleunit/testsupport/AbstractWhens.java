@@ -25,7 +25,7 @@ package cool.arch.whaleunit.testsupport;
  * #L%
  */
 
-public interface AbstractWhens<T extends AbstractThens> {
+public interface AbstractWhens<T extends AbstractThens<T>> {
 	
 	T then() throws Exception;
 	

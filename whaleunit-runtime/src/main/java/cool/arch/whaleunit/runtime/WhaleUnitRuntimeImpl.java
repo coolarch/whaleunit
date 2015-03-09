@@ -29,9 +29,11 @@ import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -43,41 +45,43 @@ import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.annotation.WhaleUnit;
+import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
+import cool.arch.whaleunit.api.exception.InitializationException;
+import cool.arch.whaleunit.api.exception.TestManagementException;
+import cool.arch.whaleunit.api.exception.ValidationException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
 import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
 import cool.arch.whaleunit.runtime.api.MutableTestClassHolder;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
-import cool.arch.whaleunit.runtime.exception.InitializationException;
-import cool.arch.whaleunit.runtime.exception.TestManagementException;
-import cool.arch.whaleunit.runtime.exception.ValidationException;
 import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 
 public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	
 	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL = "Annotation %s is required on unit test %s that is using WhaleUnit.";
 	
-	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
+	@Inject
+	private Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
 	
 	@Inject
 	private ContainerFactory containerFactory;
 	
 	@Inject
-	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
-	
-	@Inject
 	private Containers containers;
 	
 	@Inject
-	private MutableTestClassHolder testClassHolder;
+	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
 	
-	@Inject
-	private Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
+	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
+	
+	private final ServiceLocator locator;
 	
 	private Logger log;
 	
-	private final ServiceLocator locator;
+	@Inject
+	private MutableTestClassHolder testClassHolder;
 	
 	/**
 	 * Constructs a new WhaleUnitRule.
@@ -94,6 +98,16 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		this.locator = requireNonNull(locator, "locator shall not be null");
 	}
 	
+	public Logger getLog() {
+		return log;
+	}
+	
+	@Override
+	public void onCleanup() {
+		containers.stopAll();
+		containers.destroyAll();
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void onInit(final Class<?> testClass) {
@@ -104,23 +118,14 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			.ifPresent(globallyDirtiedContainerNames::addAll);
 		
 		preInit();
+
+		try {
+			init();
+		} catch (final ContainerDescriptorLoadException e) {
+			throw new TestManagementException(e);
+		}
+		
 		validate();
-		init();
-	}
-	
-	@Override
-	public void onTestStart(final String methodName) {
-		containers.startAll();
-	}
-	
-	@Override
-	public void onTestSucceeded(final String methodName) {
-		// Intentionally do nothing
-	}
-	
-	@Override
-	public void onTestFailed(final String methodName) {
-		containers.stopAll();
 	}
 	
 	@Override
@@ -135,13 +140,33 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	}
 	
 	@Override
-	public void onCleanup() {
+	public void onTestFailed(final String methodName) {
 		containers.stopAll();
-		containers.destroyAll();
 	}
 	
-	private void preInit() {
-		initLogAdapter();
+	@Override
+	public void onTestStart(final String methodName) {
+		containers.startAll();
+	}
+	
+	@Override
+	public void onTestSucceeded(final String methodName) {
+		// Intentionally do nothing
+	}
+	
+	private void addContainer(final String name) {
+		getLog().debug("Registering container " + name);
+		
+		final Container container = containerFactory.apply(name);
+		containers.add(container);
+	}
+	
+	private void init() throws ContainerDescriptorLoadException {
+		final Collection<ContainerDescriptor> descriptors = containerDescriptorLoaderService.get().extractDescriptors(testClassHolder.getTestClass().get());
+
+		descriptors.stream()
+			.map(d -> d.getId().get())
+			.forEach(this::addContainer);
 	}
 	
 	private void initLogAdapter() {
@@ -160,29 +185,39 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			.ifPresent(log -> this.log = log);
 	}
 	
-	private void init() {
-		addContainer("foo");
-		addContainer("bar");
-		addContainer("bat");
-		addContainer("baz");
+	private void preInit() {
+		initLogAdapter();
 	}
 	
 	private void validate() {
-		//		final WhaleUnit annotation = testClass.getAnnotation(WhaleUnit.class);
-		//		
-		//		annotation.config();
+		final Class<?> testClass = testClassHolder.getTestClass().get();
+		final WhaleUnit annotation = testClassHolder.getTestClass().map(tc -> tc.getAnnotation(WhaleUnit.class)).orElse(null);
 		
-		// TODO - Implement
-	}
-	
-	private void addContainer(final String name) {
-		getLog().debug("Registering container " + name);
+		final Set<String> names = new HashSet<>();
 		
-		final Container container = containerFactory.apply(name);
-		containers.add(container);
-	}
-	
-	public Logger getLog() {
-		return log;
+		testClassHolder.getTestClass()
+			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
+			.map(DirtiesContainers::value)
+			.map(Arrays::stream)
+			.orElse(Arrays.stream(new String[] {}))
+			.forEach(names::add);
+		
+		//		testClassHolder.getTestClass()
+		//			.map(tc -> tc.getMethods())
+		//			.ifPresent(methods -> {
+		//				Arrays.stream(methods)
+		//					.map(m -> m.getAnnotation(DirtiesContainers.class))
+		//					.map(DirtiesContainers::value)
+		//					.flatMap(c -> Arrays.stream(c))
+		//					.forEach(names::add);
+		//			});
+			
+		final String missingName = names.stream()
+			.filter(name -> !containers.exists(name))
+			.collect(Collectors.joining(", "));
+		
+		if (!"".equals(missingName)) {
+			throw new TestManagementException("Unknown containers in DirtiesContainers annotations: " + missingName);
+		}
 	}
 }

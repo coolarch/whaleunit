@@ -28,18 +28,26 @@ package cool.arch.whaleunit.junit;
  * #L%
  */
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.WhaleUnit;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
+import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 
 /**
  *
  */
-@DirtiesContainers({ "bat" })
+@DirtiesContainers({ "foo" })
 @WhaleUnit(containersFromClasses = { Ubuntu.class })
+@ProgrammaticContainerDescriptors(sources = { WhaleUnitRuleIT.DescriptorSupplier.class })
 public class WhaleUnitRuleIT {
 	
 	@Rule
@@ -50,9 +58,14 @@ public class WhaleUnitRuleIT {
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
 	 */
 	@Test
-	@DirtiesContainers({ "baz" })
 	public void testOne() {
 		System.out.println("one");
+	}
+	
+	@Test
+	@DirtiesContainers({ "foo", "bar" })
+	public void testThree() {
+		System.out.println("three");
 	}
 	
 	@Test
@@ -60,9 +73,25 @@ public class WhaleUnitRuleIT {
 		System.out.println("two");
 	}
 	
-	@Test
-	@DirtiesContainers({ "foo", "bar" })
-	public void testThree() {
-		System.out.println("three");
+	public static class DescriptorSupplier implements Supplier<Collection<ContainerDescriptor>> {
+		
+		@Override
+		public Collection<ContainerDescriptor> get() {
+			final List<ContainerDescriptor> descriptors = new LinkedList<>();
+			
+			ContainerDescriptor.builder()
+				.withId("foo")
+				.withImage("ubuntu")
+				.build()
+				.ifPresent(descriptors::add);
+			
+			ContainerDescriptor.builder()
+				.withId("bar")
+				.withImage("ubuntu")
+				.build()
+				.ifPresent(descriptors::add);
+
+			return descriptors;
+		}
 	}
 }
