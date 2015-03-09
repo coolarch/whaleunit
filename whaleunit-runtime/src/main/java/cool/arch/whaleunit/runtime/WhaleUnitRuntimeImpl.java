@@ -202,16 +202,15 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			.orElse(Arrays.stream(new String[] {}))
 			.forEach(names::add);
 		
-		//		testClassHolder.getTestClass()
-		//			.map(tc -> tc.getMethods())
-		//			.ifPresent(methods -> {
-		//				Arrays.stream(methods)
-		//					.map(m -> m.getAnnotation(DirtiesContainers.class))
-		//					.map(DirtiesContainers::value)
-		//					.flatMap(c -> Arrays.stream(c))
-		//					.forEach(names::add);
-		//			});
-			
+		if (testClass != null) {
+			Arrays.stream(testClass.getMethods())
+				.filter(m -> m.isAnnotationPresent(DirtiesContainers.class))
+				.map(m -> m.getAnnotation(DirtiesContainers.class))
+				.map(DirtiesContainers::value)
+				.flatMap(c -> Arrays.stream(c))
+				.forEach(names::add);
+		}
+
 		final String missingName = names.stream()
 			.filter(name -> !containers.exists(name))
 			.collect(Collectors.joining(", "));
