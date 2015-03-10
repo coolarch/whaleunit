@@ -1,14 +1,8 @@
-package cool.arch.whaleunit.runtime.api;
-
-import java.util.function.Function;
-
-import org.jvnet.hk2.annotations.Contract;
-
-import cool.arch.whaleunit.api.model.ContainerDescriptor;
+package cool.arch.whaleunit.runtime.impl;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -31,7 +25,31 @@ import cool.arch.whaleunit.api.model.ContainerDescriptor;
  * #L%
  */
 
-@Contract
-public interface ContainerFactory extends Function<ContainerDescriptor, Container> {
+import static java.util.Objects.requireNonNull;
 
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
+import cool.arch.whaleunit.runtime.api.TemporalService;
+import cool.arch.whaleunit.runtime.api.UniqueIdService;
+
+@Service
+public class UniqueIdServiceImpl implements UniqueIdService {
+	
+	private final TemporalService temporalService;
+	
+	private final String uniqueId;
+
+	@Inject
+	public UniqueIdServiceImpl(final TemporalService temporalService) {
+		this.temporalService = requireNonNull(temporalService, "temporalService shall not be null");
+		
+		uniqueId = Long.toHexString(this.temporalService.currentTimeMills());
+	}
+
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
+	}
 }

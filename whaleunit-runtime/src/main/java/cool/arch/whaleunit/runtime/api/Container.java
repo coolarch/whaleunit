@@ -29,12 +29,13 @@ public interface Container {
 	
 	void create();
 	
-	void start();
-	
-	void stop();
-	
 	void destroy();
+	
+	String getId();
 	
 	String getName();
 	
+	void start();
+	
+	void stop();
 }

@@ -46,7 +46,7 @@ import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
  *
  */
 @DirtiesContainers({ "foo" })
-@WhaleUnit(containersFromClasses = { Ubuntu.class })
+@WhaleUnit
 @ProgrammaticContainerDescriptors(sources = { WhaleUnitRuleIT.DescriptorSupplier.class })
 public class WhaleUnitRuleIT {
 	
@@ -58,21 +58,35 @@ public class WhaleUnitRuleIT {
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
 	 */
 	@Test
+	@DirtiesContainers("foo")
 	public void testOne() {
-		System.out.println("one");
+		System.out.println("one start");
+		
+		try {
+			Thread.sleep(15000);
+		} catch (final InterruptedException e) {
+			// Intentionally do nothing
+		}
+		
+		System.out.println("one end");
 	}
 	
-	@Test
-	@DirtiesContainers({ "foo", "bar" })
-	public void testThree() {
-		System.out.println("three");
-	}
-	
+	/**
+	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
+	 */
 	@Test
 	public void testTwo() {
-		System.out.println("two");
+		System.out.println("two start");
+		
+		try {
+			Thread.sleep(15000);
+		} catch (final InterruptedException e) {
+			// Intentionally do nothing
+		}
+		
+		System.out.println("two end");
 	}
-	
+
 	public static class DescriptorSupplier implements Supplier<Collection<ContainerDescriptor>> {
 		
 		@Override
@@ -81,13 +95,8 @@ public class WhaleUnitRuleIT {
 			
 			ContainerDescriptor.builder()
 				.withId("foo")
-				.withImage("ubuntu")
-				.build()
-				.ifPresent(descriptors::add);
-			
-			ContainerDescriptor.builder()
-				.withId("bar")
-				.withImage("ubuntu")
+				.withImage("ubuntu:14.04")
+				.withCommand("ls")
 				.build()
 				.ifPresent(descriptors::add);
 

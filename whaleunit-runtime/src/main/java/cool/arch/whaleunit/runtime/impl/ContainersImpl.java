@@ -56,7 +56,14 @@ public class ContainersImpl implements Containers {
 	@Override
 	public void add(final Container container) {
 		requireNonNull(container, "container shall not be null");
-		containers.put(container.getName(), container);
+		containers.put(container.getId(), container);
+	}
+	
+	@Override
+	public void createAll() {
+		for (final Container container : containers.values()) {
+			container.create();
+		}
 	}
 	
 	@Override
@@ -80,7 +87,7 @@ public class ContainersImpl implements Containers {
 	
 	@Override
 	public void stop(final Collection<String> names) {
-		loggerAdapter.debug(names.toString());
+		loggerAdapter.debug("stop: " + names.toString());
 		
 		// TODO - Implement
 		
@@ -88,7 +95,7 @@ public class ContainersImpl implements Containers {
 	
 	@Override
 	public void stop(final String... names) {
-		loggerAdapter.debug(Arrays.toString(names));
+		loggerAdapter.debug("stop: " + Arrays.toString(names));
 		
 		// TODO - Implement
 		

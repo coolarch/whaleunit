@@ -29,7 +29,6 @@ import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -49,8 +48,6 @@ import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
 import cool.arch.whaleunit.api.exception.InitializationException;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.api.exception.ValidationException;
-import cool.arch.whaleunit.api.model.ContainerDescriptor;
-import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
 import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
@@ -126,6 +123,8 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		}
 		
 		validate();
+		
+		containers.createAll();
 	}
 	
 	@Override
@@ -154,19 +153,13 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		// Intentionally do nothing
 	}
 	
-	private void addContainer(final String name) {
-		getLog().debug("Registering container " + name);
-		
-		final Container container = containerFactory.apply(name);
-		containers.add(container);
-	}
-	
 	private void init() throws ContainerDescriptorLoadException {
-		final Collection<ContainerDescriptor> descriptors = containerDescriptorLoaderService.get().extractDescriptors(testClassHolder.getTestClass().get());
-
-		descriptors.stream()
-			.map(d -> d.getId().get())
-			.forEach(this::addContainer);
+		containerDescriptorLoaderService.get()
+			.extractDescriptors(testClassHolder.getTestClass().get())
+			.stream()
+			.peek(c -> getLog().debug("Registering container " + c.getId().get()))
+			.map(containerFactory::apply)
+			.forEach(containers::add);
 	}
 	
 	private void initLogAdapter() {

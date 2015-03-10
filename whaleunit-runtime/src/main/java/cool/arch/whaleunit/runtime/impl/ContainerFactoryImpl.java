@@ -4,10 +4,16 @@ import javax.inject.Inject;
 
 import org.jvnet.hk2.annotations.Service;
 
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificateException;
+import com.spotify.docker.client.DockerClient;
+
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
+import cool.arch.whaleunit.runtime.api.UniqueIdService;
 
 /*
  * #%L
@@ -37,20 +43,24 @@ import cool.arch.whaleunit.runtime.api.ContainerFactory;
 @Service
 public class ContainerFactoryImpl implements ContainerFactory {
 	
-	private final Logger logger;
+	private final DockerClient docker;
 	
 	private final LoggerAdapterFactory factory;
+	
+	private final Logger logger;
+	
+	private final UniqueIdService uniqueIdService;
 
 	@Inject
-	ContainerFactoryImpl(final LoggerAdapterFactory factory) {
+	ContainerFactoryImpl(final LoggerAdapterFactory factory, final UniqueIdService uniqueIdService) throws DockerCertificateException {
 		this.factory = factory;
+		this.uniqueIdService = uniqueIdService;
 		logger = factory.create(getClass());
+		docker = DefaultDockerClient.fromEnv().build();
 	}
 
 	@Override
-	public Container apply(final String name) {
-		final Container container = new ContainerImpl(factory, name);
-		
-		return container;
+	public Container apply(final ContainerDescriptor descriptor) {
+		return new ContainerImpl(factory, descriptor, uniqueIdService, docker);
 	}
 }

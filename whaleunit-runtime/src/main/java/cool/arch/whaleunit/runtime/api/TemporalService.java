@@ -1,14 +1,8 @@
 package cool.arch.whaleunit.runtime.api;
 
-import java.util.function.Function;
-
-import org.jvnet.hk2.annotations.Contract;
-
-import cool.arch.whaleunit.api.model.ContainerDescriptor;
-
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -31,7 +25,11 @@ import cool.arch.whaleunit.api.model.ContainerDescriptor;
  * #L%
  */
 
+import org.jvnet.hk2.annotations.Contract;
+
 @Contract
-public interface ContainerFactory extends Function<ContainerDescriptor, Container> {
+public interface TemporalService {
+	
+	long currentTimeMills();
 
 }

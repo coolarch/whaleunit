@@ -1,8 +1,19 @@
 package cool.arch.whaleunit.runtime.impl;
 
+import static java.util.Objects.requireNonNull;
+
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerException;
+import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerConfig.Builder;
+import com.spotify.docker.client.messages.ContainerCreation;
+
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
+import cool.arch.whaleunit.api.exception.TestManagementException;
+import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
+import cool.arch.whaleunit.runtime.api.UniqueIdService;
 import cool.arch.whaleunit.runtime.enumeration.ContainerState;
 
 /*
@@ -32,22 +43,83 @@ import cool.arch.whaleunit.runtime.enumeration.ContainerState;
 
 public class ContainerImpl implements Container {
 	
-	private final String name;
+	private ContainerCreation creation;
 	
-	private ContainerState state = ContainerState.NEW;
+	private final ContainerDescriptor descriptor;
+	
+	private final DockerClient docker;
+	
+	private final String id;
 	
 	private final Logger logger;
+	
+	private final String name;
+	
+	private String runId;
 
-	public ContainerImpl(final LoggerAdapterFactory factory, final String name) {
-		this.name = name;
+	private ContainerState state = ContainerState.NEW;
+
+	public ContainerImpl(final LoggerAdapterFactory factory, final ContainerDescriptor descriptor, final UniqueIdService uniqueIdService,
+		final DockerClient docker) {
+		this.descriptor = requireNonNull(descriptor, "descriptor shall not be null");
+		final String uniqueId = uniqueIdService.getUniqueId();
+		id = descriptor.getId().get();
+		name = "whaleunit_" + uniqueId + "_" + id;
 		logger = factory.create(getClass());
+		this.docker = requireNonNull(docker, "docker shall not be null");
 	}
 	
 	@Override
 	public void create() {
 		logger.info("create: " + name);
+		
+		final String[] ports = { "80", "22" };
+
+		
+		final Builder builder = ContainerConfig.builder();
+		
+		descriptor.getImage().ifPresent(builder::image);
+		builder.exposedPorts(ports);
+		descriptor.getCommand().ifPresent(builder::cmd);
+		
+		builder.attachStdout(true);
+		builder.stdinOnce(true);
+		builder.tty(true);
+
+		final ContainerConfig config = builder.build();
+
+		try {
+			creation = docker.createContainer(config, name);
+		} catch (final DockerException e) {
+			throw new TestManagementException(e);
+		} catch (final InterruptedException e) {
+			throw new TestManagementException(e);
+		}
 	}
 
+	@Override
+	public void destroy() {
+		logger.info("destroy: " + name);
+		
+		try {
+			docker.removeContainer(runId, true);
+		} catch (final DockerException e) {
+			throw new TestManagementException(e);
+		} catch (final InterruptedException e) {
+			throw new TestManagementException(e);
+		}
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+	
 	@Override
 	public void start() {
 		if (ContainerState.STARTED.equals(state)) {
@@ -57,6 +129,16 @@ public class ContainerImpl implements Container {
 		state = ContainerState.STARTED;
 		
 		logger.info("start: " + name);
+		
+		runId = creation.id();
+
+		try {
+			docker.startContainer(runId);
+		} catch (final DockerException e) {
+			throw new TestManagementException(e);
+		} catch (final InterruptedException e) {
+			throw new TestManagementException(e);
+		}
 	}
 
 	@Override
@@ -68,15 +150,13 @@ public class ContainerImpl implements Container {
 		state = ContainerState.STOPPED;
 		
 		logger.info("stop: " + name);
-	}
-
-	@Override
-	public void destroy() {
-		logger.info("destroy: " + name);
-	}
-
-	@Override
-	public String getName() {
-		return name;
+		
+		try {
+			docker.stopContainer(runId, 30);
+		} catch (final DockerException e) {
+			throw new TestManagementException(e);
+		} catch (final InterruptedException e) {
+			throw new TestManagementException(e);
+		}
 	}
 }

@@ -34,6 +34,8 @@ public interface Containers {
 	
 	void add(Container container);
 	
+	void createAll();
+
 	void destroyAll();
 	
 	boolean exists(String name);
