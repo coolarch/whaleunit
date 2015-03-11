@@ -3,6 +3,7 @@ package cool.arch.whaleunit.runtime.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerClient.AttachParameter;
 import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
@@ -13,6 +14,7 @@ import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
+import cool.arch.whaleunit.runtime.api.SimpleExecutorService;
 import cool.arch.whaleunit.runtime.api.UniqueIdService;
 import cool.arch.whaleunit.runtime.enumeration.ContainerState;
 
@@ -49,6 +51,8 @@ public class ContainerImpl implements Container {
 	
 	private final DockerClient docker;
 	
+	private final SimpleExecutorService executorService;
+
 	private final String id;
 	
 	private final Logger logger;
@@ -60,8 +64,9 @@ public class ContainerImpl implements Container {
 	private ContainerState state = ContainerState.NEW;
 
 	public ContainerImpl(final LoggerAdapterFactory factory, final ContainerDescriptor descriptor, final UniqueIdService uniqueIdService,
-		final DockerClient docker) {
+		final DockerClient docker, final SimpleExecutorService executorService) {
 		this.descriptor = requireNonNull(descriptor, "descriptor shall not be null");
+		this.executorService = requireNonNull(executorService, "executorService shall not be null");
 		final String uniqueId = uniqueIdService.getUniqueId();
 		id = descriptor.getId().get();
 		name = "whaleunit_" + uniqueId + "_" + id;
@@ -81,6 +86,8 @@ public class ContainerImpl implements Container {
 		descriptor.getImage().ifPresent(builder::image);
 		builder.exposedPorts(ports);
 		descriptor.getCommand().ifPresent(builder::cmd);
+		
+		//		builder.cmd("sh", "-c", "while :; do sleep 1; done");
 		
 		builder.attachStdout(true);
 		builder.stdinOnce(true);
@@ -134,6 +141,16 @@ public class ContainerImpl implements Container {
 
 		try {
 			docker.startContainer(runId);
+			
+			executorService.submit(() -> {
+				try {
+					docker.attachContainer(runId, AttachParameter.LOGS, AttachParameter.STDOUT, AttachParameter.STDERR, AttachParameter.STREAM)
+						.attach(System.out, System.err);
+				} catch (final Exception e) {
+					// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			});
 		} catch (final DockerException e) {
 			throw new TestManagementException(e);
 		} catch (final InterruptedException e) {

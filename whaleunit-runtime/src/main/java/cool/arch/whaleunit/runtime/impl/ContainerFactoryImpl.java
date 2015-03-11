@@ -13,6 +13,7 @@ import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
+import cool.arch.whaleunit.runtime.api.SimpleExecutorService;
 import cool.arch.whaleunit.runtime.api.UniqueIdService;
 
 /*
@@ -49,18 +50,22 @@ public class ContainerFactoryImpl implements ContainerFactory {
 	
 	private final Logger logger;
 	
+	private final SimpleExecutorService simpleExecutorService;
+	
 	private final UniqueIdService uniqueIdService;
 
 	@Inject
-	ContainerFactoryImpl(final LoggerAdapterFactory factory, final UniqueIdService uniqueIdService) throws DockerCertificateException {
+	ContainerFactoryImpl(final LoggerAdapterFactory factory, final UniqueIdService uniqueIdService, final SimpleExecutorService simpleExecutorService)
+		throws DockerCertificateException {
 		this.factory = factory;
 		this.uniqueIdService = uniqueIdService;
+		this.simpleExecutorService = simpleExecutorService;
 		logger = factory.create(getClass());
 		docker = DefaultDockerClient.fromEnv().build();
 	}
 
 	@Override
 	public Container apply(final ContainerDescriptor descriptor) {
-		return new ContainerImpl(factory, descriptor, uniqueIdService, docker);
+		return new ContainerImpl(factory, descriptor, uniqueIdService, docker, simpleExecutorService);
 	}
 }

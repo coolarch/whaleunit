@@ -96,7 +96,7 @@ public class WhaleUnitRuleIT {
 			ContainerDescriptor.builder()
 				.withId("foo")
 				.withImage("ubuntu:14.04")
-				.withCommand("ls")
+				.withCommand("/usr/bin/yes")
 				.build()
 				.ifPresent(descriptors::add);
 
