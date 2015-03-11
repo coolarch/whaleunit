@@ -15,6 +15,7 @@ import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.UniqueIdService;
 import cool.arch.whaleunit.runtime.enumeration.ContainerState;
+import cool.arch.whaleunit.support.functional.Exceptions;
 
 /*
  * #%L
@@ -29,9 +30,9 @@ import cool.arch.whaleunit.runtime.enumeration.ContainerState;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -42,19 +43,19 @@ import cool.arch.whaleunit.runtime.enumeration.ContainerState;
  */
 
 public class ContainerImpl implements Container {
-	
+
 	private ContainerCreation creation;
-	
+
 	private final ContainerDescriptor descriptor;
-	
+
 	private final DockerClient docker;
-	
+
 	private final String id;
-	
+
 	private final Logger logger;
-	
+
 	private final String name;
-	
+
 	private String runId;
 
 	private ContainerState state = ContainerState.NEW;
@@ -68,20 +69,28 @@ public class ContainerImpl implements Container {
 		logger = factory.create(getClass());
 		this.docker = requireNonNull(docker, "docker shall not be null");
 	}
-	
+
 	@Override
 	public void create() {
 		logger.info("create: " + name);
-		
+
 		final String[] ports = { "80", "22" };
 
-		
+		descriptor.getImage().ifPresent(image -> {
+		  try {
+        docker.pull(image);
+      }
+      catch (final Exception e) {
+        throw new TestManagementException(String.format("Error pulling image %s", image), e);
+      }
+    });
+
 		final Builder builder = ContainerConfig.builder();
-		
+
 		descriptor.getImage().ifPresent(builder::image);
 		builder.exposedPorts(ports);
 		descriptor.getCommand().ifPresent(builder::cmd);
-		
+
 		builder.attachStdout(true);
 		builder.stdinOnce(true);
 		builder.tty(true);
@@ -100,7 +109,7 @@ public class ContainerImpl implements Container {
 	@Override
 	public void destroy() {
 		logger.info("destroy: " + name);
-		
+
 		try {
 			docker.removeContainer(runId, true);
 		} catch (final DockerException e) {
@@ -119,17 +128,17 @@ public class ContainerImpl implements Container {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public void start() {
 		if (ContainerState.STARTED.equals(state)) {
 			return;
 		}
-		
+
 		state = ContainerState.STARTED;
-		
+
 		logger.info("start: " + name);
-		
+
 		runId = creation.id();
 
 		try {
@@ -146,11 +155,11 @@ public class ContainerImpl implements Container {
 		if (ContainerState.STOPPED.equals(state)) {
 			return;
 		}
-		
+
 		state = ContainerState.STOPPED;
-		
+
 		logger.info("stop: " + name);
-		
+
 		try {
 			docker.stopContainer(runId, 30);
 		} catch (final DockerException e) {
