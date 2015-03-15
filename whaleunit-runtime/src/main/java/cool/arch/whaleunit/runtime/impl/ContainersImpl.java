@@ -25,12 +25,13 @@ package cool.arch.whaleunit.runtime.impl;
  * #L%
  */
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -61,16 +62,12 @@ public class ContainersImpl implements Containers {
 	
 	@Override
 	public void createAll() {
-		for (final Container container : containers.values()) {
-			container.create();
-		}
+		onAll("creating", Container::create);
 	}
 	
 	@Override
 	public void destroyAll() {
-		for (final Container container : containers.values()) {
-			container.destroy();
-		}
+		onAll("destroying", Container::destroy);
 	}
 	
 	@Override
@@ -79,32 +76,67 @@ public class ContainersImpl implements Containers {
 	}
 	
 	@Override
+	public void restart(final Collection<String> names) {
+		onEach("restarting", Container::restart, names);
+	}
+	
+	@Override
+	public void restart(final String... names) {
+		onEach("restarting", Container::restart, names);
+	}
+	
+	@Override
+	public void restartAll() {
+		onAll("restarting", Container::restart);
+	}
+	
+	@Override
+	public void start(final Collection<String> names) {
+		onEach("starting", Container::start, names);
+	}
+	
+	@Override
+	public void start(final String... names) {
+		onEach("starting", Container::start, names);
+	}
+	
+	@Override
 	public void startAll() {
-		for (final Container container : containers.values()) {
-			container.start();
-		}
+		onAll("starting", Container::start);
 	}
 	
 	@Override
 	public void stop(final Collection<String> names) {
-		loggerAdapter.debug("stop: " + names.toString());
-		
-		// TODO - Implement
-		
+		onEach("stopping", Container::stop, names);
 	}
 	
 	@Override
 	public void stop(final String... names) {
-		loggerAdapter.debug("stop: " + Arrays.toString(names));
-		
-		// TODO - Implement
-		
+		onEach("stopping", Container::stop, names);
 	}
 	
 	@Override
 	public void stopAll() {
-		for (final Container container : containers.values()) {
-			container.stop();
-		}
+		onAll("stopping", Container::stop);
+	}
+	
+	private void onAll(final String actionName, final Consumer<Container> consumer) {
+		containers.values().stream()
+			.peek(container -> loggerAdapter.debug(actionName + ": " + container.getId()))
+			.forEach(consumer);
+	}
+	
+	private void onEach(final String actionName, final Consumer<Container> consumer, final Collection<String> names) {
+		names.stream()
+			.peek(name -> loggerAdapter.debug(actionName + ": " + name))
+			.map(containers::get)
+			.forEach(consumer);
+	}
+	
+	private void onEach(final String actionName, final Consumer<Container> consumer, final String... names) {
+		stream(names)
+			.peek(name -> loggerAdapter.debug(actionName + ": " + name))
+			.map(containers::get)
+			.forEach(consumer);
 	}
 }

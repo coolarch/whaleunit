@@ -1,8 +1,8 @@
-package cool.arch.whaleunit.runtime.api;
+package cool.arch.whaleunit.runtime.service.api;
 
 /*
  * #%L
- * WhaleUnit - JUnit
+ * WhaleUnit - Runtime
  * %%
  * Copyright (C) 2015 CoolArch
  * %%
@@ -25,36 +25,12 @@ package cool.arch.whaleunit.runtime.api;
  * #L%
  */
 
-import java.util.Collection;
+import java.util.Optional;
 
 import org.jvnet.hk2.annotations.Contract;
 
 @Contract
-public interface Containers {
+public interface ConfigService {
 	
-	void add(Container container);
-	
-	void createAll();
-
-	void destroyAll();
-	
-	boolean exists(String name);
-	
-	void restart(Collection<String> names);
-	
-	void restart(String... names);
-	
-	void restartAll();
-	
-	void start(Collection<String> names);
-	
-	void start(String... names);
-
-	void startAll();
-
-	void stop(Collection<String> names);
-	
-	void stop(String... names);
-	
-	void stopAll();
+	Optional<String> getValue(String key);
 }

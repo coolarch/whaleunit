@@ -54,10 +54,14 @@ import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
 import cool.arch.whaleunit.runtime.api.MutableTestClassHolder;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
 import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
+import cool.arch.whaleunit.runtime.service.api.MutableConfigService;
 
 public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	
 	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL = "Annotation %s is required on unit test %s that is using WhaleUnit.";
+	
+	@Inject
+	private Provider<MutableConfigService> configService;
 	
 	@Inject
 	private Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
@@ -70,7 +74,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	
 	@Inject
 	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
-	
+
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
 	
 	private final ServiceLocator locator;
@@ -94,7 +98,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	WhaleUnitRuntimeImpl(final ServiceLocator locator) {
 		this.locator = requireNonNull(locator, "locator shall not be null");
 	}
-	
+
 	public Logger getLog() {
 		return log;
 	}
@@ -129,18 +133,23 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	
 	@Override
 	public void onTestEnd(final String methodName) {
-		containers.stop(globallyDirtiedContainerNames);
+		final Set<String> containersToRestart = new HashSet<>();
+		
+		containersToRestart.addAll(globallyDirtiedContainerNames);
 		
 		testClassHolder.getTestClass()
 			.map(wrap(testClass -> testClass.getMethod(methodName), e -> new TestManagementException("Error looking up method " + methodName)))
 			.map(method -> method.getAnnotation(DirtiesContainers.class))
 			.map(annotation -> annotation.value())
-			.ifPresent(containers::stop);
+			.map(Arrays::asList)
+			.ifPresent(containersToRestart::addAll);
+		
+		containers.restart(containersToRestart);
 	}
 	
 	@Override
 	public void onTestFailed(final String methodName) {
-		containers.stopAll();
+		containers.restartAll();
 	}
 	
 	@Override
@@ -160,6 +169,11 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			.peek(c -> getLog().debug("Registering container " + c.getId().get()))
 			.map(containerFactory::apply)
 			.forEach(containers::add);
+		
+		testClassHolder.getTestClass()
+			.map(tc -> tc.getAnnotation(WhaleUnit.class))
+			.map(WhaleUnit::config)
+			.ifPresent(config -> configService.get().addConfigFile(config));
 	}
 	
 	private void initLogAdapter() {
@@ -185,7 +199,6 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	private void validate() {
 		final Class<?> testClass = testClassHolder.getTestClass().get();
 		final WhaleUnit annotation = testClassHolder.getTestClass().map(tc -> tc.getAnnotation(WhaleUnit.class)).orElse(null);
-		
 		final Set<String> names = new HashSet<>();
 		
 		testClassHolder.getTestClass()
@@ -211,5 +224,25 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		if (!"".equals(missingName)) {
 			throw new TestManagementException("Unknown containers in DirtiesContainers annotations: " + missingName);
 		}
+	}
+	
+	public static enum Alphabet {
+		
+		CLEAN_UP,
+		
+		END,
+		
+		FAILED,
+		
+		INIT,
+		
+		START,
+		
+		SUCCEEDED;
+		
+	}
+	
+	public static enum States {
+		
 	}
 }

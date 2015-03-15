@@ -36,9 +36,9 @@ import cool.arch.whaleunit.support.patterns.AbstractBuilderImpl;
 public final class ContainerDescriptor {
 	
 	private Optional<String> command = Optional.empty();
-
+	
 	private Optional<Dnses> dnses = Optional.empty();
-
+	
 	private Optional<String> domainName = Optional.empty();
 	
 	private Optional<String> entryPoint = Optional.empty();
@@ -73,12 +73,13 @@ public final class ContainerDescriptor {
 	
 	private Optional<Path> workingDirectory = Optional.empty();
 	
-	private ContainerDescriptor() {}
+	private ContainerDescriptor() {
+	}
 	
 	public Optional<String> getCommand() {
 		return command;
 	}
-
+	
 	public Optional<Dnses> getDnses() {
 		return dnses;
 	}
@@ -150,7 +151,7 @@ public final class ContainerDescriptor {
 	public boolean isPrivileged() {
 		return privileged;
 	}
-
+	
 	public static Builder builder() {
 		return new BuilderImpl();
 	}
@@ -158,7 +159,7 @@ public final class ContainerDescriptor {
 	public interface Builder extends AbstractBuilder<ContainerDescriptor> {
 		
 		Builder withCommand(String command);
-
+		
 		Builder withDnses(Dnses dnses);
 		
 		Builder withDnses(Optional<Dnses> dnses);
@@ -166,27 +167,27 @@ public final class ContainerDescriptor {
 		Builder withDomainName(String domainName);
 		
 		Builder withEntryPoint(String entryPoint);
-
+		
 		Builder withEnvironments(Environments environments);
 		
 		Builder withEnvironments(Optional<Environments> environments);
-
+		
 		Builder withExposes(Exposes exposes);
 		
 		Builder withExposes(Optional<Exposes> exposes);
-
+		
 		Builder withHostname(String hostname);
 		
 		Builder withId(String id);
-
+		
 		Builder withImage(String image);
 		
 		Builder withLinks(Links links);
-
+		
 		Builder withLinks(Optional<Links> links);
 		
 		Builder withMemoryLimitMegs(int memoryLimitMegs);
-
+		
 		Builder withNet(Net net);
 		
 		Builder withNetContainer(String netContainer);
@@ -194,7 +195,7 @@ public final class ContainerDescriptor {
 		Builder withPorts(Optional<Ports> ports);
 		
 		Builder withPorts(Ports ports);
-
+		
 		Builder withPrivileged(boolean privileged);
 		
 		Builder withUser(String user);
@@ -226,35 +227,35 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withDnses(final Dnses dnses) {
 			getInstance().dnses = Optional.ofNullable(dnses);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withDnses(final Optional<Dnses> dnses) {
 			getInstance().dnses = (dnses == null) ? Optional.empty() : dnses;
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withDomainName(final String domainName) {
 			getInstance().domainName = Optional.ofNullable(domainName);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withEntryPoint(final String entryPoint) {
 			getInstance().entryPoint = Optional.ofNullable(entryPoint);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withEnvironments(final Environments environments) {
 			getInstance().environments = Optional.ofNullable(environments);
-
+			
 			return this;
 		}
 		
@@ -268,7 +269,7 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withExposes(final Exposes exposes) {
 			getInstance().exposes = Optional.ofNullable(exposes);
-
+			
 			return this;
 		}
 		
@@ -282,7 +283,7 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withHostname(final String hostname) {
 			getInstance().hostname = Optional.ofNullable(hostname);
-
+			
 			return this;
 		}
 		
@@ -303,7 +304,7 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withLinks(final Links links) {
 			getInstance().links = Optional.ofNullable(links);
-
+			
 			return this;
 		}
 		
@@ -317,49 +318,49 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withMemoryLimitMegs(final int memoryLimitMegs) {
 			getInstance().memoryLimitMegs = memoryLimitMegs;
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withNet(final Net net) {
 			getInstance().net = Optional.ofNullable(net);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withNetContainer(final String netContainer) {
 			getInstance().netContainer = Optional.ofNullable(netContainer);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withPorts(final Optional<Ports> ports) {
 			getInstance().ports = (ports == null) ? Optional.empty() : ports;
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withPorts(final Ports ports) {
 			getInstance().ports = Optional.ofNullable(ports);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withPrivileged(final boolean privileged) {
 			getInstance().privileged = privileged;
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withUser(final String user) {
 			getInstance().user = Optional.ofNullable(user);
-
+			
 			return this;
 		}
 		
@@ -373,7 +374,7 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withVolumes(final Volumes volumes) {
 			getInstance().volumes = Optional.ofNullable(volumes);
-
+			
 			return this;
 		}
 		
@@ -387,14 +388,14 @@ public final class ContainerDescriptor {
 		@Override
 		public Builder withVolumesFroms(final VolumesFroms volumesFroms) {
 			getInstance().volumesFroms = Optional.ofNullable(volumesFroms);
-
+			
 			return this;
 		}
 		
 		@Override
 		public Builder withWorkingDirectory(final Path workingDirectory) {
 			getInstance().workingDirectory = Optional.ofNullable(workingDirectory);
-
+			
 			return this;
 		}
 		
@@ -417,11 +418,11 @@ public final class ContainerDescriptor {
 			if (instance.id.filter(String::isEmpty).isPresent()) {
 				errors.add("id must not be an empty string");
 			}
-
+			
 			if (instance.image == null) {
 				errors.add("image must be supplied");
 			}
-
+			
 			return errors;
 		}
 	}

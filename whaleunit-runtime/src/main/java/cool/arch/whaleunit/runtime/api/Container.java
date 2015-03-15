@@ -35,6 +35,8 @@ public interface Container {
 	
 	String getName();
 	
+	void restart();
+	
 	void start();
 	
 	void stop();

@@ -42,16 +42,16 @@ import java.lang.annotation.Target;
 public @interface WhaleUnit {
 	
 	/**
+	 * Resource path to the WhaleUnit configuration properties file.
+	 * @return Resource path to the WhaleUnit configuration properties file
+	 */
+	String config() default "classpath:/cool/arch/whaleunit/runtime/config_default.properties";
+	
+	/**
 	 * Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers.
 	 * @return Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers
 	 */
 	Class<?>[] containersFromClasses() default {};
-	
-	/**
-	 * Resource path to the WhaleUnit configuration properties file.
-	 * @return Resource path to the WhaleUnit configuration properties file
-	 */
-	String config() default "classpath:/cool/arch/whaleunit/junit/config.properties";
 	
 	/**
 	 * Logger adapter to use with WhaleUnit.

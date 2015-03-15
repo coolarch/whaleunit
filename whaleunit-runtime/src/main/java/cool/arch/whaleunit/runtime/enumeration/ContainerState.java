@@ -27,24 +27,26 @@ package cool.arch.whaleunit.runtime.enumeration;
 
 public enum ContainerState {
 	
-	NEW,
+	CREATED,
 	
 	CREATING,
 	
-	CREATED,
-	
-	STARTING,
-	
-	STARTED,
-	
-	FAILED,
-	
-	STOPPING,
-	
-	STOPPED,
+	DESTROYED,
 	
 	DESTROYING,
 	
-	DESTROYED
+	FAILED,
+	
+	NEW,
+	
+	RESTARTING,
+	
+	STARTED,
+	
+	STARTING,
+
+	STOPPED,
+	
+	STOPPING
 	
 }
