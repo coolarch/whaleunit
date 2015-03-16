@@ -49,11 +49,11 @@ import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 @WhaleUnit
 @ProgrammaticContainerDescriptors(sources = { WhaleUnitRuleIT.DescriptorSupplier.class })
 public class WhaleUnitRuleIT {
-
+	
 	@Rule
 	@ClassRule
 	public static final WhaleUnitRule whaleUnitRule = new WhaleUnitRule();
-
+	
 	/**
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
 	 */
@@ -61,45 +61,45 @@ public class WhaleUnitRuleIT {
 	@DirtiesContainers("foo")
 	public void testOne() {
 		System.out.println("one start");
-
+		
 		try {
 			Thread.sleep(15000);
 		} catch (final InterruptedException e) {
 			// Intentionally do nothing
 		}
-
+		
 		System.out.println("one end");
 	}
-
+	
 	/**
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
 	 */
 	@Test
 	public void testTwo() {
 		System.out.println("two start");
-
+		
 		try {
 			Thread.sleep(15000);
 		} catch (final InterruptedException e) {
 			// Intentionally do nothing
 		}
-
+		
 		System.out.println("two end");
 	}
-
+	
 	public static class DescriptorSupplier implements Supplier<Collection<ContainerDescriptor>> {
-
+		
 		@Override
 		public Collection<ContainerDescriptor> get() {
 			final List<ContainerDescriptor> descriptors = new LinkedList<>();
-
+			
 			ContainerDescriptor.builder()
 				.withId("foo")
 				.withImage("ubuntu:14.04")
 				.withCommand("sleep 60")
 				.build()
 				.ifPresent(descriptors::add);
-
+			
 			return descriptors;
 		}
 	}

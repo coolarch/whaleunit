@@ -40,14 +40,14 @@ public class UniqueIdServiceImpl implements UniqueIdService {
 	private final TemporalService temporalService;
 	
 	private final String uniqueId;
-
+	
 	@Inject
 	public UniqueIdServiceImpl(final TemporalService temporalService) {
 		this.temporalService = requireNonNull(temporalService, "temporalService shall not be null");
 		
 		uniqueId = Long.toHexString(this.temporalService.currentTimeMills());
 	}
-
+	
 	@Override
 	public String getUniqueId() {
 		return uniqueId;

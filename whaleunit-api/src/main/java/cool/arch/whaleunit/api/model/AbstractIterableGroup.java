@@ -34,7 +34,7 @@ import java.util.stream.StreamSupport;
 public abstract class AbstractIterableGroup<T> implements Iterable<T> {
 	
 	private final Collection<T> collection = new LinkedList<>();
-
+	
 	@Override
 	public final Iterator<T> iterator() {
 		return collection.iterator();

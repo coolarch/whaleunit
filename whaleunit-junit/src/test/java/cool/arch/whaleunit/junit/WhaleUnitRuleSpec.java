@@ -50,7 +50,7 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	public interface Givens extends AbstractGivens<Whens, Thens> {
 		
 		Givens aWhaleUnitRuleInstantiatedWithMockArguments();
-
+		
 		Givens aWhaleUnitRuleInstantiatedWithNullArguments();
 		
 		Givens aWhaleUnitRuleInstantiatedWithoutArguments();
@@ -63,14 +63,14 @@ public abstract class WhaleUnitRuleSpec implements Spec<Givens, Whens, Thens> {
 	public interface Whens extends AbstractWhens<Thens> {
 		
 		Whens nothingElseNeedsToBedone();
-
+		
 	}
 	
 	private class Fluent extends AbstractFluent<Givens, Whens, Thens> implements Givens, Whens, Thens {
 		
 		@Mock
 		private WhaleUnitRuntime mockWhaleUnitRuntime;
-
+		
 		private WhaleUnitRule specimen;
 		
 		@Override

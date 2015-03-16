@@ -39,10 +39,10 @@ import cool.arch.whaleunit.annotation.ContainerDescriptorLoaderSource;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @ContainerDescriptorLoaderSource
 public @interface FigContainers {
 	
 	String[] values();
-
+	
 }

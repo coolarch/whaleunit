@@ -38,13 +38,13 @@ import cool.arch.whaleunit.runtime.WhaleUnitRuntime;
 public abstract class AbstractWhaleUnitTestngTest {
 	
 	private WhaleUnitRuntime runtime;
-
+	
 	@BeforeClass
 	public final void beforeClass() throws Exception {
 		runtime = WhaleUnitRuntime.create(getClass());
 		runtime.onInit(getClass());
 	}
-
+	
 	@BeforeMethod
 	public final void beforeMethod(final Method method) throws Exception {
 		runtime.onTestStart(method.getName());
@@ -53,13 +53,13 @@ public abstract class AbstractWhaleUnitTestngTest {
 	@AfterMethod
 	public final void afterMethod(final ITestResult testResult) throws Exception {
 		final String methodName = testResult.getMethod().getMethodName();
-
+		
 		if (testResult.isSuccess()) {
 			runtime.onTestSucceeded(methodName);
 		} else {
 			runtime.onTestFailed(methodName);
 		}
-
+		
 		runtime.onTestEnd(methodName);
 	}
 	

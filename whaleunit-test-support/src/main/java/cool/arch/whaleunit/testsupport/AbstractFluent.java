@@ -41,12 +41,12 @@ public abstract class AbstractFluent<G extends AbstractGivens<W, T>, W extends A
 	public AbstractFluent() {
 		MockitoAnnotations.initMocks(this);
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T exceptionsThrownCount(final int expectedCount) {
 		assertEquals(expectedCount, exceptions.size());
-
+		
 		return (T) this;
 	}
 	
@@ -57,7 +57,7 @@ public abstract class AbstractFluent<G extends AbstractGivens<W, T>, W extends A
 		
 		return (T) this;
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T noExceptionsThrown() {
@@ -69,5 +69,5 @@ public abstract class AbstractFluent<G extends AbstractGivens<W, T>, W extends A
 	protected final void recordException(final Exception e) {
 		exceptions.put(e.getClass(), e);
 	}
-
+	
 }

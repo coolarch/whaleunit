@@ -33,5 +33,5 @@ import org.jvnet.hk2.annotations.Contract;
 public interface TestClassHolder {
 	
 	Optional<Class<?>> getTestClass();
-
+	
 }

@@ -28,9 +28,9 @@ import cool.arch.whaleunit.runtime.api.ContextTracker;
  */
 
 public interface WhaleUnitRuntime extends ContextTracker {
-
+	
 	static WhaleUnitRuntime create(final Class<?> testClass) {
 		return new WhaleUnitRuntimeImpl(testClass);
 	}
-
+	
 }

@@ -31,5 +31,5 @@ import org.jvnet.hk2.annotations.Contract;
 public interface TemporalService {
 	
 	long currentTimeMills();
-
+	
 }

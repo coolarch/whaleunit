@@ -44,7 +44,7 @@ import cool.arch.whaleunit.support.io.exception.UnknownResourceException;
 public class ConfigServiceImpl implements MutableConfigService {
 	
 	private static final String BASE_CONFIG_PATH = "classpath:/cool/arch/whaleunit/runtime/config_base.properties";
-
+	
 	private final Map<String, String> values = new ConcurrentHashMap<>();
 	
 	public ConfigServiceImpl() {

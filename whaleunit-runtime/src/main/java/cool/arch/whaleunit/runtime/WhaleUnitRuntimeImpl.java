@@ -74,7 +74,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	
 	@Inject
 	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
-
+	
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
 	
 	private final ServiceLocator locator;
@@ -98,7 +98,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	WhaleUnitRuntimeImpl(final ServiceLocator locator) {
 		this.locator = requireNonNull(locator, "locator shall not be null");
 	}
-
+	
 	public Logger getLog() {
 		return log;
 	}
@@ -119,7 +119,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			.ifPresent(globallyDirtiedContainerNames::addAll);
 		
 		preInit();
-
+		
 		try {
 			init();
 		} catch (final ContainerDescriptorLoadException e) {
@@ -216,7 +216,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 				.flatMap(c -> Arrays.stream(c))
 				.forEach(names::add);
 		}
-
+		
 		final String missingName = names.stream()
 			.filter(name -> !containers.exists(name))
 			.collect(Collectors.joining(", "));

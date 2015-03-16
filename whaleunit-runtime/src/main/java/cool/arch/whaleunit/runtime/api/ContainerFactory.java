@@ -33,5 +33,5 @@ import cool.arch.whaleunit.api.model.ContainerDescriptor;
 
 @Contract
 public interface ContainerFactory extends Function<ContainerDescriptor, Container> {
-
+	
 }

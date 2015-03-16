@@ -30,5 +30,5 @@ public interface Tuple2<V0, V1> {
 	V0 item0();
 	
 	V1 item1();
-
+	
 }

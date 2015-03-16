@@ -25,12 +25,11 @@ package cool.arch.whaleunit.api.model;
  * #L%
  */
 
-
 public final class Dnses extends AbstractIterableGroup<Dns> {
 	
 	private Dnses() {
 	}
-
+	
 	public static GroupBuilder<Dnses, Dns> builder() {
 		return new GroupBuilderImpl<>(new Dnses());
 	}

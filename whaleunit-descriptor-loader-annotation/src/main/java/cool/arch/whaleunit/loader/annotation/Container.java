@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 public @interface Container {
 	
 	String id();
@@ -44,5 +44,5 @@ public @interface Container {
 	String image();
 	
 	String tag() default "latest";
-
+	
 }

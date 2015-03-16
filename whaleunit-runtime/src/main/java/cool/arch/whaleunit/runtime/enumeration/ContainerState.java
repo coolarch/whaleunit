@@ -44,7 +44,7 @@ public enum ContainerState {
 	STARTED,
 	
 	STARTING,
-
+	
 	STOPPED,
 	
 	STOPPING

@@ -33,7 +33,7 @@ import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
 public class DelegatingLoggerAdapterFactoryImpl implements DelegatingLoggerAdapterFactory {
 	
 	private LoggerAdapterFactory loggerAdapterFactory;
-
+	
 	@Override
 	public Logger create(final Class<?> source) {
 		return new LazyCreationDelegatingLoggerAdapter(source);
@@ -47,15 +47,15 @@ public class DelegatingLoggerAdapterFactoryImpl implements DelegatingLoggerAdapt
 	public LoggerAdapterFactory getLoggerAdapterFactory() {
 		return loggerAdapterFactory;
 	}
-
+	
 	class LazyCreationDelegatingLoggerAdapter implements Logger {
 		
 		private final Class<?> source;
-
+		
 		private Logger adapter;
 		
 		private final Object lock = new Object();
-
+		
 		LazyCreationDelegatingLoggerAdapter(final Class<?> source) {
 			this.source = requireNonNull(source, "source shall not be null");
 		}
@@ -127,7 +127,7 @@ public class DelegatingLoggerAdapterFactoryImpl implements DelegatingLoggerAdapt
 					adapter = getLoggerAdapterFactory().create(source);
 				}
 			}
-
+			
 			return adapter;
 		}
 	}

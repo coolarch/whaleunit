@@ -42,17 +42,17 @@ public abstract class AbstractBuilderImpl<T> implements AbstractBuilder<T> {
 	@Override
 	public final Optional<T> build() {
 		final Set<String> errors = validate(getInstance());
-
+		
 		if (!errors.isEmpty()) {
 			final StringJoiner joiner = new StringJoiner(", ", "Instance of " + instance.getClass().getName() + " is not valid to be built: ", ".");
 			errors.forEach(joiner::add);
-
+			
 			throw new IllegalStateException(joiner.toString());
 		}
-
+		
 		return Optional.of(instance);
 	}
-
+	
 	protected T getInstance() {
 		return instance;
 	}

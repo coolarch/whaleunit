@@ -43,7 +43,7 @@ public final class Iterables {
 	 */
 	public static <T> Collection<T> toCollection(final Iterable<T> iterable) {
 		requireNonNull(iterable, "iterable shall not be null");
-
+		
 		final List<T> result = new LinkedList<>();
 		iterable.forEach(result::add);
 		

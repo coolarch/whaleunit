@@ -37,7 +37,7 @@ class DefaultLogger implements Logger {
 		requireNonNull(source, "source shall not be null");
 		logger = LoggerFactory.getLogger(source.getName());
 	}
-
+	
 	@Override
 	public boolean isDebugEnabled() {
 		return logger.isDebugEnabled();

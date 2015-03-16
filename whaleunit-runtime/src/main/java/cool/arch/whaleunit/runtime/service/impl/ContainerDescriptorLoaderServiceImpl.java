@@ -62,7 +62,7 @@ public class ContainerDescriptorLoaderServiceImpl implements ContainerDescriptor
 	public ContainerDescriptorLoaderServiceImpl(final LoggerAdapterFactory factory) {
 		logger = factory.create(getClass());
 	}
-
+	
 	@Override
 	public Collection<ContainerDescriptor> extractDescriptors(final Class<?> testClass) throws ContainerDescriptorLoadException {
 		return stream(testClass.getAnnotations())
@@ -87,7 +87,7 @@ public class ContainerDescriptorLoaderServiceImpl implements ContainerDescriptor
 	@Override
 	public Collection<ContainerDescriptor> load(final Annotation annotation) throws ContainerDescriptorLoadException {
 		requireNonNull(annotation, "annotation shall not be null");
-
+		
 		final ContainerDescriptorLoader<Annotation> loader = (ContainerDescriptorLoader<Annotation>) loaders.get(annotation.annotationType());
 		final Collection<ContainerDescriptor> descriptors = loader.load(annotation);
 		

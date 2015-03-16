@@ -28,5 +28,5 @@ package cool.arch.whaleunit.support.functional;
 public interface Tuple1<V0> {
 	
 	V0 item0();
-
+	
 }

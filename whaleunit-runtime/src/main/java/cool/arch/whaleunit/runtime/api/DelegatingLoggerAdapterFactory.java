@@ -30,5 +30,5 @@ import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 public interface DelegatingLoggerAdapterFactory extends LoggerAdapterFactory {
 	
 	void setLoggerAdapterFactory(LoggerAdapterFactory loggerAdapterFactory);
-
+	
 }

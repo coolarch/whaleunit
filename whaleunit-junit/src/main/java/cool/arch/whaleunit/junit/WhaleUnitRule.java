@@ -34,11 +34,11 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	
 	public WhaleUnitRule() {
 	}
-
+	
 	WhaleUnitRule(final WhaleUnitRuntime runtime) {
 		this.runtime = requireNonNull(runtime, "runtime shall not be null");
 	}
-
+	
 	@Override
 	protected void beforeClass(final Class<?> testClass) {
 		requireNonNull(testClass, "testClass shall not be null");
@@ -46,7 +46,7 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 		if (runtime == null) {
 			runtime = WhaleUnitRuntime.create(testClass);
 		}
-
+		
 		runtime.onInit(testClass);
 	}
 	

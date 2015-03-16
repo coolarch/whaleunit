@@ -47,7 +47,7 @@ public class SimpleExecutorServiceImpl implements SimpleExecutorService {
 	public SimpleExecutorServiceImpl() {
 		executorService = Executors.newCachedThreadPool();
 	}
-
+	
 	@Override
 	public boolean awaitTermination(final long timeout, final TimeUnit unit) throws InterruptedException {
 		return executorService.awaitTermination(timeout, unit);

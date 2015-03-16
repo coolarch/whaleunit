@@ -76,6 +76,7 @@
 
 		<plugin.lint.version>0.0.8</plugin.lint.version>
 		<plugin.license.version>1.8</plugin.license.version>
+		<plugin.formatter.version>1.4.0</plugin.formatter.version>
 
 		<skipITs>true</skipITs>
 	</properties>
@@ -89,6 +90,7 @@
 		<module>whaleunit-junit</module>
 		<module>whaleunit-testng</module>
 		<module>whaleunit-license</module>
+		<module>whaleunit-codequality</module>
 		<module>whaleunit-descriptor-loader-annotation</module>
 		<module>whaleunit-descriptor-loader-fig</module>
 		<module>whaleunit-descriptor-loader-programmatic</module>
@@ -124,6 +126,11 @@
 				<configuration>
 					<skip>${skipITs}</skip>
 				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.marvinformatics.formatter</groupId>
+				<artifactId>formatter-maven-plugin</artifactId>
 			</plugin>
 
 		</plugins>
@@ -206,6 +213,40 @@
 							<phase>validate</phase>
 						</execution>
 					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>com.marvinformatics.formatter</groupId>
+					<artifactId>formatter-maven-plugin</artifactId>
+					<version>${plugin.formatter.version}</version>
+					<executions>
+						<execution>
+							<id>formatter-maven-plugin-validate</id>
+							<goals>
+								<goal>validate</goal>
+							</goals>
+							<phase>validate</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<aggregator>true</aggregator>
+						<basedir>${baseDir}</basedir>
+						<sourceDirectory>./</sourceDirectory>
+						<excludes>
+							<exclude>**/target/**</exclude>
+						</excludes>
+						<aggregator>true</aggregator>
+						<lineEnding>LF</lineEnding>
+						<configFile>whaleunit-codequality/src/main/resources/cool/arch/whaleunit/codequality/formatter/java.xml</configFile>
+						<configJsFile>whaleunit-codequality/src/main/resources/cool/arch/whaleunit/codequality/formatter/javascript.xml</configJsFile>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>cool.arch.whaleunit</groupId>
+							<artifactId>whaleunit-codequality</artifactId>
+							<version>${project.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 
 				<plugin>
@@ -316,6 +357,12 @@
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-license</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cool.arch.whaleunit</groupId>
+				<artifactId>whaleunit-codequality</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 

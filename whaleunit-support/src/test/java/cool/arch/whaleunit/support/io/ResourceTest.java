@@ -44,8 +44,8 @@ public class ResourceTest extends ResourceSpec {
 	@Test
 	public final void testAsStringForClathpathValidFile() throws Exception {
 		given().aResourceFor("classpath:/some/resource/path/test.txt")
-		.when().resourceIsReadAsAString()
-		.then().resultIs("This is test text.\nThis is also test text.");
+			.when().resourceIsReadAsAString()
+			.then().resultIs("This is test text.\nThis is also test text.");
 	}
 	
 	/**
@@ -55,8 +55,8 @@ public class ResourceTest extends ResourceSpec {
 	@Test(expected = UnknownResourceException.class)
 	public final void testAsStringForClathpathMissingFile() throws Exception {
 		given().aResourceFor("classpath:/some/resource/path/test_missing.txt")
-		.when().resourceIsReadAsAString()
-		.then().throwAnyCaughtException();
+			.when().resourceIsReadAsAString()
+			.then().throwAnyCaughtException();
 	}
 	
 	/**
@@ -66,8 +66,8 @@ public class ResourceTest extends ResourceSpec {
 	@Test
 	public final void testAsStringForValidFile() throws Exception {
 		given().aResourceFor("file:pom.xml")
-		.when().resourceIsReadAsAString()
-		.then().resultContains("<project", "<dependencies>", "<artifactId>whaleunit-support</artifactId>");
+			.when().resourceIsReadAsAString()
+			.then().resultContains("<project", "<dependencies>", "<artifactId>whaleunit-support</artifactId>");
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class ResourceTest extends ResourceSpec {
 	@Test(expected = UnknownResourceException.class)
 	public final void testAsStringForMissingFile() throws Exception {
 		given().aResourceFor("file:some_random_file_that_should_not_exist.txt")
-		.when().resourceIsReadAsAString()
-		.then().throwAnyCaughtException();
+			.when().resourceIsReadAsAString()
+			.then().throwAnyCaughtException();
 	}
 }

@@ -39,5 +39,5 @@ public interface ContainerDescriptorLoaderService {
 	Collection<ContainerDescriptor> extractDescriptors(Class<?> testClass) throws ContainerDescriptorLoadException;
 	
 	<A extends Annotation> Collection<ContainerDescriptor> load(A annotation) throws ContainerDescriptorLoadException;
-
+	
 }

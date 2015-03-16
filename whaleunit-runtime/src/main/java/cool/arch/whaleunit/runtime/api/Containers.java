@@ -35,7 +35,7 @@ public interface Containers {
 	void add(Container container);
 	
 	void createAll();
-
+	
 	void destroyAll();
 	
 	boolean exists(String name);
@@ -49,9 +49,9 @@ public interface Containers {
 	void start(Collection<String> names);
 	
 	void start(String... names);
-
+	
 	void startAll();
-
+	
 	void stop(Collection<String> names);
 	
 	void stop(String... names);

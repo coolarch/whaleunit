@@ -31,5 +31,5 @@ import org.jvnet.hk2.annotations.Contract;
 public interface MutableTestClassHolder extends TestClassHolder {
 	
 	void setTestClass(Class<?> testClass);
-
+	
 }

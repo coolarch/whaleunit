@@ -53,7 +53,7 @@ public class ContainerFactoryImpl implements ContainerFactory {
 	private final SimpleExecutorService simpleExecutorService;
 	
 	private final UniqueIdService uniqueIdService;
-
+	
 	@Inject
 	ContainerFactoryImpl(final LoggerAdapterFactory factory, final UniqueIdService uniqueIdService, final SimpleExecutorService simpleExecutorService)
 		throws DockerCertificateException {
@@ -63,7 +63,7 @@ public class ContainerFactoryImpl implements ContainerFactory {
 		logger = factory.create(getClass());
 		docker = DefaultDockerClient.fromEnv().build();
 	}
-
+	
 	@Override
 	public Container apply(final ContainerDescriptor descriptor) {
 		return new ContainerImpl(factory, descriptor, uniqueIdService, docker, simpleExecutorService);

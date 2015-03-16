@@ -46,7 +46,7 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 	public interface Givens extends AbstractGivens<Whens, Thens> {
 		
 		Givens aBuilder();
-
+		
 	}
 	
 	public interface Thens extends AbstractThens<Thens> {
@@ -54,19 +54,19 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		Thens theCommandIs(String command);
 		
 		Thens theEntryPointIs(String entryPoint);
-
+		
 	}
 	
 	public interface Whens extends AbstractWhens<Thens> {
 		
 		Whens aCommandIsDefined(String command);
-
+		
 		Whens anEntryPointIsDefined(String entryPoint);
 		
 		Whens anIdIsDefined(String id);
-
+		
 		Whens theContainerIsBuilt();
-
+		
 	}
 	
 	class Fluent extends AbstractFluent<Givens, Whens, Thens> implements Givens, Whens, Thens {
@@ -74,11 +74,11 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		private ContainerDescriptor.Builder builder;
 		
 		private ContainerDescriptor container;
-
+		
 		@Override
 		public Givens aBuilder() {
 			builder = ContainerDescriptor.builder();
-
+			
 			return this;
 		}
 		

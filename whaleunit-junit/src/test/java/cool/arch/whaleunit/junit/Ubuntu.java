@@ -29,11 +29,11 @@ import cool.arch.whaleunit.loader.annotation.Container;
 import cool.arch.whaleunit.loader.annotation.Containers;
 
 @Containers({
-	@Container(
-		id = "ubuntu",
-		image = "ubuntu"
-	)
+		@Container(
+			id = "ubuntu",
+			image = "ubuntu"
+		)
 })
 public class Ubuntu {
-
+	
 }

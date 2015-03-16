@@ -42,10 +42,10 @@ import cool.arch.whaleunit.api.model.ContainerDescriptor;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @ContainerDescriptorLoaderSource
 public @interface ProgrammaticContainerDescriptors {
 	
 	Class<? extends Supplier<Collection<ContainerDescriptor>>>[] sources();
-
+	
 }

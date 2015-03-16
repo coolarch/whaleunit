@@ -33,7 +33,7 @@ public final class Exceptions {
 		
 		final Function<T, R> fn = (t) -> {
 			R result = null;
-
+			
 			try {
 				result = function.apply(t);
 			} catch (final Throwable e) {
