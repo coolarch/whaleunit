@@ -1,6 +1,5 @@
 package cool.arch.whaleunit.annotation;
 
-
 /*
  * #%L
  * WhaleUnit - Annotation
@@ -34,5 +33,5 @@ public interface LoggerAdapterFactory {
 	 * @return LoggerAdapter instance
 	 */
 	Logger create(Class<?> source);
-
+	
 }

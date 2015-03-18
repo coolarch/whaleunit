@@ -237,6 +237,7 @@
 						</excludes>
 						<aggregator>true</aggregator>
 						<lineEnding>LF</lineEnding>
+						<!-- TODO fix this to use a classpath resource -->
 						<configFile>whaleunit-codequality/src/main/resources/cool/arch/whaleunit/codequality/formatter/java.xml</configFile>
 						<configJsFile>whaleunit-codequality/src/main/resources/cool/arch/whaleunit/codequality/formatter/javascript.xml</configJsFile>
 					</configuration>
