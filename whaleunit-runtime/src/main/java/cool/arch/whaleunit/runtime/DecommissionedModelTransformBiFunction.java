@@ -1,7 +1,5 @@
 package cool.arch.whaleunit.runtime;
 
-import cool.arch.whaleunit.runtime.api.ContextTracker;
-
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
@@ -14,10 +12,26 @@ import cool.arch.whaleunit.runtime.api.ContextTracker;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-public interface WhaleUnitRuntime extends ContextTracker {
+import java.util.function.BiFunction;
 
-	static WhaleUnitRuntime create() {
-		return new WhaleUnitRuntimeImpl();
+import cool.arch.stateroom.State;
+import cool.arch.whaleunit.runtime.api.Containers;
+import cool.arch.whaleunit.runtime.model.MachineModel;
+
+public final class DecommissionedModelTransformBiFunction implements
+	BiFunction<State<MachineModel>, MachineModel, MachineModel> {
+
+	private final Containers containers;
+
+	public DecommissionedModelTransformBiFunction(final Containers containers) {
+		this.containers = containers;
 	}
 
+	@Override
+	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
+		containers.stopAll();
+		containers.destroyAll();
+
+		return model;
+	}
 }

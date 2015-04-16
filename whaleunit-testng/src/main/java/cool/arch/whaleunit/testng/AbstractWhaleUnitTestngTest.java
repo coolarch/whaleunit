@@ -29,7 +29,7 @@ public abstract class AbstractWhaleUnitTestngTest {
 
 	@BeforeClass
 	public final void beforeClass() throws Exception {
-		runtime = WhaleUnitRuntime.create(getClass());
+		runtime = WhaleUnitRuntime.create();
 		runtime.onInit(getClass());
 	}
 

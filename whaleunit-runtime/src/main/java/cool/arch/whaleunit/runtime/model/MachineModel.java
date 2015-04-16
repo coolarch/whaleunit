@@ -1,6 +1,4 @@
-package cool.arch.whaleunit.runtime;
-
-import cool.arch.whaleunit.runtime.api.ContextTracker;
+package cool.arch.whaleunit.runtime.model;
 
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
@@ -14,10 +12,41 @@ import cool.arch.whaleunit.runtime.api.ContextTracker;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-public interface WhaleUnitRuntime extends ContextTracker {
+public final class MachineModel {
 
-	static WhaleUnitRuntime create() {
-		return new WhaleUnitRuntimeImpl();
+	private String currentMethod;
+
+	private Alphabet input;
+
+	private Class<?> testClass;
+
+	public String getCurrentMethod() {
+		return currentMethod;
 	}
 
+	public MachineModel setCurrentMethod(String currentMethod) {
+		this.currentMethod = currentMethod;
+
+		return this;
+	}
+
+	public Alphabet getInput() {
+		return input;
+	}
+
+	public MachineModel setInput(Alphabet input) {
+		this.input = input;
+
+		return this;
+	}
+
+	public Class<?> getTestClass() {
+		return testClass;
+	}
+
+	public MachineModel setTestClass(Class<?> testClass) {
+		this.testClass = testClass;
+
+		return this;
+	}
 }

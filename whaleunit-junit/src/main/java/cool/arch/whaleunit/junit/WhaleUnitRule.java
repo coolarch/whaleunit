@@ -31,7 +31,7 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 		requireNonNull(testClass, "testClass shall not be null");
 
 		if (runtime == null) {
-			runtime = WhaleUnitRuntime.create(testClass);
+			runtime = WhaleUnitRuntime.create();
 		}
 
 		runtime.onInit(testClass);

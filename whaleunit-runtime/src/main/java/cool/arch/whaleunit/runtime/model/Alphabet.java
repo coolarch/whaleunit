@@ -1,7 +1,7 @@
-package cool.arch.whaleunit.support.patterns.state;
+package cool.arch.whaleunit.runtime.model;
 
 /*
- * #%L WhaleUnit - Support %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
+ * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information regarding copyright ownership. The ASF
  * licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not
@@ -12,12 +12,18 @@ package cool.arch.whaleunit.support.patterns.state;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import cool.arch.whaleunit.support.functional.Tuple2;
+public enum Alphabet {
 
-public interface State<S extends State<S, A, C>, A extends Enum<A>, C> {
+		CLEAN_UP,
 
-	Tuple2<S, C> evaluate(C context, A input);
+		END,
 
-	boolean isAcceptState();
+		FAILURE,
+
+		INIT,
+
+		START,
+
+		SUCCESS;
 
 }

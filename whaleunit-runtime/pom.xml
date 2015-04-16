@@ -50,6 +50,10 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>cool.arch.stateroom</groupId>
+			<artifactId>stateroom</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

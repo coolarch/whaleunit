@@ -12,81 +12,110 @@ package cool.arch.whaleunit.runtime;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
+import static cool.arch.whaleunit.runtime.model.Alphabet.CLEAN_UP;
+import static cool.arch.whaleunit.runtime.model.Alphabet.END;
+import static cool.arch.whaleunit.runtime.model.Alphabet.FAILURE;
+import static cool.arch.whaleunit.runtime.model.Alphabet.INIT;
+import static cool.arch.whaleunit.runtime.model.Alphabet.START;
+import static cool.arch.whaleunit.runtime.model.Alphabet.SUCCESS;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
-import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.stateroom.Context;
+import cool.arch.stateroom.Machine;
+import cool.arch.stateroom.State;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
-import cool.arch.whaleunit.annotation.WhaleUnit;
-import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
-import cool.arch.whaleunit.api.exception.InitializationException;
 import cool.arch.whaleunit.api.exception.TestManagementException;
-import cool.arch.whaleunit.api.exception.ValidationException;
-import cool.arch.whaleunit.runtime.api.ContainerFactory;
 import cool.arch.whaleunit.runtime.api.Containers;
-import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
-import cool.arch.whaleunit.runtime.api.MutableTestClassHolder;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
-import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
-import cool.arch.whaleunit.runtime.service.api.MutableConfigService;
+import cool.arch.whaleunit.runtime.model.Alphabet;
+import cool.arch.whaleunit.runtime.model.MachineModel;
 
 public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
-
-	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL =
-		"Annotation %s is required on unit test %s that is using WhaleUnit.";
-
-	private static final String LOG_INIT_ERROR = "Error initializing LoggerAdapter";
-
-	@Inject
-	private Provider<MutableConfigService> configService;
-
-	@Inject
-	private Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
-
-	@Inject
-	private ContainerFactory containerFactory;
 
 	@Inject
 	private Containers containers;
 
-	@Inject
-	private DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
-
 	private final Set<String> globallyDirtiedContainerNames = new HashSet<>();
-
-	private final ServiceLocator locator;
 
 	private Logger log;
 
 	@Inject
-	private MutableTestClassHolder testClassHolder;
+	private InitializedModelTransformBiFunction initializedModelTransformBiFunction;
+
+	private static final State<MachineModel> CREATED = State.of("Created");
+
+	private static final State<MachineModel> INITIALIZED = State.of("Initialized");
+
+	private static final State<MachineModel> STARTED = State.of("Started");
+
+	private static final State<MachineModel> ENDED = State.of("Ended");
+
+	private static final State<MachineModel> FAILED = State.of("Failed");
+
+	private static final State<MachineModel> SUCCEEDED = State.of("Succeeded");
+
+	private static final State<MachineModel> DECOMISSIONED = State.of("Decomissioned", true);
+
+	private final Queue<Alphabet> input = new LinkedList<>();
+
+	private final Machine<MachineModel> machine;
+
+	private Context<MachineModel> context;
+
+	private static Predicate<Context<MachineModel>> is(final Alphabet value) {
+		return c -> value.equals(c.getModel()
+			.getInput());
+	}
 
 	/**
 	 * Constructs a new WhaleUnitRule.
 	 */
-	public WhaleUnitRuntimeImpl(final Class<?> testClass) {
-		requireNonNull(testClass, "testClass shall not be null");
-		locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
-		locator.inject(this);
-		testClassHolder.setTestClass(testClass);
+	public WhaleUnitRuntimeImpl() {
+		this(ServiceLocatorUtilities.createAndPopulateServiceLocator());
 	}
 
 	WhaleUnitRuntimeImpl(final ServiceLocator locator) {
-		this.locator = requireNonNull(locator, "locator shall not be null");
+		requireNonNull(locator, "locator shall not be null");
+		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
+		locator.inject(this);
+
+		machine = Machine.builder(MachineModel.class)
+			.withStartState(CREATED)
+			.withPreEvaluationTransform((state, model) -> model.setInput(input.poll()))
+			.haltWhen((state, model) -> model == null || CLEAN_UP.equals(model))
+			.withModelSupplier(() -> new MachineModel().setInput(input.poll()))
+			.withState(CREATED)
+			.to(INITIALIZED, is(INIT), initializedModelTransformBiFunction)
+			.withState(INITIALIZED)
+			.to(STARTED, is(START), (start, model) -> {
+				containers.startAll();
+
+				return model;
+			})
+			.withState(STARTED)
+			.to(SUCCEEDED, is(SUCCESS))
+			.to(FAILED, is(FAILURE), new FailedModelTransformBiFunction(containers))
+			.withState(SUCCEEDED)
+			.to(ENDED, is(END))
+			.withState(FAILED)
+			.to(ENDED, is(END), new EndModelTransformBiFunction(containers, globallyDirtiedContainerNames))
+			.withState(ENDED)
+			.to(DECOMISSIONED, is(CLEAN_UP), new DecommissionedModelTransformBiFunction(containers))
+			.build();
+
+		context = machine.create();
 	}
 
 	public Logger getLog() {
@@ -95,155 +124,52 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 
 	@Override
 	public void onCleanup() {
-		containers.stopAll();
-		containers.destroyAll();
+		supplyAndEvaluate(CLEAN_UP);
+		context = machine.evaluate(context);
 	}
 
-	@SuppressWarnings({
-			"unchecked",
-			"rawtypes"
-	})
+	private void supplyAndEvaluate(final Alphabet letter) {
+		input.add(letter);
+		context = machine.evaluate(context);
+	}
+
 	@Override
 	public void onInit(final Class<?> testClass) {
-		Optional.of((Class) testClass)
-			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
-			.map(annotation -> ((DirtiesContainers) annotation).value())
-			.map(Arrays::asList)
-			.ifPresent(globallyDirtiedContainerNames::addAll);
-
-		preInit();
-
-		try {
-			init();
-		} catch (final ContainerDescriptorLoadException e) {
-			throw new TestManagementException(e);
-		}
-
-		validate();
-
-		containers.createAll();
+		final MachineModel model = context.getModel();
+		model.setTestClass(testClass);
+		supplyAndEvaluate(START);
 	}
 
 	@Override
 	public void onTestEnd(final String methodName) {
-		final Set<String> containersToRestart = new HashSet<>();
-
-		containersToRestart.addAll(globallyDirtiedContainerNames);
-
-		Optional.ofNullable(testClassHolder.getTestClass())
-			.map(
-				wrap(testClass -> testClass.getMethod(methodName), e -> new TestManagementException(
-					"Error looking up method " + methodName)))
-			.map(method -> method.getAnnotation(DirtiesContainers.class))
-			.map(annotation -> annotation.value())
-			.map(Arrays::asList)
-			.ifPresent(containersToRestart::addAll);
-
-		containers.restart(containersToRestart);
+		checkIfCurrentMethod(methodName);
+		supplyAndEvaluate(END);
 	}
 
 	@Override
 	public void onTestFailed(final String methodName) {
-		containers.restartAll();
+		checkIfCurrentMethod(methodName);
+		supplyAndEvaluate(FAILURE);
 	}
 
 	@Override
 	public void onTestStart(final String methodName) {
-		containers.startAll();
+		context.getModel()
+			.setCurrentMethod(methodName);
+		supplyAndEvaluate(START);
 	}
 
 	@Override
 	public void onTestSucceeded(final String methodName) {
-		// Intentionally do nothing
+		checkIfCurrentMethod(methodName);
+		supplyAndEvaluate(SUCCESS);
 	}
 
-	private void init() throws ContainerDescriptorLoadException {
-		containerDescriptorLoaderService.get()
-			.extractDescriptors(testClassHolder.getTestClass())
-			.stream()
-			.peek(c -> getLog().debug("Registering container " + c.getId()
-				.get()))
-			.map(containerFactory::apply)
-			.forEach(containers::add);
+	private void checkIfCurrentMethod(final String methodName) {
+		final MachineModel model = context.getModel();
 
-		Optional.ofNullable(testClassHolder.getTestClass())
-			.map(tc -> tc.getAnnotation(WhaleUnit.class))
-			.map(WhaleUnit::config)
-			.ifPresent(config -> configService.get()
-				.addConfigFile(config));
-	}
-
-	private void initLogAdapter() {
-		final String whaleUnitName = WhaleUnit.class.getName();
-		final String testClassName = Optional.ofNullable(testClassHolder.getTestClass())
-			.map(tc -> tc.getName())
-			.get();
-		final String message = String.format(MISSING_WHALEUNIT_ANNOTATION_TMPL, whaleUnitName, testClassName);
-
-		final Optional<LoggerAdapterFactory> laf = Optional.ofNullable(testClassHolder.getTestClass())
-			.map(testClass -> testClass.getAnnotation(WhaleUnit.class))
-			.map(annotation -> annotation.loggerAdapterFactory())
-			.map(wrap(clazz -> clazz.newInstance(), e -> new InitializationException(LOG_INIT_ERROR, e)));
-
-		laf.ifPresent(delegatingLoggerAdapterFactory::setLoggerAdapterFactory);
-		laf.orElseThrow(() -> new ValidationException(message));
-		laf.map(factory -> delegatingLoggerAdapterFactory.create(getClass()))
-			.ifPresent(log -> this.log = log);
-	}
-
-	private void preInit() {
-		initLogAdapter();
-	}
-
-	private void validate() {
-		final Class<?> testClass = testClassHolder.getTestClass();
-		final WhaleUnit annotation = Optional.ofNullable(testClassHolder.getTestClass())
-			.map(tc -> tc.getAnnotation(WhaleUnit.class))
-			.orElse(null);
-		final Set<String> names = new HashSet<>();
-
-		Optional.ofNullable(testClassHolder.getTestClass())
-			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
-			.map(DirtiesContainers::value)
-			.map(Arrays::stream)
-			.orElse(Arrays.stream(new String[] {}))
-			.forEach(names::add);
-
-		if (testClass != null) {
-			Arrays.stream(testClass.getMethods())
-				.filter(m -> m.isAnnotationPresent(DirtiesContainers.class))
-				.map(m -> m.getAnnotation(DirtiesContainers.class))
-				.map(DirtiesContainers::value)
-				.flatMap(c -> Arrays.stream(c))
-				.forEach(names::add);
+		if (!Objects.equals(model.getCurrentMethod(), methodName)) {
+			throw new TestManagementException("Unexpected method ended: " + methodName);
 		}
-
-		final String missingName = names.stream()
-			.filter(name -> !containers.exists(name))
-			.collect(Collectors.joining(", "));
-
-		if (!"".equals(missingName)) {
-			throw new TestManagementException("Unknown containers in DirtiesContainers annotations: " + missingName);
-		}
-	}
-
-	public static enum Alphabet {
-
-			CLEAN_UP,
-
-			END,
-
-			FAILED,
-
-			INIT,
-
-			START,
-
-			SUCCEEDED;
-
-	}
-
-	public static enum States {
-
 	}
 }

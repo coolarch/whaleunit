@@ -49,6 +49,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
+		
+		<lib.stateroom.version>1.0.0</lib.stateroom.version>
 		<lib.junit.version>4.12</lib.junit.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
 		<lib.mockito.version>1.10.19</lib.mockito.version>
@@ -370,6 +372,11 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${lib.logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cool.arch.stateroom</groupId>
+				<artifactId>stateroom</artifactId>
+				<version>${lib.stateroom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.hk2</groupId>
