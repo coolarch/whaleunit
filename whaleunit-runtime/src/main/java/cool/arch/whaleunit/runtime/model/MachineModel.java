@@ -1,5 +1,7 @@
 package cool.arch.whaleunit.runtime.model;
 
+import java.util.Set;
+
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
@@ -19,6 +21,8 @@ public final class MachineModel {
 	private Alphabet input;
 
 	private Class<?> testClass;
+	
+	private Set<String> globallyDirtiedContainerNames;
 
 	public String getCurrentMethod() {
 		return currentMethod;
@@ -48,5 +52,13 @@ public final class MachineModel {
 		this.testClass = testClass;
 
 		return this;
+	}
+
+	public Set<String> getGloballyDirtiedContainerNames() {
+		return globallyDirtiedContainerNames;
+	}
+
+	public void setGloballyDirtiedContainerNames(Set<String> globallyDirtiedContainerNames) {
+		this.globallyDirtiedContainerNames = globallyDirtiedContainerNames;
 	}
 }

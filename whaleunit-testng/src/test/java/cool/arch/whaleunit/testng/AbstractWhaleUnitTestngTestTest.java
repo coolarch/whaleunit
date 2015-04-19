@@ -17,10 +17,7 @@ import org.testng.annotations.Test;
 
 import cool.arch.whaleunit.annotation.WhaleUnit;
 
-@WhaleUnit(
-	containersFromClasses = {
-		Ubuntu.class
-	})
+@WhaleUnit
 public class AbstractWhaleUnitTestngTestTest extends AbstractWhaleUnitTestngTest {
 
 	@Test
