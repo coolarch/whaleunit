@@ -15,22 +15,13 @@ package cool.arch.whaleunit.runtime.transform;
 import java.util.function.BiFunction;
 
 import cool.arch.stateroom.State;
-import cool.arch.whaleunit.runtime.api.Containers;
+import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 
-public final class FailedModelTransformBiFunction implements
-	BiFunction<State<MachineModel>, MachineModel, MachineModel> {
-
-	private final Containers containers;
-
-	public FailedModelTransformBiFunction(final Containers containers) {
-		this.containers = containers;
-	}
+public final class ContinuedErrorTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
-		containers.restartAll();
-
-		return model;
+		throw new TestManagementException("Test not executable due to Docker error");
 	}
 }

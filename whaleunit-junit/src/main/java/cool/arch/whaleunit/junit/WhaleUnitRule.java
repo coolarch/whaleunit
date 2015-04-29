@@ -61,9 +61,4 @@ public final class WhaleUnitRule extends AbstractLifecyleHookRule {
 	protected void starting(final Class<?> testClass, final String methodName) {
 		runtime.onTestStart(methodName);
 	}
-
-	@Override
-	protected void finished(final Class<?> testClass, final String methodName) {
-		runtime.onTestEnd(methodName);
-	}
 }

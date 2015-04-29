@@ -48,9 +48,4 @@ public abstract class AbstractLifecyleHookRule implements TestRule {
 	 * Invoked when a test is about to start
 	 */
 	protected abstract void starting(Class<?> testClass, String methodName);
-
-	/**
-	 * Invoked when a test method finishes (whether passing or failing)
-	 */
-	protected abstract void finished(Class<?> testClass, String methodName);
 }

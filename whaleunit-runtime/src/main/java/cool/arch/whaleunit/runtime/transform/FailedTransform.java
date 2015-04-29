@@ -1,4 +1,4 @@
-package cool.arch.whaleunit.runtime;
+package cool.arch.whaleunit.runtime.transform;
 
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
@@ -12,25 +12,30 @@ package cool.arch.whaleunit.runtime;
  * specific language governing permissions and limitations under the License. #L%
  */
 
+import java.util.function.BiFunction;
+
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
 import cool.arch.stateroom.State;
+import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 
-public class States {
+@Service
+public final class FailedTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
-	public static final State<MachineModel> CREATED = State.of("Created");
+	private final Containers containers;
 
-	public static final State<MachineModel> INITIALIZED = State.of("Initialized");
+	@Inject
+	public FailedTransform(final Containers containers) {
+		this.containers = containers;
+	}
 
-	public static final State<MachineModel> STARTED = State.of("Started");
+	@Override
+	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
+		containers.restartAll();
 
-	public static final State<MachineModel> ENDED = State.of("Ended");
-
-	public static final State<MachineModel> FAILED = State.of("Failed");
-
-	public static final State<MachineModel> SUCCEEDED = State.of("Succeeded");
-
-	public static final State<MachineModel> DECOMISSIONED = State.of("Decomissioned", true);
-
-	public static final State<MachineModel> ERRORED = State.of("Errored");
-
+		return model;
+	}
 }

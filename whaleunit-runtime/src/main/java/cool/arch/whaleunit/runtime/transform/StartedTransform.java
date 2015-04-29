@@ -12,47 +12,38 @@ package cool.arch.whaleunit.runtime.transform;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
 import cool.arch.stateroom.State;
-import cool.arch.whaleunit.annotation.DirtiesContainers;
-import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.api.Containers;
+import cool.arch.whaleunit.runtime.model.Alphabet;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 
-public final class EndModelTransformBiFunction implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
+@Service
+public final class StartedTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	private final Containers containers;
 
-	private final Set<String> globallyDirtiedContainerNames;
-
-	public EndModelTransformBiFunction(final Containers containers, final Set<String> globallyDirtiedContainerNames) {
+	@Inject
+	public StartedTransform(final Containers containers) {
 		this.containers = containers;
-		this.globallyDirtiedContainerNames = globallyDirtiedContainerNames;
 	}
 
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
-		final Set<String> containersToRestart = new HashSet<>();
-		containersToRestart.addAll(globallyDirtiedContainerNames);
-		final String methodName = model.getCurrentMethod();
-
-		Optional.ofNullable(model.getTestClass())
-			.map(
-				wrap(testClass -> testClass.getMethod(methodName), e -> new TestManagementException(
-					"Error looking up method " + methodName)))
-			.map(method -> method.getAnnotation(DirtiesContainers.class))
-			.map(annotation -> annotation.value())
-			.map(Arrays::asList)
-			.ifPresent(containersToRestart::addAll);
-
-		containers.restart(containersToRestart);
+		System.out.println("Started Transformer");
+		
+		try {
+			containers.startAll();
+		} catch (Exception e) {
+			model.getQueue().add(Alphabet.FAILURE);
+			
+			throw e;
+		}
 
 		return model;
 	}

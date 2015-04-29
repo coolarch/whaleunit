@@ -1,6 +1,18 @@
 package cool.arch.whaleunit.runtime.impl;
 
+import static com.spotify.docker.client.DockerClient.AttachParameter.LOGS;
+import static com.spotify.docker.client.DockerClient.AttachParameter.STDERR;
+import static com.spotify.docker.client.DockerClient.AttachParameter.STDOUT;
+import static com.spotify.docker.client.DockerClient.AttachParameter.STREAM;
 import static java.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.AttachParameter;
@@ -8,6 +20,8 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.HostConfig;
+import com.spotify.docker.client.messages.PortBinding;
 
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
@@ -94,9 +108,8 @@ public class ContainerImpl implements Container {
 		builder.exposedPorts(ports);
 		descriptor.getCommand()
 			.ifPresent(builder::cmd);
-		builder.attachStdout(true);
-		builder.stdinOnce(true);
-		builder.tty(true);
+		builder.attachStdout(false);
+		builder.tty(false);
 
 		final ContainerConfig config = builder.build();
 
@@ -156,38 +169,79 @@ public class ContainerImpl implements Container {
 			return;
 		}
 
+		stop();
+		start();
 	}
 
 	@Override
 	public void start() {
-		if (ContainerState.STARTED.equals(state)) {
+		if (ContainerState.STARTED.equals(state) && isRunning()) {
 			return;
 		}
 
 		state = ContainerState.STARTED;
 
-		logger.info("start: " + name);
+		final String[] ports = {
+				"80",
+				"22"
+		};
+
+		final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+
+		// for(String port : ports) {
+		// List<PortBinding> hostPorts = new ArrayList<>();
+		// hostPorts.add(PortBinding.of("0.0.0.0", port));
+		// portBindings.put(port, hostPorts);
+		// }
+		final HostConfig hostConfig = HostConfig.builder()
+			.portBindings(portBindings)
+			.build();
 
 		runId = creation.id();
 
 		try {
-			docker.startContainer(runId);
+			final PipedInputStream stdout = new PipedInputStream();
+			final PipedInputStream stderr = new PipedInputStream();
+			final PipedOutputStream stdoutPipe = new PipedOutputStream(stdout);
+			final PipedOutputStream stderrPipe = new PipedOutputStream(stderr);
+
+			docker.startContainer(runId, hostConfig);
+
+			docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
+				.attach(stdoutPipe, stderrPipe);
 
 			executorService.submit(() -> {
-				try {
-					docker.attachContainer(runId, AttachParameter.LOGS, AttachParameter.STDOUT, AttachParameter.STDERR,
-						AttachParameter.STREAM)
-						.attach(System.out, System.err);
-				} catch (final Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
+					sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
+				} catch (Exception e) {
+					logger.error("Error reading input", e);
 				}
 			});
+
 		} catch (final DockerException e) {
+			logger.error("Error starting container", e);
+
 			throw new TestManagementException(e);
 		} catch (final InterruptedException e) {
+			logger.error("Error starting container", e);
+
 			throw new TestManagementException(e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
+	
+	public boolean isRunning() {
+		boolean running = false;
+		
+		try {
+			running = docker.inspectContainer(runId).state().running();
+		} catch (DockerException | InterruptedException e) {
+			logger.error("Error checking container state", e);
+		}
+		
+		return running;
 	}
 
 	@Override

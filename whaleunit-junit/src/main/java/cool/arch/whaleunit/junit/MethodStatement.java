@@ -37,13 +37,17 @@ class MethodStatement extends Statement {
 
 	@Override
 	public void evaluate() throws Throwable {
-		final List<Throwable> errors = new ArrayList<Throwable>();
+		final List<Throwable> errors = new ArrayList<>();
 
 		startingQuietly(description, errors);
-
+		
 		try {
-			base.evaluate();
-			succeededQuietly(description, errors);
+			if (errors.isEmpty()) {
+				base.evaluate();
+				succeededQuietly(description, errors);
+			} else {
+				failedQuietly(null, description, errors);
+			}
 		} catch (final org.junit.internal.AssumptionViolatedException e) {
 			errors.add(e);
 			skippedQuietly(e, description, errors);
@@ -91,10 +95,6 @@ class MethodStatement extends Statement {
 	}
 
 	private void finishedQuietly(final Description description, final List<Throwable> errors) {
-		try {
-			rule.finished(description.getTestClass(), description.getMethodName());
-		} catch (final Throwable e) {
-			errors.add(e);
-		}
+		// Intentionally do nothing
 	}
 }

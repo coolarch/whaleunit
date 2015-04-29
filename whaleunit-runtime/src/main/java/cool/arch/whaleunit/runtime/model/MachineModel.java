@@ -1,5 +1,7 @@
 package cool.arch.whaleunit.runtime.model;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 /*
@@ -19,9 +21,15 @@ public final class MachineModel {
 	private String currentMethod;
 
 	private Alphabet input;
+	
+	private final Queue<Alphabet> queue = new LinkedList<>();
+
+	public Queue<Alphabet> getQueue() {
+		return queue;
+	}
 
 	private Class<?> testClass;
-	
+
 	private Set<String> globallyDirtiedContainerNames;
 
 	public String getCurrentMethod() {
@@ -60,5 +68,11 @@ public final class MachineModel {
 
 	public void setGloballyDirtiedContainerNames(Set<String> globallyDirtiedContainerNames) {
 		this.globallyDirtiedContainerNames = globallyDirtiedContainerNames;
+	}
+	
+	public MachineModel updateInput() {
+		input = queue.poll();
+		
+		return this;
 	}
 }

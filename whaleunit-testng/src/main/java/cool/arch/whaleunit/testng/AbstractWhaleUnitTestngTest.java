@@ -48,8 +48,6 @@ public abstract class AbstractWhaleUnitTestngTest {
 		} else {
 			runtime.onTestFailed(methodName);
 		}
-
-		runtime.onTestEnd(methodName);
 	}
 
 	@AfterClass

@@ -43,8 +43,7 @@ import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 import cool.arch.whaleunit.runtime.service.api.MutableConfigService;
 
 @Service
-public final class InitializedModelTransformBiFunction implements
-	BiFunction<State<MachineModel>, MachineModel, MachineModel> {
+public final class InitTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	private static final String MISSING_WHALEUNIT_ANNOTATION_TMPL =
 		"Annotation %s is required on unit test %s that is using WhaleUnit.";
@@ -61,12 +60,12 @@ public final class InitializedModelTransformBiFunction implements
 
 	private final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
 
-	private Set<String> globallyDirtiedContainerNames;
+	private Set<String> globallyDirtiedContainerNames = new HashSet<>();
 
 	private Logger log;
 
 	@Inject
-	public InitializedModelTransformBiFunction(final Containers containers, final ContainerFactory containerFactory,
+	public InitTransform(final Containers containers, final ContainerFactory containerFactory,
 		final Provider<MutableConfigService> configService,
 		final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService,
 		final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory) {
@@ -79,6 +78,8 @@ public final class InitializedModelTransformBiFunction implements
 
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
+		model.setGloballyDirtiedContainerNames(globallyDirtiedContainerNames);
+		
 		Optional.of(model.getTestClass())
 			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
 			.map(annotation -> annotation.value())
@@ -87,6 +88,8 @@ public final class InitializedModelTransformBiFunction implements
 
 		preInit(model);
 
+		log.info("Initializing");
+		
 		try {
 			init(model);
 		} catch (final ContainerDescriptorLoadException e) {
@@ -171,14 +174,6 @@ public final class InitializedModelTransformBiFunction implements
 		laf.orElseThrow(() -> new ValidationException(message));
 		laf.map(factory -> delegatingLoggerAdapterFactory.create(getClass()))
 			.ifPresent(log -> this.log = log);
-	}
-
-	public Set<String> getGloballyDirtiedContainerNames() {
-		return globallyDirtiedContainerNames;
-	}
-
-	public void setGloballyDirtiedContainerNames(Set<String> globallyDirtiedContainerNames) {
-		this.globallyDirtiedContainerNames = globallyDirtiedContainerNames;
 	}
 
 	public Logger getLog() {

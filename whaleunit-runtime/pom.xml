@@ -54,6 +54,11 @@
 			<groupId>cool.arch.stateroom</groupId>
 			<artifactId>stateroom</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

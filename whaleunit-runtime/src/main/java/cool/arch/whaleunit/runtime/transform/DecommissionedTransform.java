@@ -14,16 +14,21 @@ package cool.arch.whaleunit.runtime.transform;
 
 import java.util.function.BiFunction;
 
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
 import cool.arch.stateroom.State;
 import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 
-public final class DecommissionedModelTransformBiFunction implements
-	BiFunction<State<MachineModel>, MachineModel, MachineModel> {
+@Service
+public final class DecommissionedTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	private final Containers containers;
 
-	public DecommissionedModelTransformBiFunction(final Containers containers) {
+	@Inject
+	public DecommissionedTransform(final Containers containers) {
 		this.containers = containers;
 	}
 

@@ -1,9 +1,7 @@
-package cool.arch.whaleunit.runtime.api;
-
-import org.jvnet.hk2.annotations.Contract;
+package cool.arch.whaleunit.runtime.transform;
 
 /*
- * #%L WhaleUnit - JUnit %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
+ * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information regarding copyright ownership. The ASF
  * licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not
@@ -14,16 +12,23 @@ import org.jvnet.hk2.annotations.Contract;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-@Contract
-public interface ContextTracker {
+import java.util.function.BiFunction;
 
-	void onInit(Class<?> testClass);
+import cool.arch.stateroom.State;
+import cool.arch.whaleunit.runtime.model.MachineModel;
 
-	void onTestStart(String methodName);
+public final class ErrorTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
-	void onTestSucceeded(String methodName);
+	private final String error;
+	
+	public ErrorTransform(final String error) {
+		this.error = error;
+	}
 
-	void onTestFailed(String methodName);
+	@Override
+	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
+		System.out.println(error + ", Input: " + model.getInput().toString());
 
-	void onCleanup();
+		return model;
+	}
 }

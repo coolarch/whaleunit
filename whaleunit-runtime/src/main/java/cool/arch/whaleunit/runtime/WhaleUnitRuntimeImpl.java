@@ -13,44 +13,25 @@ package cool.arch.whaleunit.runtime;
  */
 
 import static cool.arch.whaleunit.runtime.model.Alphabet.CLEAN_UP;
-import static cool.arch.whaleunit.runtime.model.Alphabet.END;
 import static cool.arch.whaleunit.runtime.model.Alphabet.FAILURE;
-import static cool.arch.whaleunit.runtime.model.Alphabet.INIT;
 import static cool.arch.whaleunit.runtime.model.Alphabet.START;
 import static cool.arch.whaleunit.runtime.model.Alphabet.SUCCESS;
-
-import static cool.arch.whaleunit.runtime.States.CREATED;
-import static cool.arch.whaleunit.runtime.States.DECOMISSIONED;
-import static cool.arch.whaleunit.runtime.States.ENDED;
-import static cool.arch.whaleunit.runtime.States.FAILED;
-import static cool.arch.whaleunit.runtime.States.INITIALIZED;
-import static cool.arch.whaleunit.runtime.States.STARTED;
-import static cool.arch.whaleunit.runtime.States.SUCCEEDED;
-
+import static cool.arch.whaleunit.runtime.model.Alphabet.INIT;
+import static cool.arch.whaleunit.runtime.model.Alphabet.END;
 import static java.util.Objects.requireNonNull;
 
-import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Queue;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
-import cool.arch.stateroom.Context;
-import cool.arch.stateroom.Machine;
 import cool.arch.whaleunit.annotation.Logger;
+import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.exception.TestManagementException;
-import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
-import cool.arch.whaleunit.runtime.model.Alphabet;
 import cool.arch.whaleunit.runtime.model.MachineModel;
-import cool.arch.whaleunit.runtime.transform.DecommissionedModelTransformBiFunction;
-import cool.arch.whaleunit.runtime.transform.EndModelTransformBiFunction;
-import cool.arch.whaleunit.runtime.transform.FailedModelTransformBiFunction;
-import cool.arch.whaleunit.runtime.transform.InitializedModelTransformBiFunction;
 
 public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 
@@ -58,6 +39,9 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	private MachineWrapper machineWrapper;
 
 	private Logger log;
+	
+	@Inject
+	private LoggerAdapterFactory loggerAdapterFactory;
 
 	/**
 	 * Constructs a new WhaleUnitRule.
@@ -70,6 +54,9 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		requireNonNull(locator, "locator shall not be null");
 		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
 		locator.inject(this);
+		log = loggerAdapterFactory.create(this.getClass());
+		
+		System.out.println("Runtime instantiated");
 	}
 
 	public Logger getLog() {
@@ -84,39 +71,42 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 
 	@Override
 	public void onInit(final Class<?> testClass) {
-		machineWrapper.getContext().getModel().setTestClass(testClass);
-		machineWrapper.submit(START);
-		machineWrapper.evaluate();
-	}
+		machineWrapper.getContext()
+			.getModel()
+			.setTestClass(testClass);
 
-	@Override
-	public void onTestEnd(final String methodName) {
-		checkIfCurrentMethod(methodName);
-		machineWrapper.submit(END);
+		machineWrapper.submit(INIT);
 		machineWrapper.evaluate();
 	}
 
 	@Override
 	public void onTestFailed(final String methodName) {
 		checkIfCurrentMethod(methodName);
-		supplyAndEvaluate(FAILURE);
+		machineWrapper.submit(FAILURE);
+		machineWrapper.evaluate();
+
 	}
 
 	@Override
 	public void onTestStart(final String methodName) {
-		context.getModel()
+		machineWrapper.getContext()
+			.getModel()
 			.setCurrentMethod(methodName);
-		supplyAndEvaluate(START);
+
+		machineWrapper.submit(START);
+		machineWrapper.evaluate();
 	}
 
 	@Override
 	public void onTestSucceeded(final String methodName) {
 		checkIfCurrentMethod(methodName);
-		supplyAndEvaluate(SUCCESS);
+		machineWrapper.submit(SUCCESS);
+		machineWrapper.evaluate();
 	}
 
 	private void checkIfCurrentMethod(final String methodName) {
-		final MachineModel model = context.getModel();
+		final MachineModel model = machineWrapper.getContext()
+			.getModel();
 
 		if (!Objects.equals(model.getCurrentMethod(), methodName)) {
 			throw new TestManagementException("Unexpected method ended: " + methodName);

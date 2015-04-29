@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
-
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,7 +87,7 @@ public class WhaleUnitRuleIT {
 			ContainerDescriptor.builder()
 				.withId("foo")
 				.withImage("ubuntu:14.04")
-				.withCommand("sleep 60")
+				.withCommand("/bin/ls")
 				.build()
 				.ifPresent(descriptors::add);
 
