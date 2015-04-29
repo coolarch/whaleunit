@@ -39,7 +39,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	private MachineWrapper machineWrapper;
 
 	private Logger log;
-	
+
 	@Inject
 	private LoggerAdapterFactory loggerAdapterFactory;
 
@@ -55,7 +55,7 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
 		locator.inject(this);
 		log = loggerAdapterFactory.create(this.getClass());
-		
+
 		System.out.println("Runtime instantiated");
 	}
 

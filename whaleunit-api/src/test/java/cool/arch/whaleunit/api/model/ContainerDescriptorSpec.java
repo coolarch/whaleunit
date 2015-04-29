@@ -14,6 +14,10 @@ package cool.arch.whaleunit.api.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.Arrays;
+import java.util.List;
+
 import cool.arch.whaleunit.api.model.ContainerDescriptorSpec.Givens;
 import cool.arch.whaleunit.api.model.ContainerDescriptorSpec.Thens;
 import cool.arch.whaleunit.api.model.ContainerDescriptorSpec.Whens;
@@ -46,7 +50,7 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 
 	public interface Whens extends AbstractWhens<Thens> {
 
-		Whens aCommandIsDefined(String command);
+		Whens aCommandIsDefined(String... command);
 
 		Whens anEntryPointIsDefined(String entryPoint);
 
@@ -70,8 +74,10 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		}
 
 		@Override
-		public Whens aCommandIsDefined(final String command) {
-			builder = builder.withCommand(command);
+		public Whens aCommandIsDefined(final String... command) {
+			List<String> list = Arrays.asList(command);
+
+			builder = builder.withCommand(list);
 
 			return this;
 		}
@@ -94,7 +100,8 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		public Thens theCommandIs(final String command) {
 			assertNotNull(container);
 			assertEquals(command, container.getCommand()
-				.get());
+				.get()
+				.toString());
 
 			return this;
 		}

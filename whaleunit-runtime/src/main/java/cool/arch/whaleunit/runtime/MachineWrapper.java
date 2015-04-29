@@ -67,39 +67,39 @@ public class MachineWrapper {
 			.withModelSupplier(() -> new MachineModel())
 
 			.withState(CREATED)
-				.to(INITIALIZED, is(INIT), initTransform)
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Created"))
+			.to(INITIALIZED, is(INIT), initTransform)
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Created"))
 
 			.withState(INITIALIZED)
-				.to(STARTED, is(START), startedTransform)
-				.to(ERRORED, is(FAILURE), failedTransform)
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Initialized"))
+			.to(STARTED, is(START), startedTransform)
+			.to(ERRORED, is(FAILURE), failedTransform)
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Initialized"))
 
 			.withState(STARTED)
-				.to(SUCCEEDED, is(SUCCESS), successTransform)
-				.to(FAILED, is(FAILURE), failedTransform)
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Started"))
+			.to(SUCCEEDED, is(SUCCESS), successTransform)
+			.to(FAILED, is(FAILURE), failedTransform)
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Started"))
 
 			.withState(SUCCEEDED)
-				.to(STARTED, is(START))
-				.to(DECOMISSIONED, is(CLEAN_UP))
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Succeeded"))
+			.to(STARTED, is(START))
+			.to(DECOMISSIONED, is(CLEAN_UP))
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Succeeded"))
 
 			.withState(FAILED)
-				.to(STARTED, is(START), startedTransform)
-				.to(ENDED, is(FAILURE))
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Failed"))
+			.to(STARTED, is(START), startedTransform)
+			.to(ENDED, is(FAILURE))
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Failed"))
 
 			.withState(ENDED)
-				.to(STARTED, is(START), startedTransform)
-				.to(DECOMISSIONED, is(CLEAN_UP), decommissionedTransform)
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Ended"))
+			.to(STARTED, is(START), startedTransform)
+			.to(DECOMISSIONED, is(CLEAN_UP), decommissionedTransform)
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Ended"))
 
 			.withState(DECOMISSIONED)
-				.to(ERRORED, (state, model) -> true, new ErrorTransform("Error"))
+			.to(ERRORED, (state, model) -> true, new ErrorTransform("Error"))
 
 			.withState(ERRORED)
-				.to(ERRORED, (state, model) -> true, new ContinuedErrorTransform())
+			.to(ERRORED, (state, model) -> true, new ContinuedErrorTransform())
 
 			.build();
 
@@ -111,20 +111,24 @@ public class MachineWrapper {
 	}
 
 	public void evaluate() {
-		while (!context.getModel().getQueue().isEmpty()) {
+		while (!context.getModel()
+			.getQueue()
+			.isEmpty()) {
 			context = machine.evaluate(context);
 		}
 	}
 
 	public void submit(final Alphabet letter) {
 		System.out.println("Submitting: " + letter.toString());
-		context.getModel().getQueue().add(letter);
+		context.getModel()
+			.getQueue()
+			.add(letter);
 	}
 
 	private BiPredicate<State<MachineModel>, MachineModel> is(final Alphabet value) {
 		return (state, model) -> {
 			System.out.println("Comparing expected " + value + " to " + model.getInput());
-			
+
 			return value.equals(model.getInput());
 		};
 	}

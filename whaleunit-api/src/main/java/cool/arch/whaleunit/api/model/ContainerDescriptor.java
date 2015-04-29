@@ -2,6 +2,7 @@ package cool.arch.whaleunit.api.model;
 
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import cool.arch.whaleunit.support.patterns.AbstractBuilderImpl;
 
 public final class ContainerDescriptor {
 
-	private Optional<String> command = Optional.empty();
+	private Optional<List<String>> command = Optional.empty();
 
 	private Optional<Dnses> dnses = Optional.empty();
 
@@ -63,7 +64,7 @@ public final class ContainerDescriptor {
 	private ContainerDescriptor() {
 	}
 
-	public Optional<String> getCommand() {
+	public Optional<List<String>> getCommand() {
 		return command;
 	}
 
@@ -145,7 +146,7 @@ public final class ContainerDescriptor {
 
 	public interface Builder extends AbstractBuilder<ContainerDescriptor> {
 
-		Builder withCommand(String command);
+		Builder withCommand(List<String> command);
 
 		Builder withDnses(Dnses dnses);
 
@@ -205,7 +206,7 @@ public final class ContainerDescriptor {
 		}
 
 		@Override
-		public Builder withCommand(final String command) {
+		public Builder withCommand(final List<String> command) {
 			getInstance().command = Optional.ofNullable(command);
 
 			return this;

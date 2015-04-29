@@ -21,7 +21,7 @@ public final class MachineModel {
 	private String currentMethod;
 
 	private Alphabet input;
-	
+
 	private final Queue<Alphabet> queue = new LinkedList<>();
 
 	public Queue<Alphabet> getQueue() {
@@ -69,10 +69,10 @@ public final class MachineModel {
 	public void setGloballyDirtiedContainerNames(Set<String> globallyDirtiedContainerNames) {
 		this.globallyDirtiedContainerNames = globallyDirtiedContainerNames;
 	}
-	
+
 	public MachineModel updateInput() {
 		input = queue.poll();
-		
+
 		return this;
 	}
 }

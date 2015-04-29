@@ -40,7 +40,7 @@ class MethodStatement extends Statement {
 		final List<Throwable> errors = new ArrayList<>();
 
 		startingQuietly(description, errors);
-		
+
 		try {
 			if (errors.isEmpty()) {
 				base.evaluate();

@@ -36,12 +36,13 @@ public final class StartedTransform implements BiFunction<State<MachineModel>, M
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
 		System.out.println("Started Transformer");
-		
+
 		try {
 			containers.startAll();
 		} catch (Exception e) {
-			model.getQueue().add(Alphabet.FAILURE);
-			
+			model.getQueue()
+				.add(Alphabet.FAILURE);
+
 			throw e;
 		}
 

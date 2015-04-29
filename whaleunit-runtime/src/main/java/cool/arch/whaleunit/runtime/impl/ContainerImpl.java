@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.AttachParameter;
 import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
@@ -207,16 +206,22 @@ public class ContainerImpl implements Container {
 
 			docker.startContainer(runId, hostConfig);
 
-			docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
-				.attach(stdoutPipe, stderrPipe);
+			Thread.sleep(50);
 
-			executorService.submit(() -> {
-				try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
-					sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
-				} catch (Exception e) {
-					logger.error("Error reading input", e);
-				}
-			});
+			if (isRunning()) {
+				docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
+					.attach(stdoutPipe, stderrPipe);
+
+				executorService.submit(() -> {
+					try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
+						sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
+					} catch (Exception e) {
+						logger.error("Error reading input", e);
+					}
+				});
+			} else {
+				logger.error("Container no longer running");
+			}
 
 		} catch (final DockerException e) {
 			logger.error("Error starting container", e);
@@ -231,16 +236,19 @@ public class ContainerImpl implements Container {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@SuppressWarnings("boxing")
 	public boolean isRunning() {
 		boolean running = false;
-		
+
 		try {
-			running = docker.inspectContainer(runId).state().running();
+			running = docker.inspectContainer(runId)
+				.state()
+				.running();
 		} catch (DockerException | InterruptedException e) {
 			logger.error("Error checking container state", e);
 		}
-		
+
 		return running;
 	}
 
@@ -256,6 +264,7 @@ public class ContainerImpl implements Container {
 
 		try {
 			docker.stopContainer(runId, 30);
+			docker.waitContainer(runId);
 		} catch (final DockerException e) {
 			throw new TestManagementException(e);
 		} catch (final InterruptedException e) {

@@ -20,14 +20,15 @@ import cool.arch.whaleunit.runtime.model.MachineModel;
 public final class ErrorTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	private final String error;
-	
+
 	public ErrorTransform(final String error) {
 		this.error = error;
 	}
 
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
-		System.out.println(error + ", Input: " + model.getInput().toString());
+		System.out.println(error + ", Input: " + model.getInput()
+			.toString());
 
 		return model;
 	}

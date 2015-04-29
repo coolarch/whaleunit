@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -37,7 +39,11 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	public final void testBuilderAllPresent() throws Exception {
 		final ContainerDescriptor container = ContainerDescriptor.builder()
 			.withId("foo")
-			.withCommand("/bin/bash")
+			.withCommand(new ArrayList<String>() {
+				{
+					add("/bin/bash");
+				}
+			})
 			.withDnses(Dnses.builder()
 				.build())
 			.withDomainName("arch.cool")
@@ -52,8 +58,9 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 
 		assertNotNull(container);
 
-		assertEquals("/bin/bash", container.getCommand()
-			.get());
+		assertEquals("[/bin/bash]", container.getCommand()
+			.get()
+			.toString());
 		assertTrue(container.getDnses()
 			.isPresent());
 		assertEquals("arch.cool", container.getDomainName()
@@ -80,7 +87,7 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 			.aCommandIsDefined("/bin/bash")
 			.theContainerIsBuilt()
 			.then()
-			.theCommandIs("/bin/bash")
+			.theCommandIs("[/bin/bash]")
 			.noExceptionsThrown();
 	}
 

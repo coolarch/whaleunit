@@ -79,7 +79,7 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
 		model.setGloballyDirtiedContainerNames(globallyDirtiedContainerNames);
-		
+
 		Optional.of(model.getTestClass())
 			.map(tc -> tc.getAnnotation(DirtiesContainers.class))
 			.map(annotation -> annotation.value())
@@ -89,7 +89,7 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 		preInit(model);
 
 		log.info("Initializing");
-		
+
 		try {
 			init(model);
 		} catch (final ContainerDescriptorLoadException e) {
