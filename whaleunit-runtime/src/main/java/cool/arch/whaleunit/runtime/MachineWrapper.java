@@ -82,12 +82,13 @@ public class MachineWrapper {
 
 			.withState(SUCCEEDED)
 			.to(STARTED, is(START))
-			.to(DECOMISSIONED, is(CLEAN_UP))
+			.to(DECOMISSIONED, is(CLEAN_UP), decommissionedTransform)
 			.to(ERRORED, (state, model) -> true, new ErrorTransform("Succeeded"))
 
 			.withState(FAILED)
 			.to(STARTED, is(START), startedTransform)
 			.to(ENDED, is(FAILURE))
+			.to(DECOMISSIONED, is(CLEAN_UP), decommissionedTransform)
 			.to(ERRORED, (state, model) -> true, new ErrorTransform("Failed"))
 
 			.withState(ENDED)

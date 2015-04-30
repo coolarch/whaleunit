@@ -29,6 +29,8 @@ import org.junit.Test;
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.WhaleUnit;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
+import cool.arch.whaleunit.api.model.Port;
+import cool.arch.whaleunit.api.model.Ports;
 import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 
 /**
@@ -115,8 +117,7 @@ public class WhaleUnitRuleIT {
 
 			ContainerDescriptor.builder()
 				.withId("foo")
-				.withImage("ubuntu:14.04")
-				.withCommand(Lists.newArrayList("/bin/sleep", "10"))
+				.withImage("tutum/apache-php")
 				.build()
 				.ifPresent(descriptors::add);
 

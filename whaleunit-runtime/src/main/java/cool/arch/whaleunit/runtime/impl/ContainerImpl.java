@@ -9,9 +9,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.spotify.docker.client.DockerClient;
@@ -20,7 +17,6 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.PortBinding;
 
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
@@ -104,7 +100,7 @@ public class ContainerImpl implements Container {
 
 		descriptor.getImage()
 			.ifPresent(builder::image);
-		builder.exposedPorts(ports);
+//		builder.exposedPorts(ports);
 		descriptor.getCommand()
 			.ifPresent(builder::cmd);
 		builder.attachStdout(false);
@@ -138,7 +134,7 @@ public class ContainerImpl implements Container {
 		logger.info("destroy: " + name);
 
 		try {
-			docker.removeContainer(runId, true);
+			docker.removeContainer(name, true);
 		} catch (final InterruptedException | DockerException e) {
 			state = ContainerState.FAILED;
 
@@ -180,20 +176,13 @@ public class ContainerImpl implements Container {
 
 		state = ContainerState.STARTED;
 
-		final String[] ports = {
-				"80",
-				"22"
-		};
-
-		final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-
 		// for(String port : ports) {
 		// List<PortBinding> hostPorts = new ArrayList<>();
 		// hostPorts.add(PortBinding.of("0.0.0.0", port));
 		// portBindings.put(port, hostPorts);
 		// }
 		final HostConfig hostConfig = HostConfig.builder()
-			.portBindings(portBindings)
+//			.publishAllPorts(true)
 			.build();
 
 		runId = creation.id();
@@ -209,16 +198,16 @@ public class ContainerImpl implements Container {
 			Thread.sleep(50);
 
 			if (isRunning()) {
-				docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
-					.attach(stdoutPipe, stderrPipe);
-
-				executorService.submit(() -> {
-					try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
-						sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
-					} catch (Exception e) {
-						logger.error("Error reading input", e);
-					}
-				});
+//				docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
+//					.attach(stdoutPipe, stderrPipe);
+//
+//				executorService.submit(() -> {
+//					try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
+//						sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
+//					} catch (Exception e) {
+//						logger.error("Error reading input", e);
+//					}
+//				});
 			} else {
 				logger.error("Container no longer running");
 			}
@@ -263,8 +252,8 @@ public class ContainerImpl implements Container {
 		logger.info("stop: " + name);
 
 		try {
-			docker.stopContainer(runId, 30);
-			docker.waitContainer(runId);
+			docker.stopContainer(name, 30);
+			docker.killContainer(name);
 		} catch (final DockerException e) {
 			throw new TestManagementException(e);
 		} catch (final InterruptedException e) {
