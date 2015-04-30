@@ -182,7 +182,7 @@ public class ContainerImpl implements Container {
 		// portBindings.put(port, hostPorts);
 		// }
 		final HostConfig hostConfig = HostConfig.builder()
-//			.publishAllPorts(true)
+			.publishAllPorts(true)
 			.build();
 
 		runId = creation.id();
