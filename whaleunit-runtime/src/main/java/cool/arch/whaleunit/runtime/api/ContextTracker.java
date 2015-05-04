@@ -19,7 +19,7 @@ public interface ContextTracker {
 
 	void onInit(Class<?> testClass);
 
-	void onTestStart(String methodName);
+	void onTestStart(String methodName, Object instance);
 
 	void onTestSucceeded(String methodName);
 

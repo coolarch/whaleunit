@@ -17,7 +17,6 @@ import static cool.arch.whaleunit.runtime.model.Alphabet.FAILURE;
 import static cool.arch.whaleunit.runtime.model.Alphabet.START;
 import static cool.arch.whaleunit.runtime.model.Alphabet.SUCCESS;
 import static cool.arch.whaleunit.runtime.model.Alphabet.INIT;
-import static cool.arch.whaleunit.runtime.model.Alphabet.END;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
@@ -88,10 +87,14 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	}
 
 	@Override
-	public void onTestStart(final String methodName) {
+	public void onTestStart(final String methodName, final Object instance) {
 		machineWrapper.getContext()
 			.getModel()
 			.setCurrentMethod(methodName);
+
+		machineWrapper.getContext()
+			.getModel()
+			.setInstance(instance);
 
 		machineWrapper.submit(START);
 		machineWrapper.evaluate();

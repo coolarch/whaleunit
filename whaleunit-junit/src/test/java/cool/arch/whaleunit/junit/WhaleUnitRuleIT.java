@@ -15,22 +15,23 @@ package cool.arch.whaleunit.junit;
  * specific language governing permissions and limitations under the License. #L%
  */
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import jersey.repackaged.com.google.common.collect.Lists;
-
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.common.collect.Lists;
 
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.WhaleUnit;
+import cool.arch.whaleunit.api.WhaleUnitContext;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
-import cool.arch.whaleunit.api.model.Port;
-import cool.arch.whaleunit.api.model.Ports;
 import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 
 /**
@@ -44,11 +45,11 @@ import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 	sources = {
 		WhaleUnitRuleIT.DescriptorSupplier.class
 	})
+
+@RunWith(WhaleUnitJUnit4ClassRunner.class)
 public class WhaleUnitRuleIT {
 
-	@Rule
-	@ClassRule
-	public static final WhaleUnitRule whaleUnitRule = new WhaleUnitRule();
+	private WhaleUnitContext context;
 
 	/**
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
@@ -56,6 +57,8 @@ public class WhaleUnitRuleIT {
 	@Test
 	public void testOne() {
 		System.out.println("one start");
+		
+		assertNotNull(context);
 
 		try {
 			Thread.sleep(15000);

@@ -35,7 +35,7 @@ public abstract class AbstractWhaleUnitTestngTest {
 
 	@BeforeMethod
 	public final void beforeMethod(final Method method) throws Exception {
-		runtime.onTestStart(method.getName());
+		runtime.onTestStart(method.getName(), this);
 	}
 
 	@AfterMethod

@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import cool.arch.whaleunit.api.WhaleUnitContext;
+
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
@@ -24,6 +26,10 @@ public final class MachineModel {
 
 	private final Queue<Alphabet> queue = new LinkedList<>();
 
+	private Object instance;
+	
+	private WhaleUnitContext whaleUnitContext;
+	
 	public Queue<Alphabet> getQueue() {
 		return queue;
 	}
@@ -74,5 +80,21 @@ public final class MachineModel {
 		input = queue.poll();
 
 		return this;
+	}
+
+	public Object getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Object instance) {
+		this.instance = instance;
+	}
+
+	public WhaleUnitContext getWhaleUnitContext() {
+		return whaleUnitContext;
+	}
+
+	public void setWhaleUnitContext(WhaleUnitContext whaleUnitContext) {
+		this.whaleUnitContext = whaleUnitContext;
 	}
 }
