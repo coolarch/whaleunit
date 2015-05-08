@@ -12,13 +12,8 @@ package cool.arch.whaleunit.runtime.transform;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import static java.lang.reflect.Modifier.FINAL;
-import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.BiFunction;
 
 import javax.inject.Inject;
@@ -27,7 +22,6 @@ import org.jvnet.hk2.annotations.Service;
 
 import cool.arch.stateroom.State;
 import cool.arch.whaleunit.api.WhaleUnitContext;
-import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.impl.WhaleUnitContextImpl;
 import cool.arch.whaleunit.runtime.model.Alphabet;
@@ -58,42 +52,7 @@ public final class StartedTransform implements BiFunction<State<MachineModel>, M
 
 			throw e;
 		}
-		
-		injectContext(model);
 
 		return model;
-	}
-	
-	private void injectContext(final MachineModel model) {
-		final Object instance = model.getInstance();
-		
-		if (instance == null) {
-			return;
-		}
-		
-		injectContext(instance.getClass(), model);
-	}
-	
-	private void injectContext(final Class<?> clazz, final MachineModel model) {
-		if (Object.class.equals(clazz)) {
-			return;
-		}
-		
-		final Field[] fields = clazz.getDeclaredFields();
-		
-		stream(fields)
-			.filter(field -> WhaleUnitContext.class.equals(field.getType()))
-			.filter(field -> (field.getModifiers() & FINAL) != FINAL)
-			.forEach(field -> {
-				field.setAccessible(true);
-				
-				try {
-					field.set(model.getInstance(), model.getWhaleUnitContext());
-				} catch (Exception e) {
-					throw new TestManagementException("Error injecting context into field " + field.getName(), e);
-				}
-			});
-		
-		injectContext(clazz.getSuperclass(), model);
 	}
 }

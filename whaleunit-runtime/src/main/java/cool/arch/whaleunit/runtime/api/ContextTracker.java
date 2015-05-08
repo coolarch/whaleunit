@@ -26,4 +26,6 @@ public interface ContextTracker {
 	void onTestFailed(String methodName);
 
 	void onCleanup();
+	
+	void inject(Object instance);
 }

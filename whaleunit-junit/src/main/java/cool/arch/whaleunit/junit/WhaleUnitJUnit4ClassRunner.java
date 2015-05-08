@@ -15,7 +15,16 @@ public final class WhaleUnitJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	public WhaleUnitJUnit4ClassRunner(Class<?> clazz) throws InitializationError {
 		super(clazz);
 	}
-
+	
+	@Override
+	protected Object createTest() throws Exception {
+		final Object instance = super.createTest();
+		
+		
+		
+		return instance;
+	}
+	
 	@Override
 	protected Statement withBeforeClasses(Statement statement) {
 		return new PreClassStatement(super.withBeforeClasses(statement), runtime, getTestClass().getJavaClass());
@@ -28,6 +37,7 @@ public final class WhaleUnitJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 
 	@Override
 	protected Statement withBefores(FrameworkMethod frameworkMethod, Object instance, Statement statement) {
+		runtime.inject(instance);
 		return new PreMethodStatement(super.withBefores(frameworkMethod, instance, statement), frameworkMethod.getMethod(), runtime, instance);
 	}
 

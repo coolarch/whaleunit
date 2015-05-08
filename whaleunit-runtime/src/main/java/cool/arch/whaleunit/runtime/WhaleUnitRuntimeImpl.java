@@ -17,8 +17,11 @@ import static cool.arch.whaleunit.runtime.model.Alphabet.FAILURE;
 import static cool.arch.whaleunit.runtime.model.Alphabet.START;
 import static cool.arch.whaleunit.runtime.model.Alphabet.SUCCESS;
 import static cool.arch.whaleunit.runtime.model.Alphabet.INIT;
+import static java.lang.reflect.Modifier.FINAL;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -28,8 +31,10 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
+import cool.arch.whaleunit.api.WhaleUnitContext;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
+import cool.arch.whaleunit.runtime.impl.WhaleUnitContextImpl;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 
 public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
@@ -41,6 +46,9 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 
 	@Inject
 	private LoggerAdapterFactory loggerAdapterFactory;
+
+	@Inject
+	private WhaleUnitContextImpl context;
 
 	/**
 	 * Constructs a new WhaleUnitRule.
@@ -115,4 +123,38 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 			throw new TestManagementException("Unexpected method ended: " + methodName);
 		}
 	}
+
+	@Override
+	public void inject(Object instance) {
+		if (instance == null) {
+			return;
+		}
+		
+		injectContext(instance.getClass(), instance);
+	}
+	
+	private void injectContext(final Class<?> clazz, final Object instance) {
+		if (Object.class.equals(clazz)) {
+			return;
+		}
+		
+		final Field[] fields = clazz.getDeclaredFields();
+		
+		stream(fields)
+			.filter(field -> WhaleUnitContext.class.equals(field.getType()))
+			.filter(field -> (field.getModifiers() & FINAL) != FINAL)
+			.forEach(field -> {
+				field.setAccessible(true);
+				
+				try {
+					field.set(instance, context);
+				} catch (Exception e) {
+					throw new TestManagementException("Error injecting context into field " + field.getName(), e);
+				}
+			});
+		
+		injectContext(clazz.getSuperclass(), instance);
+	}
+
+	
 }

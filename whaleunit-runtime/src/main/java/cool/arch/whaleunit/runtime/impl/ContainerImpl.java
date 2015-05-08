@@ -1,15 +1,13 @@
 package cool.arch.whaleunit.runtime.impl;
 
-import static com.spotify.docker.client.DockerClient.AttachParameter.LOGS;
-import static com.spotify.docker.client.DockerClient.AttachParameter.STDERR;
-import static com.spotify.docker.client.DockerClient.AttachParameter.STDOUT;
-import static com.spotify.docker.client.DockerClient.AttachParameter.STREAM;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.Scanner;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerException;
@@ -17,6 +15,8 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
+import com.spotify.docker.client.messages.NetworkSettings;
+import com.spotify.docker.client.messages.PortBinding;
 
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
@@ -226,6 +226,7 @@ public class ContainerImpl implements Container {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("boxing")
 	public boolean isRunning() {
 		boolean running = false;
@@ -259,5 +260,28 @@ public class ContainerImpl implements Container {
 		} catch (final InterruptedException e) {
 			throw new TestManagementException(e);
 		}
+	}
+
+	@Override
+	public Optional<Integer> externalTcpPortFor(int internalPort) {
+		return Optional.of(docker)
+			.map(docker -> {
+				try {
+					return docker.inspectContainer(runId);
+				} catch (Exception e) {
+					throw new TestManagementException("Error looking up port information", e);
+				}
+			})
+			.map(container -> container.networkSettings())
+			.map(networkSettings -> networkSettings.ports())
+			.map(ports -> ports.get(internalPort + "/tcp"))
+			.map(bindings -> bindings.get(0))
+			.map(binding -> binding.hostPort())
+			.map(Integer::parseInt);
+	}
+
+	@Override
+	public String getHostname() {
+		return docker.getHost();
 	}
 }

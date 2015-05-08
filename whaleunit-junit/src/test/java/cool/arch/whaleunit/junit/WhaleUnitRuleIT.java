@@ -17,12 +17,16 @@ package cool.arch.whaleunit.junit;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,19 +57,21 @@ public class WhaleUnitRuleIT {
 
 	/**
 	 * Test method for {@link cool.arch.whaleunit.junit.WhaleUnitRule#testExecution()}.
+	 * @throws IOException 
 	 */
 	@Test
-	public void testOne() {
+	public void testOne() throws IOException {
 		System.out.println("one start");
-		
 		assertNotNull(context);
+		
+		final String url = "http://" + context.onContainer("foo").getHostname() + ":" + context.onContainer("foo").externalTcpPortFor(80).get();
+		final URL urlConnection = new URL(url);
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.openConnection().getInputStream()));
 
-		try {
-			Thread.sleep(15000);
-		} catch (final InterruptedException e) {
-			// Intentionally do nothing
-		}
-
+		System.out.println(url);
+		
+		reader.lines().forEach(System.out::println);
+		
 		System.out.println("one end");
 	}
 
@@ -75,13 +81,8 @@ public class WhaleUnitRuleIT {
 	@Test
 	public void testTwo() {
 		System.out.println("two start");
-
-		//		try {
-		//			Thread.sleep(15000);
-		//		} catch (final InterruptedException e) {
-		//			// Intentionally do nothing
-		//		}
-
+		assertNotNull(context);
+		context.onContainer("foo").externalTcpPortFor(80).ifPresent(System.out::println);
 		System.out.println("two end");
 	}
 
@@ -89,26 +90,12 @@ public class WhaleUnitRuleIT {
 	@DirtiesContainers("bar")
 	public void testThree() {
 		System.out.println("three start");
-
-		//		try {
-		//			Thread.sleep(15000);
-		//		} catch (final InterruptedException e) {
-		//			// Intentionally do nothing
-		//		}
-
 		System.out.println("three end");
 	}
 
 	@Test
 	public void testFour() {
 		System.out.println("four start");
-
-		//		try {
-		//			Thread.sleep(15000);
-		//		} catch (final InterruptedException e) {
-		//			// Intentionally do nothing
-		//		}
-
 		System.out.println("four end");
 	}
 

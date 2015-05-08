@@ -126,4 +126,9 @@ public class ContainersImpl implements Containers {
 			.map(containers::get)
 			.forEach(consumer);
 	}
+
+	@Override
+	public Container lookup(String name) {
+		return containers.get(name);
+	}
 }

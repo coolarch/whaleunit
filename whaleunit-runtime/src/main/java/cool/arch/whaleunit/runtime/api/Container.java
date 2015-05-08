@@ -1,5 +1,7 @@
 package cool.arch.whaleunit.runtime.api;
 
+import cool.arch.whaleunit.api.ContainerStatus;
+
 /*
  * #%L WhaleUnit - JUnit %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
@@ -12,7 +14,7 @@ package cool.arch.whaleunit.runtime.api;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-public interface Container {
+public interface Container extends ContainerStatus {
 
 	void create();
 
