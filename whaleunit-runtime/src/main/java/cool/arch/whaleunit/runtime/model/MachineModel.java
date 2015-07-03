@@ -27,9 +27,9 @@ public final class MachineModel {
 	private final Queue<Alphabet> queue = new LinkedList<>();
 
 	private Object instance;
-	
+
 	private WhaleUnitContext whaleUnitContext;
-	
+
 	public Queue<Alphabet> getQueue() {
 		return queue;
 	}

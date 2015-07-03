@@ -31,7 +31,7 @@ import cool.arch.whaleunit.runtime.model.MachineModel;
 public final class StartedTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
 
 	private final Containers containers;
-	
+
 	private final WhaleUnitContext whaleUnitContext;
 
 	@Inject
@@ -43,7 +43,7 @@ public final class StartedTransform implements BiFunction<State<MachineModel>, M
 	@Override
 	public MachineModel apply(final State<MachineModel> state, final MachineModel model) {
 		model.setWhaleUnitContext(whaleUnitContext);
-		
+
 		try {
 			containers.startAll();
 		} catch (Exception e) {

@@ -100,7 +100,7 @@ public class ContainerImpl implements Container {
 
 		descriptor.getImage()
 			.ifPresent(builder::image);
-//		builder.exposedPorts(ports);
+		//		builder.exposedPorts(ports);
 		descriptor.getCommand()
 			.ifPresent(builder::cmd);
 		builder.attachStdout(false);
@@ -198,16 +198,16 @@ public class ContainerImpl implements Container {
 			Thread.sleep(50);
 
 			if (isRunning()) {
-//				docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
-//					.attach(stdoutPipe, stderrPipe);
-//
-//				executorService.submit(() -> {
-//					try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
-//						sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
-//					} catch (Exception e) {
-//						logger.error("Error reading input", e);
-//					}
-//				});
+				//				docker.attachContainer(runId, LOGS, STDOUT, STDERR, STREAM)
+				//					.attach(stdoutPipe, stderrPipe);
+				//
+				//				executorService.submit(() -> {
+				//					try (Scanner sc_stdout = new Scanner(stdout); Scanner sc_stderr = new Scanner(stderr)) {
+				//						sc_stdout.forEachRemaining(line -> logger.info(String.format("[%s] [STDOUT] %s", name, line)));
+				//					} catch (Exception e) {
+				//						logger.error("Error reading input", e);
+				//					}
+				//				});
 			} else {
 				logger.error("Container no longer running");
 			}

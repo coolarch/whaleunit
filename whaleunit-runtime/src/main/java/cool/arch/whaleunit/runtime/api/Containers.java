@@ -44,6 +44,6 @@ public interface Containers {
 	void stop(String... names);
 
 	void stopAll();
-	
+
 	Container lookup(String name);
 }

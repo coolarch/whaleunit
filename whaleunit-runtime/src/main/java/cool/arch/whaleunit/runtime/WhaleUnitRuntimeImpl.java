@@ -129,32 +129,30 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		if (instance == null) {
 			return;
 		}
-		
+
 		injectContext(instance.getClass(), instance);
 	}
-	
+
 	private void injectContext(final Class<?> clazz, final Object instance) {
 		if (Object.class.equals(clazz)) {
 			return;
 		}
-		
+
 		final Field[] fields = clazz.getDeclaredFields();
-		
-		stream(fields)
-			.filter(field -> WhaleUnitContext.class.equals(field.getType()))
+
+		stream(fields).filter(field -> WhaleUnitContext.class.equals(field.getType()))
 			.filter(field -> (field.getModifiers() & FINAL) != FINAL)
 			.forEach(field -> {
 				field.setAccessible(true);
-				
+
 				try {
 					field.set(instance, context);
 				} catch (Exception e) {
 					throw new TestManagementException("Error injecting context into field " + field.getName(), e);
 				}
 			});
-		
+
 		injectContext(clazz.getSuperclass(), instance);
 	}
 
-	
 }

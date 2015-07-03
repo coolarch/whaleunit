@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
+		<groupId>cool.arch.infrastructure</groupId>
+		<artifactId>base-pom</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>cool.arch.whaleunit</groupId>
 	<artifactId>whaleunit</artifactId>
@@ -35,7 +35,7 @@
 			<organization>CoolArch</organization>
 			<organizationUrl>http://www.arch.cool/</organizationUrl>
 			<timezone>-7</timezone>
-			<email>matthewwerny+coolarch@gmail.com</email>
+			<email>matthew.werny@arch.cool</email>
 			<roles>
 				<role>Project Lead</role>
 			</roles>
@@ -51,16 +51,11 @@
 		<java.target.version>1.8</java.target.version>
 		
 		<lib.stateroom.version>1.0.1-SNAPSHOT</lib.stateroom.version>
-		<lib.junit.version>4.12</lib.junit.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
-		<lib.mockito.version>1.10.19</lib.mockito.version>
 		<lib.docker-client.version>2.7.21</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
 		<lib.slf4j.version>1.7.10</lib.slf4j.version>
 		<lib.logback.version>1.1.2</lib.logback.version>
-		<plugin.lint.version>0.0.8</plugin.lint.version>
-		<plugin.license.version>1.8</plugin.license.version>
-		<plugin.formatter.version>1.5.0</plugin.formatter.version>
 		<skipITs>true</skipITs>
 	</properties>
 	<modules>
@@ -71,91 +66,13 @@
 		<module>whaleunit-test-support</module>
 		<module>whaleunit-junit</module>
 		<module>whaleunit-testng</module>
-		<module>whaleunit-license</module>
-		<module>whaleunit-codequality</module>
 		<module>whaleunit-descriptor-loader-annotation</module>
 		<module>whaleunit-descriptor-loader-fig</module>
 		<module>whaleunit-descriptor-loader-programmatic</module>
 	</modules>
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.lewisd</groupId>
-				<artifactId>lint-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.18.1</version>
-				<executions>
-					<execution>
-						<id>integration-test</id>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<skip>${skipITs}</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.marvinformatics.formatter</groupId>
-				<artifactId>formatter-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.2</version>
-					<configuration>
-						<source>${java.source.version}</source>
-						<target>${java.target.version}</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>${plugin.license.version}</version>
-					<configuration>
-						<licenseName>apache2</licenseName>
-						<licenseResolver>classpath://license/resolver</licenseResolver>
-						<includes>
-							<include>**/*.java</include>
-						</includes>
-						<roots>
-							<root>src/main/java</root>
-							<root>src/test/java</root>
-							<root>src/main/resources</root>
-							<root>src/test/resources</root>
-						</roots>
-						<failOnMissingHeader>true</failOnMissingHeader>
-					</configuration>
-					<executions>
-						<execution>
-							<id>license-maven-plugin-check-file-header</id>
-							<goals>
-								<goal>check-file-header</goal>
-							</goals>
-							<phase>verify</phase>
-						</execution>
-					</executions>
-					<dependencies>
-						<dependency>
-							<groupId>cool.arch.whaleunit</groupId>
-							<artifactId>whaleunit-license</artifactId>
-							<version>${project.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
 				<plugin>
 					<groupId>org.glassfish.hk2</groupId>
 					<artifactId>hk2-inhabitant-generator</artifactId>
@@ -169,105 +86,6 @@
 							<phase>process-classes</phase>
 						</execution>
 					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.lewisd</groupId>
-					<artifactId>lint-maven-plugin</artifactId>
-					<version>${plugin.lint.version}</version>
-					<executions>
-						<execution>
-							<id>lint-maven-plugin-validate-check</id>
-							<goals>
-								<goal>check</goal>
-							</goals>
-							<phase>validate</phase>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.marvinformatics.formatter</groupId>
-					<artifactId>formatter-maven-plugin</artifactId>
-					<version>${plugin.formatter.version}</version>
-					<executions>
-						<execution>
-							<id>formatter-maven-plugin-validate</id>
-							<goals>
-								<goal>validate</goal>
-							</goals>
-							<phase>validate</phase>
-						</execution>
-					</executions>
-					<configuration>
-						<aggregator>true</aggregator>
-						<basedir>${baseDir}</basedir>
-						<sourceDirectory>./</sourceDirectory>
-						<excludes>
-							<exclude>**/target/**</exclude>
-						</excludes>
-						<aggregator>true</aggregator>
-						<lineEnding>LF</lineEnding>
-						<configFile>classpath:/cool/arch/whaleunit/codequality/formatter/java.xml</configFile>
-						<configJsFile>classpath:/cool/arch/whaleunit/codequality/formatter/javascript.xml</configJsFile>
-					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>cool.arch.whaleunit</groupId>
-							<artifactId>whaleunit-codequality</artifactId>
-							<version>${project.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.glassfish.hk2</groupId>
-										<artifactId>hk2-inhabitant-generator</artifactId>
-										<versionRange>[2.4.0-b10,)</versionRange>
-										<goals>
-											<goal>generate-inhabitants</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.lewisd</groupId>
-										<artifactId>lint-maven-plugin</artifactId>
-										<versionRange>[0.0.8,)</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.2,)</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -312,16 +130,6 @@
 			</dependency>
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
-				<artifactId>whaleunit-license</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>cool.arch.whaleunit</groupId>
-				<artifactId>whaleunit-codequality</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>cool.arch.whaleunit</groupId>
 				<artifactId>whaleunit-descriptor-loader-annotation</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
@@ -336,21 +144,9 @@
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${lib.junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
 				<version>${lib.testng.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${lib.mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

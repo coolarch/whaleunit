@@ -49,7 +49,6 @@ import cool.arch.whaleunit.loader.programmatic.ProgrammaticContainerDescriptors;
 	sources = {
 		WhaleUnitRuleIT.DescriptorSupplier.class
 	})
-
 @RunWith(WhaleUnitJUnit4ClassRunner.class)
 public class WhaleUnitRuleIT {
 
@@ -63,15 +62,20 @@ public class WhaleUnitRuleIT {
 	public void testOne() throws IOException {
 		System.out.println("one start");
 		assertNotNull(context);
-		
-		final String url = "http://" + context.onContainer("foo").getHostname() + ":" + context.onContainer("foo").externalTcpPortFor(80).get();
+
+		final String url = "http://" + context.onContainer("foo")
+			.getHostname() + ":" + context.onContainer("foo")
+			.externalTcpPortFor(80)
+			.get();
 		final URL urlConnection = new URL(url);
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.openConnection().getInputStream()));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.openConnection()
+			.getInputStream()));
 
 		System.out.println(url);
-		
-		reader.lines().forEach(System.out::println);
-		
+
+		reader.lines()
+			.forEach(System.out::println);
+
 		System.out.println("one end");
 	}
 
@@ -82,7 +86,9 @@ public class WhaleUnitRuleIT {
 	public void testTwo() {
 		System.out.println("two start");
 		assertNotNull(context);
-		context.onContainer("foo").externalTcpPortFor(80).ifPresent(System.out::println);
+		context.onContainer("foo")
+			.externalTcpPortFor(80)
+			.ifPresent(System.out::println);
 		System.out.println("two end");
 	}
 
