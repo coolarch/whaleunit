@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cool.arch.infrastructure</groupId>
 		<artifactId>base-pom</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<groupId>cool.arch.whaleunit</groupId>
 	<artifactId>whaleunit</artifactId>
@@ -50,7 +50,7 @@
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
 		
-		<lib.stateroom.version>1.0.1-SNAPSHOT</lib.stateroom.version>
+		<lib.stateroom.version>1.0.1</lib.stateroom.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
 		<lib.docker-client.version>2.7.21</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>

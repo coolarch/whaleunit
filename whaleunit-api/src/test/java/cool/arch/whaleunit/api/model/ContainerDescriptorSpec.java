@@ -46,6 +46,10 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 
 		Thens theEntryPointIs(String entryPoint);
 
+		Thens theDomainNameIs(String domainName);
+
+		Thens theImageIs(String image);
+
 	}
 
 	public interface Whens extends AbstractWhens<Thens> {
@@ -55,6 +59,10 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		Whens anEntryPointIsDefined(String entryPoint);
 
 		Whens anIdIsDefined(String id);
+
+		Whens aDomainNameIsDefined(String domainName);
+
+		Whens anImageIsDefined(String image);
 
 		Whens theContainerIsBuilt();
 
@@ -97,9 +105,43 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 		}
 
 		@Override
+		public Whens aDomainNameIsDefined(String domainName) {
+			builder = builder.withDomainName(domainName);
+
+			return this;
+		}
+
+		@Override
+		public Whens anImageIsDefined(String image) {
+			builder = builder.withImage(image);
+
+			return this;
+		}
+
+		@Override
 		public Thens theCommandIs(final String command) {
 			assertNotNull(container);
 			assertEquals(command, container.getCommand()
+				.get()
+				.toString());
+
+			return this;
+		}
+
+		@Override
+		public Thens theDomainNameIs(String domainName) {
+			assertNotNull(container);
+			assertEquals(domainName, container.getDomainName()
+				.get()
+				.toString());
+
+			return this;
+		}
+
+		@Override
+		public Thens theImageIs(String image) {
+			assertNotNull(container);
+			assertEquals(image, container.getImage()
 				.get()
 				.toString());
 

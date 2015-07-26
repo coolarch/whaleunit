@@ -32,6 +32,7 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 
 	/**
 	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#builder()}.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -77,6 +78,7 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 
 	/**
 	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getCommand()}.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -101,16 +103,27 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getDomainName()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getDomainName()}.
+	 * 
+	 * @throws Exception
 	 */
 	@Test
-	@Ignore
-	public final void testGetDomainName() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetDomainName() throws Exception {
+		given().aBuilder()
+			.when()
+			.anIdIsDefined("foo")
+			.aDomainNameIsDefined("arch.cool")
+			.theContainerIsBuilt()
+			.then()
+			.theDomainNameIs("arch.cool")
+			.noExceptionsThrown();
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getEntryPoint()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getEntryPoint()}.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -126,7 +139,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getEnvironments()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getEnvironments()}.
 	 */
 	@Test
 	@Ignore
@@ -154,11 +168,20 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 
 	/**
 	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getImage()}.
+	 * 
+	 * @throws Exception
 	 */
 	@Test
-	@Ignore
-	public final void testGetImage() {
-		fail("Not yet implemented"); // TODO
+	public final void testGetImage() throws Exception {
+		given().aBuilder()
+			.when()
+			.anIdIsDefined("foo")
+			.anImageIsDefined("bar")
+			.aDomainNameIsDefined("arch.cool")
+			.theContainerIsBuilt()
+			.then()
+			.theImageIs("bar")
+			.noExceptionsThrown();
 	}
 
 	/**
@@ -171,7 +194,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getMemoryLimitMegs()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getMemoryLimitMegs()}.
 	 */
 	@Test
 	@Ignore
@@ -189,7 +213,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getNetContainer()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getNetContainer()}.
 	 */
 	@Test
 	@Ignore
@@ -225,7 +250,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getVolumesFrom()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getVolumesFrom()}.
 	 */
 	@Test
 	@Ignore
@@ -234,7 +260,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getWorkingDirectory()}.
+	 * Test method for
+	 * {@link cool.arch.whaleunit.api.model.ContainerDescriptor#getWorkingDirectory()}.
 	 */
 	@Test
 	@Ignore
@@ -243,7 +270,8 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 	}
 
 	/**
-	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#isPrivileged()}.
+	 * Test method for {@link cool.arch.whaleunit.api.model.ContainerDescriptor#isPrivileged()}
+	 * .
 	 */
 	@Test
 	@Ignore
