@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -66,7 +65,7 @@ public class WhaleUnitRuleIT {
 		final String url = "http://" + context.onContainer("foo")
 			.getHostname() + ":" + context.onContainer("foo")
 			.externalTcpPortFor(80)
-			.get();
+			.orElse(80);
 		final URL urlConnection = new URL(url);
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.openConnection()
 			.getInputStream()));
@@ -85,10 +84,12 @@ public class WhaleUnitRuleIT {
 	@Test
 	public void testTwo() {
 		System.out.println("two start");
+
 		assertNotNull(context);
 		context.onContainer("foo")
 			.externalTcpPortFor(80)
 			.ifPresent(System.out::println);
+
 		System.out.println("two end");
 	}
 

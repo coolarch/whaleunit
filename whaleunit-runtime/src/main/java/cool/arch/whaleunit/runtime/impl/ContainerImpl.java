@@ -1,5 +1,6 @@
 package cool.arch.whaleunit.runtime.impl;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -81,10 +82,9 @@ public class ContainerImpl implements Container {
 
 		logger.info("create: " + name);
 
-		final String[] ports = {
-				"80",
-				"22"
-		};
+//		final String[] ports = descriptor.getPorts()
+//			.map(v -> new String[] {}) // TODO - Extract ports here from descriptor
+//			.orElse(new String[] {"80", "22"});
 
 		descriptor.getImage()
 			.ifPresent(image -> {
@@ -96,15 +96,24 @@ public class ContainerImpl implements Container {
 
 			});
 
+		// for(String port : ports) {
+		// List<PortBinding> hostPorts = new ArrayList<>();
+		// hostPorts.add(PortBinding.of("0.0.0.0", port));
+		// portBindings.put(port, hostPorts);
+		// }
+		final HostConfig hostConfig = HostConfig.builder()
+			.publishAllPorts(TRUE)
+			.build();
+
 		final Builder builder = ContainerConfig.builder();
 
 		descriptor.getImage()
 			.ifPresent(builder::image);
-		//		builder.exposedPorts(ports);
 		descriptor.getCommand()
 			.ifPresent(builder::cmd);
 		builder.attachStdout(false);
 		builder.tty(false);
+		builder.hostConfig(hostConfig);
 
 		final ContainerConfig config = builder.build();
 
@@ -176,15 +185,6 @@ public class ContainerImpl implements Container {
 
 		state = ContainerState.STARTED;
 
-		// for(String port : ports) {
-		// List<PortBinding> hostPorts = new ArrayList<>();
-		// hostPorts.add(PortBinding.of("0.0.0.0", port));
-		// portBindings.put(port, hostPorts);
-		// }
-		final HostConfig hostConfig = HostConfig.builder()
-			.publishAllPorts(true)
-			.build();
-
 		runId = creation.id();
 
 		try {
@@ -193,7 +193,7 @@ public class ContainerImpl implements Container {
 			final PipedOutputStream stdoutPipe = new PipedOutputStream(stdout);
 			final PipedOutputStream stderrPipe = new PipedOutputStream(stderr);
 
-			docker.startContainer(runId, hostConfig);
+			docker.startContainer(runId);
 
 			Thread.sleep(50);
 
@@ -254,7 +254,6 @@ public class ContainerImpl implements Container {
 
 		try {
 			docker.stopContainer(name, 30);
-			docker.killContainer(name);
 		} catch (final DockerException e) {
 			throw new TestManagementException(e);
 		} catch (final InterruptedException e) {
@@ -263,7 +262,7 @@ public class ContainerImpl implements Container {
 	}
 
 	@Override
-	public Optional<Integer> externalTcpPortFor(int internalPort) {
+	public Optional<Integer> externalTcpPortFor(final int internalPort) {
 		return Optional.of(docker)
 			.map(docker -> {
 				try {

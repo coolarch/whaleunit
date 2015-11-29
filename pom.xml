@@ -52,7 +52,7 @@
 		
 		<lib.stateroom.version>1.0.1</lib.stateroom.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
-		<lib.docker-client.version>2.7.21</lib.docker-client.version>
+		<lib.docker-client.version>3.3.1</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
 		<lib.slf4j.version>1.7.10</lib.slf4j.version>
 		<lib.logback.version>1.1.2</lib.logback.version>
