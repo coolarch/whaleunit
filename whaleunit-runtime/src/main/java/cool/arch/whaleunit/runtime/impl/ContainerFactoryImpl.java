@@ -8,8 +8,8 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificateException;
 import com.spotify.docker.client.DockerClient;
 
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
@@ -33,27 +33,24 @@ public class ContainerFactoryImpl implements ContainerFactory {
 
 	private final DockerClient docker;
 
-	private final LoggerAdapterFactory factory;
-
-	private final Logger logger;
+	@Log
+	private Logger logger;
 
 	private final SimpleExecutorService simpleExecutorService;
 
 	private final UniqueIdService uniqueIdService;
 
 	@Inject
-	ContainerFactoryImpl(final LoggerAdapterFactory factory, final UniqueIdService uniqueIdService,
-		final SimpleExecutorService simpleExecutorService) throws DockerCertificateException {
-		this.factory = factory;
+	ContainerFactoryImpl(final UniqueIdService uniqueIdService, final SimpleExecutorService simpleExecutorService)
+		throws DockerCertificateException {
 		this.uniqueIdService = uniqueIdService;
 		this.simpleExecutorService = simpleExecutorService;
-		logger = factory.create(getClass());
 		docker = DefaultDockerClient.fromEnv()
 			.build();
 	}
 
 	@Override
 	public Container apply(final ContainerDescriptor descriptor) {
-		return new ContainerImpl(factory, descriptor, uniqueIdService, docker, simpleExecutorService);
+		return new ContainerImpl(logger, descriptor, uniqueIdService, docker, simpleExecutorService);
 	}
 }

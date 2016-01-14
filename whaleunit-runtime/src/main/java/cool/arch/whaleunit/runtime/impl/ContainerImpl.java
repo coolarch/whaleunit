@@ -1,13 +1,12 @@
 package cool.arch.whaleunit.runtime.impl;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.spotify.docker.client.DockerClient;
@@ -16,11 +15,9 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.NetworkSettings;
-import com.spotify.docker.client.messages.PortBinding;
 
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
 import cool.arch.whaleunit.runtime.api.Container;
@@ -40,6 +37,9 @@ import cool.arch.whaleunit.runtime.enumeration.ContainerState;
  * specific language governing permissions and limitations under the License. #L%
  */
 
+/**
+ * 
+ */
 public class ContainerImpl implements Container {
 
 	private ContainerCreation creation;
@@ -52,7 +52,7 @@ public class ContainerImpl implements Container {
 
 	private final String id;
 
-	private final Logger logger;
+	private Logger logger;
 
 	private final String name;
 
@@ -60,15 +60,22 @@ public class ContainerImpl implements Container {
 
 	private ContainerState state = ContainerState.NEW;
 
-	public ContainerImpl(final LoggerAdapterFactory factory, final ContainerDescriptor descriptor,
+	/**
+	 * @param factory
+	 * @param descriptor
+	 * @param uniqueIdService
+	 * @param docker
+	 * @param executorService
+	 */
+	public ContainerImpl(final Logger logger, final ContainerDescriptor descriptor,
 		final UniqueIdService uniqueIdService, final DockerClient docker, final SimpleExecutorService executorService) {
 		this.descriptor = requireNonNull(descriptor, "descriptor shall not be null");
 		this.executorService = requireNonNull(executorService, "executorService shall not be null");
 		final String uniqueId = uniqueIdService.getUniqueId();
+		this.logger = logger;
 		id = descriptor.getId()
 			.get();
 		name = "whaleunit_" + uniqueId + "_" + id;
-		logger = factory.create(getClass());
 		this.docker = requireNonNull(docker, "docker shall not be null");
 	}
 
@@ -82,9 +89,9 @@ public class ContainerImpl implements Container {
 
 		logger.info("create: " + name);
 
-//		final String[] ports = descriptor.getPorts()
-//			.map(v -> new String[] {}) // TODO - Extract ports here from descriptor
-//			.orElse(new String[] {"80", "22"});
+		//		final String[] ports = descriptor.getPorts()
+		//			.map(v -> new String[] {}) // TODO - Extract ports here from descriptor
+		//			.orElse(new String[] {"80", "22"});
 
 		descriptor.getImage()
 			.ifPresent(image -> {
@@ -111,8 +118,8 @@ public class ContainerImpl implements Container {
 			.ifPresent(builder::image);
 		descriptor.getCommand()
 			.ifPresent(builder::cmd);
-		builder.attachStdout(false);
-		builder.tty(false);
+		builder.attachStdout(FALSE);
+		builder.tty(FALSE);
 		builder.hostConfig(hostConfig);
 
 		final ContainerConfig config = builder.build();
@@ -249,14 +256,11 @@ public class ContainerImpl implements Container {
 		}
 
 		state = ContainerState.STOPPED;
-
 		logger.info("stop: " + name);
 
 		try {
 			docker.stopContainer(name, 30);
-		} catch (final DockerException e) {
-			throw new TestManagementException(e);
-		} catch (final InterruptedException e) {
+		} catch (final DockerException | InterruptedException e) {
 			throw new TestManagementException(e);
 		}
 	}

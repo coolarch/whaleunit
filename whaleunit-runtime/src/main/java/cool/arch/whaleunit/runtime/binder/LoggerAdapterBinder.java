@@ -14,19 +14,18 @@ package cool.arch.whaleunit.runtime.binder;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
-import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
-import cool.arch.whaleunit.runtime.impl.DelegatingLoggerAdapterFactoryImpl;
+import cool.arch.whaleunit.annotation.Log;
 
 public class LoggerAdapterBinder extends AbstractBinder {
 
 	@Override
 	protected void configure() {
-		bind(DelegatingLoggerAdapterFactoryImpl.class).to(DelegatingLoggerAdapterFactory.class)
-			.to(LoggerAdapterFactory.class)
+		bind(LoggerInjectionResolver.class).to(new TypeLiteral<InjectionResolver<Log>>() {
+		})
 			.in(Singleton.class);
-		;
 	}
 }

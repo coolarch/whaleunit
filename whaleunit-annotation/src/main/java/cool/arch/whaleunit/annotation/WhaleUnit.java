@@ -41,12 +41,4 @@ public @interface WhaleUnit {
 	 * @return Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers
 	 */
 	Class<?>[] containersFromClasses() default {};
-
-	/**
-	 * Logger adapter to use with WhaleUnit.
-	 * <p>
-	 * The default implementation uses java.util.logging based logging.
-	 * @return
-	 */
-	Class<? extends LoggerAdapterFactory> loggerAdapterFactory() default DefaultLoggerAdapterFactory.class;
 }

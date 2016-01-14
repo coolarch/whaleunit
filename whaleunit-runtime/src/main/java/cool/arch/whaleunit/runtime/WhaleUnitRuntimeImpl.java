@@ -29,8 +29,8 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.WhaleUnitContext;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.runtime.binder.LoggerAdapterBinder;
@@ -42,10 +42,8 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 	@Inject
 	private MachineWrapper machineWrapper;
 
+	@Log
 	private Logger log;
-
-	@Inject
-	private LoggerAdapterFactory loggerAdapterFactory;
 
 	@Inject
 	private WhaleUnitContextImpl context;
@@ -61,13 +59,8 @@ public final class WhaleUnitRuntimeImpl implements WhaleUnitRuntime {
 		requireNonNull(locator, "locator shall not be null");
 		ServiceLocatorUtilities.bind(locator, new LoggerAdapterBinder());
 		locator.inject(this);
-		log = loggerAdapterFactory.create(this.getClass());
 
 		System.out.println("Runtime instantiated");
-	}
-
-	public Logger getLog() {
-		return log;
 	}
 
 	@Override

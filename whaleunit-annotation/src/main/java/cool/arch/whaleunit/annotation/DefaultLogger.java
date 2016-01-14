@@ -16,11 +16,11 @@ import static java.util.Objects.requireNonNull;
 
 import org.slf4j.LoggerFactory;
 
-class DefaultLogger implements Logger {
+public class DefaultLogger implements Logger {
 
 	private final org.slf4j.Logger logger;
 
-	DefaultLogger(final Class<?> source) {
+	public DefaultLogger(final Class<?> source) {
 		requireNonNull(source, "source shall not be null");
 		logger = LoggerFactory.getLogger(source.getName());
 	}

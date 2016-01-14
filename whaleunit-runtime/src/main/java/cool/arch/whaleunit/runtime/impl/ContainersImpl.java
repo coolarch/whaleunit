@@ -20,12 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-
 import org.jvnet.hk2.annotations.Service;
 
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.runtime.api.Container;
 import cool.arch.whaleunit.runtime.api.Containers;
 
@@ -34,12 +32,8 @@ public class ContainersImpl implements Containers {
 
 	private final Map<String, Container> containers = new HashMap<>();
 
-	private final Logger loggerAdapter;
-
-	@Inject
-	public ContainersImpl(final LoggerAdapterFactory factory) {
-		loggerAdapter = factory.create(getClass());
-	}
+	@Log
+	private Logger loggerAdapter;
 
 	@Override
 	public void add(final Container container) {

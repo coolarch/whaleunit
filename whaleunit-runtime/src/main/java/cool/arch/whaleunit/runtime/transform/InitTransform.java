@@ -12,8 +12,6 @@ package cool.arch.whaleunit.runtime.transform;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import static cool.arch.whaleunit.support.functional.Exceptions.wrap;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -28,16 +26,13 @@ import org.jvnet.hk2.annotations.Service;
 
 import cool.arch.stateroom.State;
 import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.annotation.WhaleUnit;
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
-import cool.arch.whaleunit.api.exception.InitializationException;
 import cool.arch.whaleunit.api.exception.TestManagementException;
-import cool.arch.whaleunit.api.exception.ValidationException;
 import cool.arch.whaleunit.runtime.api.ContainerFactory;
 import cool.arch.whaleunit.runtime.api.Containers;
-import cool.arch.whaleunit.runtime.api.DelegatingLoggerAdapterFactory;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 import cool.arch.whaleunit.runtime.service.api.MutableConfigService;
@@ -58,22 +53,19 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 
 	private final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
 
-	private final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory;
-
 	private Set<String> globallyDirtiedContainerNames = new HashSet<>();
 
+	@Log
 	private Logger log;
 
 	@Inject
 	public InitTransform(final Containers containers, final ContainerFactory containerFactory,
 		final Provider<MutableConfigService> configService,
-		final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService,
-		final DelegatingLoggerAdapterFactory delegatingLoggerAdapterFactory) {
+		final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService) {
 		this.containers = containers;
 		this.containerFactory = containerFactory;
 		this.configService = configService;
 		this.containerDescriptorLoaderService = containerDescriptorLoaderService;
-		this.delegatingLoggerAdapterFactory = delegatingLoggerAdapterFactory;
 	}
 
 	@Override
@@ -164,16 +156,6 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 			.map(tc -> tc.getName())
 			.get();
 		final String message = String.format(MISSING_WHALEUNIT_ANNOTATION_TMPL, whaleUnitName, testClassName);
-
-		final Optional<LoggerAdapterFactory> laf = Optional.ofNullable(testClass)
-			.map(testClazz -> testClazz.getAnnotation(WhaleUnit.class))
-			.map(annotation -> annotation.loggerAdapterFactory())
-			.map(wrap(clazz -> clazz.newInstance(), e -> new InitializationException(LOG_INIT_ERROR, e)));
-
-		laf.ifPresent(delegatingLoggerAdapterFactory::setLoggerAdapterFactory);
-		laf.orElseThrow(() -> new ValidationException(message));
-		laf.map(factory -> delegatingLoggerAdapterFactory.create(getClass()))
-			.ifPresent(log -> this.log = log);
 	}
 
 	public Logger getLog() {

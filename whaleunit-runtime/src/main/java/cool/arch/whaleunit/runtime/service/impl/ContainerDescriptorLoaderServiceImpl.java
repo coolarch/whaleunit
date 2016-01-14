@@ -30,8 +30,8 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import cool.arch.whaleunit.annotation.ContainerDescriptorLoaderSource;
+import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
-import cool.arch.whaleunit.annotation.LoggerAdapterFactory;
 import cool.arch.whaleunit.api.ContainerDescriptorLoader;
 import cool.arch.whaleunit.api.exception.ContainerDescriptorLoadException;
 import cool.arch.whaleunit.api.exception.TestManagementException;
@@ -43,12 +43,8 @@ public class ContainerDescriptorLoaderServiceImpl implements ContainerDescriptor
 
 	private final Map<Class<?>, ContainerDescriptorLoader<?>> loaders = new HashMap<>();
 
-	private final Logger logger;
-
-	@Inject
-	public ContainerDescriptorLoaderServiceImpl(final LoggerAdapterFactory factory) {
-		logger = factory.create(getClass());
-	}
+	@Log
+	private Logger logger;
 
 	@Override
 	public Collection<ContainerDescriptor> extractDescriptors(final Class<?> testClass)
