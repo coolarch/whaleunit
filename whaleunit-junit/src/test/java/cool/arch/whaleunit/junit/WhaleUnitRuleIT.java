@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import com.google.common.collect.Lists;
 
 import cool.arch.whaleunit.annotation.DirtiesContainers;
+import cool.arch.whaleunit.annotation.ContainerStartedPredicate;
 import cool.arch.whaleunit.annotation.WhaleUnit;
 import cool.arch.whaleunit.api.WhaleUnitContext;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
@@ -100,10 +101,14 @@ public class WhaleUnitRuleIT {
 		System.out.println("three end");
 	}
 
-	@Test
-	public void testFour() {
-		System.out.println("four start");
-		System.out.println("four end");
+	@ContainerStartedPredicate("foo")
+	public boolean isFooStarted() {
+		return true;
+	}
+
+	@ContainerStartedPredicate("bar")
+	public boolean isBarStarted() {
+		return true;
 	}
 
 	public static class DescriptorSupplier implements Supplier<Collection<ContainerDescriptor>> {

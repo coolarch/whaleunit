@@ -1,5 +1,8 @@
 package cool.arch.whaleunit.runtime.transform;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 /*
  * #%L WhaleUnit - Runtime %% Copyright (C) 2015 CoolArch %% Licensed to the Apache Software
  * Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
@@ -14,9 +17,13 @@ package cool.arch.whaleunit.runtime.transform;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -25,6 +32,7 @@ import javax.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
 
 import cool.arch.stateroom.State;
+import cool.arch.whaleunit.annotation.ContainerStartedPredicate;
 import cool.arch.whaleunit.annotation.DirtiesContainers;
 import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
@@ -96,6 +104,8 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 	}
 
 	private void validate(final MachineModel model) {
+		final List<String> errors = new LinkedList<>();
+
 		final Class<?> testClass = model.getTestClass();
 		final WhaleUnit annotation = Optional.ofNullable(testClass)
 			.map(tc -> tc.getAnnotation(WhaleUnit.class))
@@ -123,8 +133,37 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 			.collect(Collectors.joining(", "));
 
 		if (!"".equals(missingName)) {
-			throw new TestManagementException("Unknown containers in DirtiesContainers annotations: " + missingName);
+			errors.add("Unknown containers in DirtiesContainers annotations: " + missingName);
 		}
+
+		validateContainerStartedPredicateAnnotatedMethods(testClass, errors::add);
+
+		if (!errors.isEmpty()) {
+			final String message = errors.stream()
+				.collect(Collectors.joining(", "));
+
+			throw new TestManagementException(message);
+		}
+	}
+
+	private void validateContainerStartedPredicateAnnotatedMethods(final Class<?> testClass, final Consumer<String> errorConsumer) {
+		final List<Method> methods = Arrays.stream(testClass.getMethods())
+			.filter(m -> m.getAnnotationsByType(ContainerStartedPredicate.class).length > 0)
+			.collect(Collectors.toList());
+
+		validateMethods(methods, errorConsumer, "Method %s annotated with @ContainerStartedPredicate must have a return type of boolean.", m -> m.getReturnType().equals(boolean.class));
+		validateMethods(methods, errorConsumer, "Method %s must not have any parameters.", m -> m.getParameterCount() == 0);
+		validateMethods(methods, errorConsumer, "Method %s must not have varargs parameters.", m -> !m.isVarArgs());
+		validateMethods(methods, errorConsumer, "Method %s must not be abstract.", m -> !Modifier.isAbstract(m.getModifiers()));
+		validateMethods(methods, errorConsumer, "Method %s must not be static.", m -> !Modifier.isStatic(m.getModifiers()));
+	}
+
+	private void validateMethods(final List<Method> methods, final Consumer<String> errorConsumer, final String messageTemplate, final Predicate<Method> predicate) {
+		methods.stream()
+			.filter(predicate.negate())
+			.map(Method::getName)
+			.map(name -> String.format(messageTemplate, name))
+			.forEach(errorConsumer);
 	}
 
 	private void preInit(final MachineModel model) {
