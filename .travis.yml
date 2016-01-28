@@ -1,6 +1,6 @@
 language: java
 script:
-  - mvn clean install -DskipITs=false
+  - mvn test integration-test -DskipITs=false
 notifications:
   email: false
 jdk:
