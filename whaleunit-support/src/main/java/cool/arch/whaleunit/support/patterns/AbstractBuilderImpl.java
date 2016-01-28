@@ -14,7 +14,6 @@ package cool.arch.whaleunit.support.patterns;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -27,7 +26,7 @@ public abstract class AbstractBuilderImpl<T> implements AbstractBuilder<T> {
 	}
 
 	@Override
-	public final Optional<T> build() {
+	public final T build() {
 		final Set<String> errors = validate(getInstance());
 
 		if (!errors.isEmpty()) {
@@ -38,7 +37,7 @@ public abstract class AbstractBuilderImpl<T> implements AbstractBuilder<T> {
 			throw new IllegalStateException(joiner.toString());
 		}
 
-		return Optional.of(instance);
+		return instance;
 	}
 
 	protected T getInstance() {

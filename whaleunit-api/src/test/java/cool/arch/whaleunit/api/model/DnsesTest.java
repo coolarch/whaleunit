@@ -36,8 +36,7 @@ public class DnsesTest {
 
 		final Dnses result = Dnses.builder()
 			.with(dns)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(dns, result.iterator()
@@ -56,8 +55,7 @@ public class DnsesTest {
 
 		final Dnses result = Dnses.builder()
 			.with(dnss)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(dns, result.iterator()

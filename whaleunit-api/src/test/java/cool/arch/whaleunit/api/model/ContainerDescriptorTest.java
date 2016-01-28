@@ -54,8 +54,7 @@ public class ContainerDescriptorTest extends ContainerDescriptorSpec {
 			.withExposes(Exposes.builder()
 				.build())
 			.withHostname("whaleunit.arch.cool")
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(container);
 

@@ -150,8 +150,7 @@ public abstract class ContainerDescriptorSpec implements Spec<Givens, Whens, The
 
 		@Override
 		public Whens theContainerIsBuilt() {
-			container = builder.build()
-				.get();
+			container = builder.build();
 
 			return this;
 		}

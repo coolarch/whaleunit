@@ -36,8 +36,7 @@ public class PortsTest {
 
 		final Ports result = Ports.builder()
 			.with(port)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(port, result.iterator()
@@ -56,8 +55,7 @@ public class PortsTest {
 
 		final Ports result = Ports.builder()
 			.with(ports)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(port, result.iterator()

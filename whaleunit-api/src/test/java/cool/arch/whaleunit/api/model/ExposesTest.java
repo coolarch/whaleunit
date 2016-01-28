@@ -36,8 +36,7 @@ public class ExposesTest {
 
 		final Exposes result = Exposes.builder()
 			.with(expose)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(expose, result.iterator()
@@ -56,8 +55,7 @@ public class ExposesTest {
 
 		final Exposes result = Exposes.builder()
 			.with(exposes)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(expose, result.iterator()

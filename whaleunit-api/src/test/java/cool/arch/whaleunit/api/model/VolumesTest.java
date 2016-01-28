@@ -36,8 +36,7 @@ public class VolumesTest {
 
 		final Volumes result = Volumes.builder()
 			.with(volume)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(volume, result.iterator()
@@ -56,8 +55,7 @@ public class VolumesTest {
 
 		final Volumes result = Volumes.builder()
 			.with(volumes)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(volume, result.iterator()

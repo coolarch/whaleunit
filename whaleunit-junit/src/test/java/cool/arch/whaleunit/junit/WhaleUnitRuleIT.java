@@ -117,18 +117,24 @@ public class WhaleUnitRuleIT {
 		public Collection<ContainerDescriptor> get() {
 			final List<ContainerDescriptor> descriptors = new LinkedList<>();
 
-			ContainerDescriptor.builder()
+			final ContainerDescriptor descriptor0 = ContainerDescriptor.builder()
 				.withId("foo")
 				.withImage("tutum/apache-php")
-				.build()
-				.ifPresent(descriptors::add);
+				.build();
+			
+				if (descriptor0 != null) {
+					descriptors.add(descriptor0);
+				}
 
-			ContainerDescriptor.builder()
+				final ContainerDescriptor descriptor1 = ContainerDescriptor.builder()
 				.withId("bar")
 				.withImage("ubuntu:14.04")
 				.withCommand(Lists.newArrayList("/bin/sleep", "10"))
-				.build()
-				.ifPresent(descriptors::add);
+				.build();
+
+				if (descriptor1 != null) {
+					descriptors.add(descriptor1);
+				}
 
 			return descriptors;
 		}

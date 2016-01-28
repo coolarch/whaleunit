@@ -36,8 +36,7 @@ public class LinksTest {
 
 		final Links result = Links.builder()
 			.with(link)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(link, result.iterator()
@@ -56,8 +55,7 @@ public class LinksTest {
 
 		final Links result = Links.builder()
 			.with(links)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(link, result.iterator()

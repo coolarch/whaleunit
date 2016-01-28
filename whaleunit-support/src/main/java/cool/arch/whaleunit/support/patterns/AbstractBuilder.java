@@ -12,9 +12,7 @@ package cool.arch.whaleunit.support.patterns;
  * specific language governing permissions and limitations under the License. #L%
  */
 
-import java.util.Optional;
-
 public interface AbstractBuilder<T> {
 
-	Optional<T> build();
+	T build();
 }

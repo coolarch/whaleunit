@@ -36,8 +36,7 @@ public class EnvironmentsTest {
 
 		final Environments result = Environments.builder()
 			.with(environment)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(environment, result.iterator()
@@ -56,8 +55,7 @@ public class EnvironmentsTest {
 
 		final Environments result = Environments.builder()
 			.with(environments)
-			.build()
-			.get();
+			.build();
 
 		assertNotNull(result);
 		assertSame(environment, result.iterator()
