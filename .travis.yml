@@ -1,7 +1,10 @@
 language: java
 script:
-  - mvn test
+  - mvn clean install -DskipITs
 notifications:
   email: false
 jdk:
   - oraclejdk8
+sudo: required
+services:
+  - docker
