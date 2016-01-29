@@ -146,19 +146,27 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 		}
 	}
 
-	private void validateContainerStartedPredicateAnnotatedMethods(final Class<?> testClass, final Consumer<String> errorConsumer) {
+	private void validateContainerStartedPredicateAnnotatedMethods(final Class<?> testClass,
+		final Consumer<String> errorConsumer) {
 		final List<Method> methods = Arrays.stream(testClass.getMethods())
 			.filter(m -> m.getAnnotationsByType(ContainerStartedPredicate.class).length > 0)
 			.collect(Collectors.toList());
 
-		validateMethods(methods, errorConsumer, "Method %s annotated with @ContainerStartedPredicate must have a return type of boolean.", m -> m.getReturnType().equals(boolean.class));
-		validateMethods(methods, errorConsumer, "Method %s must not have any parameters.", m -> m.getParameterCount() == 0);
+		validateMethods(methods, errorConsumer,
+			"Method %s annotated with @ContainerStartedPredicate must have a return type of boolean.",
+			m -> m.getReturnType()
+				.equals(boolean.class));
+		validateMethods(methods, errorConsumer, "Method %s must not have any parameters.",
+			m -> m.getParameterCount() == 0);
 		validateMethods(methods, errorConsumer, "Method %s must not have varargs parameters.", m -> !m.isVarArgs());
-		validateMethods(methods, errorConsumer, "Method %s must not be abstract.", m -> !Modifier.isAbstract(m.getModifiers()));
-		validateMethods(methods, errorConsumer, "Method %s must not be static.", m -> !Modifier.isStatic(m.getModifiers()));
+		validateMethods(methods, errorConsumer, "Method %s must not be abstract.",
+			m -> !Modifier.isAbstract(m.getModifiers()));
+		validateMethods(methods, errorConsumer, "Method %s must not be static.",
+			m -> !Modifier.isStatic(m.getModifiers()));
 	}
 
-	private void validateMethods(final List<Method> methods, final Consumer<String> errorConsumer, final String messageTemplate, final Predicate<Method> predicate) {
+	private void validateMethods(final List<Method> methods, final Consumer<String> errorConsumer,
+		final String messageTemplate, final Predicate<Method> predicate) {
 		methods.stream()
 			.filter(predicate.negate())
 			.map(Method::getName)

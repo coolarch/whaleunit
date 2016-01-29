@@ -3,6 +3,8 @@
  */
 package cool.arch.whaleunit.junit;
 
+import static org.mockito.MockitoAnnotations.initMocks;
+
 /*
  * #%L WhaleUnit - JUnit Support %% Copyright (C) 2015 CoolArch %% Licensed to the Apache
  * Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE
@@ -21,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class MethodStatementTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		initMocks(this);
 		specimen = new MethodStatement(mockRule, mockBase, mockDescription);
 	}
 

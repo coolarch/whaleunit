@@ -121,20 +121,20 @@ public class WhaleUnitRuleIT {
 				.withId("foo")
 				.withImage("tutum/apache-php")
 				.build();
-			
-				if (descriptor0 != null) {
-					descriptors.add(descriptor0);
-				}
 
-				final ContainerDescriptor descriptor1 = ContainerDescriptor.builder()
+			if (descriptor0 != null) {
+				descriptors.add(descriptor0);
+			}
+
+			final ContainerDescriptor descriptor1 = ContainerDescriptor.builder()
 				.withId("bar")
 				.withImage("ubuntu:14.04")
 				.withCommand(Lists.newArrayList("/bin/sleep", "10"))
 				.build();
 
-				if (descriptor1 != null) {
-					descriptors.add(descriptor1);
-				}
+			if (descriptor1 != null) {
+				descriptors.add(descriptor1);
+			}
 
 			return descriptors;
 		}

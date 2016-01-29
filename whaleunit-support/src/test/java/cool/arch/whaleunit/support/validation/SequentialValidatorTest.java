@@ -9,7 +9,7 @@ public class SequentialValidatorTest {
 	 */
 	@Test
 	public void testValidate() {
-		final SequentialValidator<String> validator = SequentialValidator.<String>builder()
+		final SequentialValidator<String> validator = SequentialValidator.<String> builder()
 			.withValidator((model, errors) -> true)
 			.build();
 	}

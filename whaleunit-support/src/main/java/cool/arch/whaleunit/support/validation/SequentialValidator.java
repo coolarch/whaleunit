@@ -24,7 +24,8 @@ public final class SequentialValidator<T> {
 		boolean active = true;
 
 		while (active && iterator.hasNext()) {
-			active = iterator.next().test(model, errors::add);
+			active = iterator.next()
+				.test(model, errors::add);
 		}
 
 		return errors.stream()
