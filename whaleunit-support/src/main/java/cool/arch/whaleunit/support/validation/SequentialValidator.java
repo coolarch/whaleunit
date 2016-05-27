@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 import cool.arch.whaleunit.support.patterns.AbstractBuilder;
 import cool.arch.whaleunit.support.patterns.AbstractBuilderImpl;
@@ -29,7 +30,7 @@ public final class SequentialValidator<T> {
 
 	private final List<BiPredicate<T, Consumer<String>>> predicates = new LinkedList<>();
 
-	public <R> R validate(final T model, final Collector<? super CharSequence, ?, R> collector) {
+	public Stream<String> validate(final T model) {
 		final List<String> errors = new LinkedList<>();
 
 		final Iterator<BiPredicate<T, Consumer<String>>> iterator = predicates.iterator();
@@ -41,8 +42,7 @@ public final class SequentialValidator<T> {
 				.test(model, errors::add);
 		}
 
-		return errors.stream()
-			.collect(collector);
+		return errors.stream();
 	}
 
 	public static <T> Builder<T> builder() {
@@ -51,7 +51,7 @@ public final class SequentialValidator<T> {
 
 	public interface Builder<T> extends AbstractBuilder<SequentialValidator<T>> {
 
-		Builder<T> withValidator(BiPredicate<T, Consumer<String>> predicate);
+		Builder<T> addValidator(BiPredicate<T, Consumer<String>> predicate);
 
 	}
 
@@ -67,7 +67,7 @@ public final class SequentialValidator<T> {
 		}
 
 		@Override
-		public Builder<T> withValidator(final BiPredicate<T, Consumer<String>> predicate) {
+		public Builder<T> addValidator(final BiPredicate<T, Consumer<String>> predicate) {
 			if (predicate != null) {
 				getInstance().predicates.add(predicate);
 			}

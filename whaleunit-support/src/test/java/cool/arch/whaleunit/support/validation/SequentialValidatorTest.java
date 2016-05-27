@@ -1,5 +1,12 @@
 package cool.arch.whaleunit.support.validation;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
+import org.junit.Test;
+
 /*
  * #%L WhaleUnit - Support %% Copyright (C) 2015 - 2016 CoolArch %% Licensed to the Apache
  * Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE
@@ -13,8 +20,6 @@ package cool.arch.whaleunit.support.validation;
  * #L%
  */
 
-import org.junit.Test;
-
 public class SequentialValidatorTest {
 
 	/**
@@ -23,7 +28,27 @@ public class SequentialValidatorTest {
 	@Test
 	public void testValidate() {
 		final SequentialValidator<String> validator = SequentialValidator.<String> builder()
-			.withValidator((model, errors) -> true)
+			.addValidator((model, errors) -> {
+				errors.accept("first error for " + model);
+
+				return true;
+			})
+			.addValidator((model, errors) -> {
+				errors.accept("second error for " + model);
+
+				return false;
+			})
+			.addValidator((model, errors) -> {
+				errors.accept("third error for " + model);
+
+				return true;
+			})
 			.build();
+
+		final List<String> errors = validator.validate("foo").collect(toList());
+
+		assertEquals(2, errors.size());
+		assertEquals("first error for foo", errors.get(0));
+		assertEquals("second error for foo", errors.get(1));
 	}
 }

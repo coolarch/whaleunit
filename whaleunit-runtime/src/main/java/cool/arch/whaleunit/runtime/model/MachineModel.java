@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import cool.arch.whaleunit.annotation.WhaleUnit;
 import cool.arch.whaleunit.api.WhaleUnitContext;
 
 /*
@@ -28,6 +29,8 @@ public final class MachineModel {
 
 	private Object instance;
 
+	private WhaleUnit annotation;
+
 	private WhaleUnitContext whaleUnitContext;
 
 	public Queue<Alphabet> getQueue() {
@@ -37,6 +40,14 @@ public final class MachineModel {
 	private Class<?> testClass;
 
 	private Set<String> globallyDirtiedContainerNames;
+
+	public WhaleUnit getAnnotation() {
+		return annotation;
+	}
+
+	public void setAnnotation(WhaleUnit annotation) {
+		this.annotation = annotation;
+	}
 
 	public String getCurrentMethod() {
 		return currentMethod;

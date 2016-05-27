@@ -1,5 +1,7 @@
 package cool.arch.whaleunit.runtime.transform;
 
+import static java.util.stream.Collectors.joining;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -44,6 +46,7 @@ import cool.arch.whaleunit.runtime.api.Containers;
 import cool.arch.whaleunit.runtime.model.MachineModel;
 import cool.arch.whaleunit.runtime.service.api.ContainerDescriptorLoaderService;
 import cool.arch.whaleunit.runtime.service.api.MutableConfigService;
+import cool.arch.whaleunit.support.validation.SequentialValidator;
 
 @Service
 public final class InitTransform implements BiFunction<State<MachineModel>, MachineModel, MachineModel> {
@@ -62,6 +65,11 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 	private final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
 
 	private Set<String> globallyDirtiedContainerNames = new HashSet<>();
+	
+	private SequentialValidator<MachineModel> validator = SequentialValidator.<MachineModel>builder()
+		.addValidator(this::extractAndValidateAnnotation)
+		.addValidator(this::validateContainerStartedPredicateAnnotatedMethods)
+		.build();
 
 	@Log
 	private Logger log;
@@ -103,13 +111,20 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 		return model;
 	}
 
+	private boolean extractAndValidateAnnotation(final MachineModel model, final Consumer<String> errorConsumer) {
+		Optional.ofNullable(model)
+			.map(MachineModel::getTestClass)
+			.map(tc -> tc.getAnnotation(WhaleUnit.class))
+			.ifPresent(model::setAnnotation);
+
+		return model.getAnnotation() != null;
+	}
+
 	private void validate(final MachineModel model) {
 		final List<String> errors = new LinkedList<>();
 
 		final Class<?> testClass = model.getTestClass();
-		final WhaleUnit annotation = Optional.ofNullable(testClass)
-			.map(tc -> tc.getAnnotation(WhaleUnit.class))
-			.orElse(null);
+
 		final Set<String> names = new HashSet<>();
 
 		Optional.ofNullable(testClass)
@@ -136,19 +151,17 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 			errors.add("Unknown containers in DirtiesContainers annotations: " + missingName);
 		}
 
-		validateContainerStartedPredicateAnnotatedMethods(testClass, errors::add);
+		final String message = validator.validate(model)
+			.collect(joining(", "));
 
-		if (!errors.isEmpty()) {
-			final String message = errors.stream()
-				.collect(Collectors.joining(", "));
-
+		if (!"".equals(message)) {
 			throw new TestManagementException(message);
 		}
 	}
 
-	private void validateContainerStartedPredicateAnnotatedMethods(final Class<?> testClass,
+	private boolean validateContainerStartedPredicateAnnotatedMethods(final MachineModel model,
 		final Consumer<String> errorConsumer) {
-		final List<Method> methods = Arrays.stream(testClass.getMethods())
+		final List<Method> methods = Arrays.stream(model.getTestClass().getMethods())
 			.filter(m -> m.getAnnotationsByType(ContainerStartedPredicate.class).length > 0)
 			.collect(Collectors.toList());
 
@@ -163,6 +176,8 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 			m -> !Modifier.isAbstract(m.getModifiers()));
 		validateMethods(methods, errorConsumer, "Method %s must not be static.",
 			m -> !Modifier.isStatic(m.getModifiers()));
+
+		return true;
 	}
 
 	private void validateMethods(final List<Method> methods, final Consumer<String> errorConsumer,
