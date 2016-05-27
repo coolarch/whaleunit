@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificateException;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerCertificateException;
 
 import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;

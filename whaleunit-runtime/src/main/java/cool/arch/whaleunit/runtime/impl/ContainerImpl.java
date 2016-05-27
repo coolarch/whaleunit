@@ -10,13 +10,12 @@ import java.io.PipedOutputStream;
 import java.util.Optional;
 
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerException;
+import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
 
-import cool.arch.whaleunit.annotation.Log;
 import cool.arch.whaleunit.annotation.Logger;
 import cool.arch.whaleunit.api.exception.TestManagementException;
 import cool.arch.whaleunit.api.model.ContainerDescriptor;
@@ -61,6 +60,7 @@ public class ContainerImpl implements Container {
 	private ContainerState state = ContainerState.NEW;
 
 	/**
+	 * @param logger 
 	 * @param factory
 	 * @param descriptor
 	 * @param uniqueIdService

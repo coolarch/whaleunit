@@ -45,7 +45,8 @@ public class SequentialValidatorTest {
 			})
 			.build();
 
-		final List<String> errors = validator.validate("foo").collect(toList());
+		final List<String> errors = validator.validate("foo")
+			.collect(toList());
 
 		assertEquals(2, errors.size());
 		assertEquals("first error for foo", errors.get(0));

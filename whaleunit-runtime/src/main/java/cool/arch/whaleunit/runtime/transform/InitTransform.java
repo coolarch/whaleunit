@@ -65,8 +65,8 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 	private final Provider<ContainerDescriptorLoaderService> containerDescriptorLoaderService;
 
 	private Set<String> globallyDirtiedContainerNames = new HashSet<>();
-	
-	private SequentialValidator<MachineModel> validator = SequentialValidator.<MachineModel>builder()
+
+	private SequentialValidator<MachineModel> validator = SequentialValidator.<MachineModel> builder()
 		.addValidator(this::extractAndValidateAnnotation)
 		.addValidator(this::validateContainerStartedPredicateAnnotatedMethods)
 		.build();
@@ -161,7 +161,8 @@ public final class InitTransform implements BiFunction<State<MachineModel>, Mach
 
 	private boolean validateContainerStartedPredicateAnnotatedMethods(final MachineModel model,
 		final Consumer<String> errorConsumer) {
-		final List<Method> methods = Arrays.stream(model.getTestClass().getMethods())
+		final List<Method> methods = Arrays.stream(model.getTestClass()
+			.getMethods())
 			.filter(m -> m.getAnnotationsByType(ContainerStartedPredicate.class).length > 0)
 			.collect(Collectors.toList());
 

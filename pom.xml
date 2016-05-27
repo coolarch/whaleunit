@@ -52,7 +52,7 @@
 		
 		<lib.stateroom.version>1.0.1</lib.stateroom.version>
 		<lib.testng.version>6.8.21</lib.testng.version>
-		<lib.docker-client.version>3.3.1</lib.docker-client.version>
+		<lib.docker-client.version>5.0.1</lib.docker-client.version>
 		<lib.hk2.version>2.4.0-b10</lib.hk2.version>
 		<lib.slf4j.version>1.7.10</lib.slf4j.version>
 		<lib.logback.version>1.1.2</lib.logback.version>
@@ -64,7 +64,7 @@
 		<module>whaleunit-annotation</module>
 		<module>whaleunit-support</module>
 		<module>whaleunit-test-support</module>
-		<module>whaleunit-junit</module>
+		<module>whaleunit-junit4</module>
 		<module>whaleunit-testng</module>
 		<module>whaleunit-descriptor-loader-annotation</module>
 		<module>whaleunit-descriptor-loader-fig</module>
@@ -120,7 +120,7 @@
 			</dependency>
 			<dependency>
 				<groupId>cool.arch.whaleunit</groupId>
-				<artifactId>whaleunit-junit</artifactId>
+				<artifactId>whaleunit-junit4</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>

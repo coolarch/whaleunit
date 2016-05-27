@@ -17,6 +17,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Primary configuration annotation for the WhaleUnit framework.
@@ -41,4 +43,10 @@ public @interface WhaleUnit {
 	 * @return Classes that are annotated with {@link cool.arch.whaleunit.loader.annotation.Container} annotations to define containers
 	 */
 	Class<?>[] containersFromClasses() default {};
+
+	/**
+	 * 
+	 * @return
+	 */
+	Class<Supplier<Optional<String>>>[] dockerHostDiscovers() default {};
 }
